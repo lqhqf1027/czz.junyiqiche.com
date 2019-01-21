@@ -55,7 +55,7 @@ return [
     // | 模块设置
     // +----------------------------------------------------------------------
     // 默认模块名
-    'default_module'         => 'index',
+    'default_module'         => 'admin',
     // 禁止访问模块
     'deny_module_list'       => ['common'],
     // 默认控制器名
@@ -176,7 +176,7 @@ return [
     // +----------------------------------------------------------------------
     'cache'                  => [
         // 驱动方式
-        'type'   => 'File',
+        'type'   => 'Memcache',
         // 缓存保存目录
         'path'   => CACHE_PATH,
         // 缓存前缀
@@ -226,7 +226,7 @@ return [
     //验证码配置
     'captcha'                => [
         // 验证码字符集合
-        'codeSet'  => '2345678abcdefhijkmnpqrstuvwxyzABCDEFGHJKLMNPQRTUVWXY',
+        'codeSet'  => '123456789',
         // 验证码字体大小(px)
         'fontSize' => 18,
         // 是否画混淆曲线

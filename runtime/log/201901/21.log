@@ -1,0 +1,2400 @@
+---------------------------------------------------------------
+[ 2019-01-21T15:55:14+08:00 ] 127.0.0.1 POST czz.jyqc.com/index.php/admin/index/login
+[ sql ] [ DB ] CONNECT:[ UseTime:0.100299s ] mysql:host=120.78.135.109;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_admin` [ RunTime:0.063097s ]
+[ sql ] [ SQL ] SELECT * FROM `czz_test_admin` WHERE  `username` = 'czz' LIMIT 1 [ RunTime:0.061614s ]
+[ sql ] [ SQL ] UPDATE `czz_test_admin`  SET `logintime`=1548057314,`token`='2e139cab-979f-47ee-8274-fecc26a3eccb',`updatetime`=1548057314  WHERE  `id` = 1 [ RunTime:0.084594s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_admin_log` [ RunTime:0.064154s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_admin_log` (`title` , `content` , `url` , `admin_id` , `username` , `useragent` , `ip` , `createtime`) VALUES ('登录' , '{\"__token__\":\"798327b48742b004c55cf567428cdf54\",\"username\":\"czz\",\"captcha\":\"mjqk\"}' , '/index.php/admin/index/login' , 1 , 'czz' , 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' , '127.0.0.1' , 1548057314) [ RunTime:0.067927s ]
+---------------------------------------------------------------
+[ 2019-01-21T15:55:15+08:00 ] 127.0.0.1 GET czz.jyqc.com/index.php/admin/index/index
+[ sql ] [ DB ] CONNECT:[ UseTime:0.095527s ] mysql:host=120.78.135.109;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.063851s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.063077s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.063301s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.063951s ]
+[ sql ] [ SQL ] SELECT * FROM `czz_test_auth_rule` WHERE  `status` = 'normal'  AND `ismenu` = 1 ORDER BY `weigh` DESC [ RunTime:0.064887s ]
+---------------------------------------------------------------
+[ 2019-01-21T15:55:16+08:00 ] 127.0.0.1 GET czz.jyqc.com/index.php/admin/dashboard?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.173677s ] mysql:host=120.78.135.109;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.073935s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.074217s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.072776s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.073182s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'dashboard' LIMIT 1 [ RunTime:0.073066s ]
+---------------------------------------------------------------
+[ 2019-01-21T15:58:18+08:00 ] 127.0.0.1 GET czz.jyqc.com/index.php/admin/dashboard?ref=addtabs
+[ sql ] [ DB ] CONNECT:[ UseTime:0.113218s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.073749s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.073793s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.073715s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.074360s ]
+---------------------------------------------------------------
+[ 2019-01-21T15:58:18+08:00 ] 127.0.0.1 GET czz.jyqc.com/index.php/admin/index/index
+[ sql ] [ DB ] CONNECT:[ UseTime:0.132915s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.082922s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.082780s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.084625s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.083886s ]
+---------------------------------------------------------------
+[ 2019-01-21T15:58:38+08:00 ] 127.0.0.1 GET czz.jyqc.com/index.php/admin/dashboard?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.136070s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ error ] [2]PDO::prepare(): MySQL server has gone away
+---------------------------------------------------------------
+[ 2019-01-21T15:58:38+08:00 ] 127.0.0.1 GET czz.jyqc.com/index.php/admin/index/index
+[ error ] [2002]SQLSTATE[HY000] [2002] php_network_getaddresses: getaddrinfo failed: ��֪�������������� 
+---------------------------------------------------------------
+[ 2019-01-21T15:58:38+08:00 ] 127.0.0.1 GET czz.jyqc.com/index.php/admin/index/index
+[ error ] [2002]SQLSTATE[HY000] [2002] php_network_getaddresses: getaddrinfo failed: ��֪�������������� 
+---------------------------------------------------------------
+[ 2019-01-21T15:58:45+08:00 ] 127.0.0.1 GET czz.jyqc.com/index.php/admin/index/index
+[ sql ] [ DB ] CONNECT:[ UseTime:0.131186s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.075356s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.074812s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.074993s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.074491s ]
+---------------------------------------------------------------
+[ 2019-01-21T15:58:46+08:00 ] 127.0.0.1 GET czz.jyqc.com/index.php/admin/dashboard?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.243622s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.086101s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.085775s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.087140s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.087838s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'dashboard' LIMIT 1 [ RunTime:0.086780s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:25:50+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/index/index
+[ sql ] [ DB ] CONNECT:[ UseTime:0.127879s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.082971s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.080269s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.081460s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.080272s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:25:51+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/dashboard?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.145048s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.086720s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.086569s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.089748s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.086504s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'dashboard' LIMIT 1 [ RunTime:0.085736s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:25:52+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/addon?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.113563s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.076454s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.075364s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.075914s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.076037s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'addon' LIMIT 1 [ RunTime:0.075783s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:26:38+08:00 ] 127.0.0.1 POST czz.jyqc.com/admin/addon/install
+[ sql ] [ DB ] CONNECT:[ UseTime:0.118645s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.075576s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.077011s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.075739s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.077694s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_admin_log` [ RunTime:0.076445s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_admin_log` (`title` , `content` , `url` , `admin_id` , `username` , `useragent` , `ip` , `createtime`) VALUES ('插件管理 安装' , '{\"name\":\"upyun\",\"force\":\"0\",\"uid\":\"2437\",\"token\":\"a206db14-d7f3-4bdb-a230-71bfe43f1ba5\",\"version\":\"1.0.1\",\"faversion\":\"1.0.0.20190111_beta\"}' , '/admin/addon/install' , 1 , 'czz' , 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' , '127.0.0.1' , 1548059198) [ RunTime:0.080776s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:26:39+08:00 ] 127.0.0.1 POST czz.jyqc.com/admin/index/index
+[ sql ] [ DB ] CONNECT:[ UseTime:0.142086s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.083881s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.083664s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.083908s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.083281s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_admin_log` [ RunTime:0.083328s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_admin_log` (`title` , `content` , `url` , `admin_id` , `username` , `useragent` , `ip` , `createtime`) VALUES ('' , '{\"action\":\"refreshmenu\"}' , '/admin/index/index' , 1 , 'czz' , 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' , '127.0.0.1' , 1548059199) [ RunTime:0.088936s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:26:43+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/addon/config?name=upyun&dialog=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.126967s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.080078s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.080694s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.081836s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.083176s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:30:50+08:00 ] 127.0.0.1 POST czz.jyqc.com/admin/addon/config?name=upyun&dialog=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.130507s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.085627s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.085938s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.086204s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.086312s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_admin_log` [ RunTime:0.084802s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_admin_log` (`title` , `content` , `url` , `admin_id` , `username` , `useragent` , `ip` , `createtime`) VALUES ('插件管理 配置' , '{\"name\":\"upyun\",\"dialog\":\"1\",\"row\":{\"bucket\":\"static-czz-jy\",\"cdnurl\":\"https:\\/\\/static-czz.junyiqiche.com\",\"uploadurl\":\"https:\\/\\/v0.api.upyun.com\\/static-czz-jy\",\"notifyurl\":\"https:\\/\\/czz.junyiqiche.com\\/index\\/notify\",\"formkey\":\"gLRClPh\\/s4a2JcwzfkaBxyfzFWM=\",\"savekey\":\"\\/uploads\\/{year}{mon}{day}\\/{filemd5}{.suffix}\",\"expire\":\"7200\",\"maxsize\":\"20M\",\"mimetype\":\"jpg,png,bmp,jpeg,gif,zip,rar,xls,xlsx,pdf\",\"multiple\":\"1\"}}' , '/admin/addon/config?name=upyun&dialog=1' , 1 , 'czz' , 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' , '127.0.0.1' , 1548059450) [ RunTime:0.103225s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:30:53+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/addon?ref=addtabs
+[ sql ] [ DB ] CONNECT:[ UseTime:0.117207s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.076964s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.076276s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.075726s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.086076s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:30:54+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/index/index
+[ sql ] [ DB ] CONNECT:[ UseTime:0.118493s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.076920s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.075393s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.075872s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.076585s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:30:55+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/dashboard?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.115001s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.073537s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.073961s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.074352s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.073816s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'dashboard' LIMIT 1 [ RunTime:0.073120s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:30:56+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/addon?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.130540s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.084786s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.085747s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.086097s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.085544s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'addon' LIMIT 1 [ RunTime:0.083666s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:48:50+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/addon?ref=addtabs
+[ sql ] [ DB ] CONNECT:[ UseTime:0.116563s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.074109s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.074388s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.074283s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.073933s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:48:51+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/index/index
+[ sql ] [ DB ] CONNECT:[ UseTime:0.125058s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.080986s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.080734s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.081680s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.080227s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:48:52+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/dashboard?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.116181s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.075622s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.076492s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.077468s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.078033s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'dashboard' LIMIT 1 [ RunTime:0.076055s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:48:53+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/addon?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.098212s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.064628s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.064813s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.064915s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.065371s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'addon' LIMIT 1 [ RunTime:0.064553s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:49:20+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/addon?ref=addtabs
+[ sql ] [ DB ] CONNECT:[ UseTime:0.130547s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.083664s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.083637s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.084259s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.083574s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:49:20+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/index/index
+[ sql ] [ DB ] CONNECT:[ UseTime:0.134578s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.085849s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.087221s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.087025s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.087000s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:49:21+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/dashboard?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.153962s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.075572s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.074165s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.075436s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.076873s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'dashboard' LIMIT 1 [ RunTime:0.074807s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:49:22+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/addon?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.137845s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.075815s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.075647s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.074283s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.076175s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'addon' LIMIT 1 [ RunTime:0.074521s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:49:24+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/general/profile?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.105509s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.063598s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.066186s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.065804s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.065802s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:49:25+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/general/profile/index?sort=id&order=desc&offset=0&limit=10&_=1548060564315
+[ sql ] [ DB ] CONNECT:[ UseTime:0.133190s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.084719s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.086115s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.086511s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.087152s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_admin_log` [ RunTime:0.084924s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `czz_test_admin_log` WHERE  `admin_id` = 1 ORDER BY `id` DESC LIMIT 1 [ RunTime:0.085248s ]
+[ sql ] [ SQL ] SELECT * FROM `czz_test_admin_log` WHERE  `admin_id` = 1 ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.087048s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:49:59+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/addon/config?name=upyun&dialog=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.113170s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.073301s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.072495s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.073654s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.073915s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:55:24+08:00 ] 127.0.0.1 POST czz.jyqc.com/admin/addon/config?name=upyun&dialog=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.116425s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.074443s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.079596s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.073821s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.076108s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_admin_log` [ RunTime:0.074383s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_admin_log` (`title` , `content` , `url` , `admin_id` , `username` , `useragent` , `ip` , `createtime`) VALUES ('插件管理 配置' , '{\"name\":\"upyun\",\"dialog\":\"1\",\"row\":{\"bucket\":\"static-czz-jy\",\"cdnurl\":\"https:\\/\\/static-czz.junyiqiche.com\",\"uploadurl\":\"https:\\/\\/v0.api.upyun.com\\/static-czz-jy\",\"notifyurl\":\"https:\\/\\/czz.junyiqiche.com\\/index\\/notify\",\"formkey\":\"gLRClPh\\/s4a2JcwzfkaBxyfzFWM=\",\"savekey\":\"\\/uploads\\/{year}{mon}{day}\\/{filemd5}{.suffix}\",\"expire\":\"7200\",\"maxsize\":\"20M\",\"mimetype\":\"jpg,png,bmp,jpeg,gif,zip,rar,xls,xlsx,pdf\",\"multiple\":\"1\"}}' , '/admin/addon/config?name=upyun&dialog=1' , 1 , 'czz' , 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' , '127.0.0.1' , 1548060924) [ RunTime:0.079059s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:55:28+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/general/profile/index?sort=id&order=desc&offset=0&limit=10&_=1548060564316
+[ sql ] [ DB ] CONNECT:[ UseTime:0.123897s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.077115s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.076288s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.077879s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.077326s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_admin_log` [ RunTime:0.077639s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `czz_test_admin_log` WHERE  `admin_id` = 1 ORDER BY `id` DESC LIMIT 1 [ RunTime:0.077277s ]
+[ sql ] [ SQL ] SELECT * FROM `czz_test_admin_log` WHERE  `admin_id` = 1 ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.077072s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:56:17+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/general/attachment?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.117392s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.077306s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.076624s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.105365s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.076532s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'general/attachment' LIMIT 1 [ RunTime:0.076459s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:56:18+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/general/attachment/index?sort=id&order=desc&offset=0&limit=10&filter=%7B%7D&op=%7B%7D&_=1548060977962
+[ sql ] [ DB ] CONNECT:[ UseTime:0.116301s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.076414s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.076444s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.076917s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.075802s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_attachment` [ RunTime:0.075224s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `czz_test_attachment` ORDER BY `id` DESC LIMIT 1 [ RunTime:0.077301s ]
+[ sql ] [ SQL ] SELECT * FROM `czz_test_attachment` ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.076339s ]
+---------------------------------------------------------------
+[ 2019-01-21T16:56:24+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/general/config?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.114696s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.075081s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.075182s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.075022s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.074470s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_config` [ RunTime:0.075365s ]
+[ sql ] [ SQL ] SELECT * FROM `czz_test_config` [ RunTime:0.074614s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'general/config' LIMIT 1 [ RunTime:0.074053s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:00:07+08:00 ] 127.0.0.1 POST czz.jyqc.com/admin/addon/install
+[ sql ] [ DB ] CONNECT:[ UseTime:0.140228s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.086865s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.086767s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.087394s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.087585s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms' , 'CMS管理' , 1 , 'fa fa-list' , 0 , 'normal' , 1548061199 , 1548061199) [ RunTime:0.091224s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `icon` , `ismenu` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/archives' , '内容管理' , 'fa fa-file-text-o' , 1 , 85 , 'normal' , 1548061199 , 1548061199) [ RunTime:0.089615s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/archives/index' , '查看' , 0 , 'fa fa-circle-o' , 86 , 'normal' , 1548061199 , 1548061199) [ RunTime:0.087902s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `remark` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/archives/content' , '副表管理' , '用于管理模型副表的数据列表,不建议在此进行删除操作' , 0 , 'fa fa-circle-o' , 86 , 'normal' , 1548061199 , 1548061199) [ RunTime:0.089274s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/archives/add' , '添加' , 0 , 'fa fa-circle-o' , 86 , 'normal' , 1548061199 , 1548061199) [ RunTime:0.088926s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/archives/edit' , '修改' , 0 , 'fa fa-circle-o' , 86 , 'normal' , 1548061199 , 1548061199) [ RunTime:0.095765s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/archives/del' , '删除' , 0 , 'fa fa-circle-o' , 86 , 'normal' , 1548061199 , 1548061199) [ RunTime:0.090025s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/archives/multi' , '批量更新' , 0 , 'fa fa-circle-o' , 86 , 'normal' , 1548061199 , 1548061199) [ RunTime:0.089326s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `icon` , `remark` , `ismenu` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/channel' , '栏目管理' , 'fa fa-list' , '用于管理网站的分类，可进行无限级分类，注意只有类型为列表的才可以添加文章' , 1 , 85 , 'normal' , 1548061199 , 1548061199) [ RunTime:0.091851s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/channel/index' , '查看' , 0 , 'fa fa-circle-o' , 93 , 'normal' , 1548061199 , 1548061199) [ RunTime:0.087753s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/channel/add' , '添加' , 0 , 'fa fa-circle-o' , 93 , 'normal' , 1548061200 , 1548061200) [ RunTime:0.090730s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/channel/edit' , '修改' , 0 , 'fa fa-circle-o' , 93 , 'normal' , 1548061200 , 1548061200) [ RunTime:0.089715s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/channel/del' , '删除' , 0 , 'fa fa-circle-o' , 93 , 'normal' , 1548061200 , 1548061200) [ RunTime:0.087860s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/channel/multi' , '批量更新' , 0 , 'fa fa-circle-o' , 93 , 'normal' , 1548061200 , 1548061200) [ RunTime:0.089178s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/channel/admin' , '栏目授权' , 0 , 'fa fa-circle-o' , 93 , 'normal' , 1548061200 , 1548061200) [ RunTime:0.089500s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `icon` , `remark` , `ismenu` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/modelx' , '模型管理' , 'fa fa-th' , '在线添加修改删除模型，管理模型字段和相关模型数据' , 1 , 85 , 'normal' , 1548061200 , 1548061200) [ RunTime:0.090572s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/modelx/index' , '查看' , 0 , 'fa fa-circle-o' , 100 , 'normal' , 1548061200 , 1548061200) [ RunTime:0.089643s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/modelx/add' , '添加' , 0 , 'fa fa-circle-o' , 100 , 'normal' , 1548061200 , 1548061200) [ RunTime:0.089049s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/modelx/edit' , '修改' , 0 , 'fa fa-circle-o' , 100 , 'normal' , 1548061200 , 1548061200) [ RunTime:0.089689s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/modelx/del' , '删除' , 0 , 'fa fa-circle-o' , 100 , 'normal' , 1548061200 , 1548061200) [ RunTime:0.088602s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/modelx/multi' , '批量更新' , 0 , 'fa fa-circle-o' , 100 , 'normal' , 1548061200 , 1548061200) [ RunTime:0.093292s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `icon` , `ismenu` , `remark` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/fields' , '字段管理' , 'fa fa-fields' , 0 , '用于管理模型或表单的字段，进行相关的增删改操作' , 100 , 'normal' , 1548061201 , 1548061201) [ RunTime:0.091384s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/fields/index' , '查看' , 0 , 'fa fa-circle-o' , 106 , 'normal' , 1548061201 , 1548061201) [ RunTime:0.089257s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/fields/add' , '添加' , 0 , 'fa fa-circle-o' , 106 , 'normal' , 1548061201 , 1548061201) [ RunTime:0.099174s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/fields/edit' , '修改' , 0 , 'fa fa-circle-o' , 106 , 'normal' , 1548061201 , 1548061201) [ RunTime:0.091648s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/fields/del' , '删除' , 0 , 'fa fa-circle-o' , 106 , 'normal' , 1548061201 , 1548061201) [ RunTime:0.090780s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/fields/multi' , '批量更新' , 0 , 'fa fa-circle-o' , 106 , 'normal' , 1548061201 , 1548061201) [ RunTime:0.090879s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `icon` , `remark` , `ismenu` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/tags' , '标签管理' , 'fa fa-tags' , '用于管理文章关联的标签,标签的添加在添加文章时自动维护,无需手动添加标签' , 1 , 85 , 'normal' , 1548061201 , 1548061201) [ RunTime:0.087931s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/tags/index' , '查看' , 0 , 'fa fa-circle-o' , 112 , 'normal' , 1548061201 , 1548061201) [ RunTime:0.090642s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/tags/add' , '添加' , 0 , 'fa fa-circle-o' , 112 , 'normal' , 1548061201 , 1548061201) [ RunTime:0.089992s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/tags/edit' , '修改' , 0 , 'fa fa-circle-o' , 112 , 'normal' , 1548061201 , 1548061201) [ RunTime:0.091782s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/tags/del' , '删除' , 0 , 'fa fa-circle-o' , 112 , 'normal' , 1548061201 , 1548061201) [ RunTime:0.090920s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/tags/multi' , '批量更新' , 0 , 'fa fa-circle-o' , 112 , 'normal' , 1548061202 , 1548061202) [ RunTime:0.091438s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `icon` , `remark` , `ismenu` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/block' , '区块管理' , 'fa fa-th-large' , '用于管理站点的自定义区块内容,常用于广告、JS脚本、焦点图、片段代码等' , 1 , 85 , 'normal' , 1548061202 , 1548061202) [ RunTime:0.091206s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/block/index' , '查看' , 0 , 'fa fa-circle-o' , 118 , 'normal' , 1548061202 , 1548061202) [ RunTime:0.089837s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/block/add' , '添加' , 0 , 'fa fa-circle-o' , 118 , 'normal' , 1548061202 , 1548061202) [ RunTime:0.089722s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/block/edit' , '修改' , 0 , 'fa fa-circle-o' , 118 , 'normal' , 1548061202 , 1548061202) [ RunTime:0.091567s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/block/del' , '删除' , 0 , 'fa fa-circle-o' , 118 , 'normal' , 1548061202 , 1548061202) [ RunTime:0.089095s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/block/multi' , '批量更新' , 0 , 'fa fa-circle-o' , 118 , 'normal' , 1548061202 , 1548061202) [ RunTime:0.119991s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `icon` , `remark` , `ismenu` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/page' , '单页管理' , 'fa fa-file' , '用于管理网站的单页面，可任意创建修改删除单页面' , 1 , 85 , 'normal' , 1548061202 , 1548061202) [ RunTime:0.111019s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/page/index' , '查看' , 0 , 'fa fa-circle-o' , 124 , 'normal' , 1548061202 , 1548061202) [ RunTime:0.091708s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/page/add' , '添加' , 0 , 'fa fa-circle-o' , 124 , 'normal' , 1548061202 , 1548061202) [ RunTime:0.101390s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/page/edit' , '修改' , 0 , 'fa fa-circle-o' , 124 , 'normal' , 1548061203 , 1548061203) [ RunTime:0.089561s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/page/del' , '删除' , 0 , 'fa fa-circle-o' , 124 , 'normal' , 1548061203 , 1548061203) [ RunTime:0.089785s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/page/multi' , '批量更新' , 0 , 'fa fa-circle-o' , 124 , 'normal' , 1548061203 , 1548061203) [ RunTime:0.089346s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `icon` , `remark` , `ismenu` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/comment' , '评论管理' , 'fa fa-comment' , '用于管理用户在网站上发表的评论，可任意修改或隐藏评论' , 1 , 85 , 'normal' , 1548061203 , 1548061203) [ RunTime:0.089270s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/comment/index' , '查看' , 0 , 'fa fa-circle-o' , 130 , 'normal' , 1548061203 , 1548061203) [ RunTime:0.089715s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/comment/add' , '添加' , 0 , 'fa fa-circle-o' , 130 , 'normal' , 1548061203 , 1548061203) [ RunTime:0.094437s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/comment/edit' , '修改' , 0 , 'fa fa-circle-o' , 130 , 'normal' , 1548061203 , 1548061203) [ RunTime:0.091241s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/comment/del' , '删除' , 0 , 'fa fa-circle-o' , 130 , 'normal' , 1548061203 , 1548061203) [ RunTime:0.090720s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/comment/multi' , '批量更新' , 0 , 'fa fa-circle-o' , 130 , 'normal' , 1548061203 , 1548061203) [ RunTime:0.091797s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `icon` , `remark` , `ismenu` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/diyform' , '自定义表单管理' , 'fa fa-list' , '可在线创建自定义表单，管理表单字段和数据列表' , 1 , 85 , 'normal' , 1548061203 , 1548061203) [ RunTime:0.097648s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/diyform/index' , '查看' , 0 , 'fa fa-circle-o' , 136 , 'normal' , 1548061203 , 1548061203) [ RunTime:0.124007s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/diyform/add' , '添加' , 0 , 'fa fa-circle-o' , 136 , 'normal' , 1548061204 , 1548061204) [ RunTime:0.097614s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/diyform/edit' , '修改' , 0 , 'fa fa-circle-o' , 136 , 'normal' , 1548061204 , 1548061204) [ RunTime:0.108625s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/diyform/del' , '删除' , 0 , 'fa fa-circle-o' , 136 , 'normal' , 1548061204 , 1548061204) [ RunTime:0.091426s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/diyform/multi' , '批量更新' , 0 , 'fa fa-circle-o' , 136 , 'normal' , 1548061204 , 1548061204) [ RunTime:0.090389s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `icon` , `ismenu` , `remark` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/diydata' , '自定义表单数据管理' , 'fa fa-list' , 0 , '可在线管理自定义表单的数据列表' , 85 , 'normal' , 1548061204 , 1548061204) [ RunTime:0.092693s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/diydata/index' , '查看' , 0 , 'fa fa-circle-o' , 142 , 'normal' , 1548061204 , 1548061204) [ RunTime:0.103850s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/diydata/add' , '添加' , 0 , 'fa fa-circle-o' , 142 , 'normal' , 1548061204 , 1548061204) [ RunTime:0.090947s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/diydata/edit' , '修改' , 0 , 'fa fa-circle-o' , 142 , 'normal' , 1548061204 , 1548061204) [ RunTime:0.097577s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/diydata/del' , '删除' , 0 , 'fa fa-circle-o' , 142 , 'normal' , 1548061204 , 1548061204) [ RunTime:0.102150s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/diydata/multi' , '批量更新' , 0 , 'fa fa-circle-o' , 142 , 'normal' , 1548061204 , 1548061204) [ RunTime:0.098742s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `icon` , `ismenu` , `remark` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/order' , '订单管理' , 'fa fa-cny' , 1 , '可在线管理付费查看所产生的订单' , 85 , 'normal' , 1548061205 , 1548061205) [ RunTime:0.092262s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/order/index' , '查看' , 0 , 'fa fa-circle-o' , 148 , 'normal' , 1548061205 , 1548061205) [ RunTime:0.089382s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/order/add' , '添加' , 0 , 'fa fa-circle-o' , 148 , 'normal' , 1548061205 , 1548061205) [ RunTime:0.089206s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/order/edit' , '修改' , 0 , 'fa fa-circle-o' , 148 , 'normal' , 1548061205 , 1548061205) [ RunTime:0.091172s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/order/del' , '删除' , 0 , 'fa fa-circle-o' , 148 , 'normal' , 1548061205 , 1548061205) [ RunTime:0.094195s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_auth_rule` (`name` , `title` , `ismenu` , `icon` , `pid` , `status` , `createtime` , `updatetime`) VALUES ('cms/order/multi' , '批量更新' , 0 , 'fa fa-circle-o' , 148 , 'normal' , 1548061205 , 1548061205) [ RunTime:0.092284s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_admin_log` [ RunTime:0.087366s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_admin_log` (`title` , `content` , `url` , `admin_id` , `username` , `useragent` , `ip` , `createtime`) VALUES ('插件管理 安装' , '{\"name\":\"cms\",\"force\":\"0\",\"uid\":\"2437\",\"token\":\"a206db14-d7f3-4bdb-a230-71bfe43f1ba5\",\"version\":\"1.0.21\",\"faversion\":\"1.0.0.20190111_beta\"}' , '/admin/addon/install' , 1 , 'czz' , 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' , '127.0.0.1' , 1548061207) [ RunTime:0.086352s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:00:08+08:00 ] 127.0.0.1 POST czz.jyqc.com/admin/index/index
+[ sql ] [ DB ] CONNECT:[ UseTime:0.134479s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.086589s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.085013s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.086937s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.085907s ]
+[ sql ] [ SQL ] SELECT * FROM `czz_test_auth_rule` WHERE  `status` = 'normal'  AND `ismenu` = 1 ORDER BY `weigh` DESC [ RunTime:0.087263s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_admin_log` [ RunTime:0.086724s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_admin_log` (`title` , `content` , `url` , `admin_id` , `username` , `useragent` , `ip` , `createtime`) VALUES ('' , '{\"action\":\"refreshmenu\"}' , '/admin/index/index' , 1 , 'czz' , 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' , '127.0.0.1' , 1548061208) [ RunTime:0.097185s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:07:37+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/addon?ref=addtabs
+[ sql ] [ DB ] CONNECT:[ UseTime:0.120145s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.076208s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.075567s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.075043s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.078219s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:07:38+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/index/index
+[ sql ] [ DB ] CONNECT:[ UseTime:0.114792s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.074017s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.073982s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.074031s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.073078s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:07:38+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/dashboard?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.148867s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.073712s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.073277s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.074132s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.073312s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'dashboard' LIMIT 1 [ RunTime:0.072413s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:07:39+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/addon?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.114109s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.075537s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.076875s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.076682s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.077887s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'addon' LIMIT 1 [ RunTime:0.075345s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:07:42+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/general/profile?addtabs=1
+[ sql ] [ DB ] CONNECT:[ UseTime:0.135377s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.087670s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.084296s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.085838s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.085351s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:07:43+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/general/profile/index?sort=id&order=desc&offset=0&limit=10&_=1548061662341
+[ sql ] [ DB ] CONNECT:[ UseTime:0.118058s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.076246s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.077388s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.078208s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.078365s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_admin_log` [ RunTime:0.077872s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `czz_test_admin_log` WHERE  `admin_id` = 1 ORDER BY `id` DESC LIMIT 1 [ RunTime:0.077121s ]
+[ sql ] [ SQL ] SELECT * FROM `czz_test_admin_log` WHERE  `admin_id` = 1 ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.077486s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:08:47+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/addon?ref=addtabs
+[运行时间：0.528078s] [吞吐率：1.89req/s] [内存消耗：2,946.85kb] [文件加载：77]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000033s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.015238s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'addon',
+    2 => NULL,
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/index/login.html',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'upgrade-insecure-requests' => '1',
+  'cache-control' => 'max-age=0',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'ref' => 'addtabs',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.003715s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001328s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.115754s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.073211s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.076104s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.074557s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.077177s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:08:48+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/index/index
+[运行时间：0.595215s] [吞吐率：1.68req/s] [内存消耗：3,455.05kb] [文件加载：94]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000029s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.016696s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'index',
+    2 => 'index',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/index/login.html',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'upgrade-insecure-requests' => '1',
+  'cache-control' => 'max-age=0',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.002656s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.001945s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/index.php
+[ info ] [ RUN ] app\admin\controller\Index->index[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Index.php ]
+[ info ] [ DB ] INIT mysql
+[ info ] [ VIEW ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\view\index\index.html [ array (
+  0 => 'breadcrumb',
+  1 => 'site',
+  2 => 'config',
+  3 => 'auth',
+  4 => 'admin',
+  5 => 'menulist',
+  6 => 'navlist',
+  7 => 'fixedmenu',
+  8 => 'referermenu',
+  9 => 'title',
+) ]
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001668s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.110954s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.074895s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.072280s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.073896s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.074129s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:08:49+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/dashboard?addtabs=1
+[运行时间：0.570339s] [吞吐率：1.75req/s] [内存消耗：3,323.07kb] [文件加载：84]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000023s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.014547s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'dashboard',
+    2 => NULL,
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/index/index',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'upgrade-insecure-requests' => '1',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'addtabs' => '1',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.003830s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.007649s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/dashboard.php
+[ info ] [ RUN ] app\admin\controller\Dashboard->index[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Dashboard.php ]
+[ info ] [ VIEW ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\view\dashboard\index.html [ array (
+  0 => 'breadcrumb',
+  1 => 'site',
+  2 => 'config',
+  3 => 'auth',
+  4 => 'admin',
+  5 => 'totaluser',
+  6 => 'totalviews',
+  7 => 'totalorder',
+  8 => 'totalorderamount',
+  9 => 'todayuserlogin',
+  10 => 'todayusersignup',
+  11 => 'todayorder',
+  12 => 'unsettleorder',
+  13 => 'sevendnu',
+  14 => 'sevendau',
+  15 => 'paylist',
+  16 => 'createlist',
+  17 => 'addonversion',
+  18 => 'uploadmode',
+) ]
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.002224s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.108246s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.061957s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.063724s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.065164s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.064653s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'dashboard' LIMIT 1 [ RunTime:0.065079s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:08:49+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/addon?addtabs=1
+[运行时间：1.167896s] [吞吐率：0.86req/s] [内存消耗：3,330.78kb] [文件加载：84]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000030s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.007289s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'addon',
+    2 => NULL,
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/index/index',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'upgrade-insecure-requests' => '1',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'addtabs' => '1',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.001804s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.002262s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/addon.php
+[ info ] [ RUN ] app\admin\controller\Addon->index[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Addon.php ]
+[ info ] [ VIEW ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\view\addon\index.html [ array (
+  0 => 'breadcrumb',
+  1 => 'site',
+  2 => 'config',
+  3 => 'auth',
+  4 => 'admin',
+) ]
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001232s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.174354s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.072244s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.073198s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.076928s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.074263s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'addon' LIMIT 1 [ RunTime:0.073340s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:08:49+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/ajax/lang?callback=define&controllername=index&v=1548061727
+[运行时间：0.185140s] [吞吐率：5.40req/s] [内存消耗：2,478.25kb] [文件加载：75]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000030s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.009322s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'ajax',
+    2 => 'lang',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/index/index',
+  'accept' => '*/*',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'callback' => 'define',
+  'controllername' => 'index',
+  'v' => '1548061727',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.002032s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.076891s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/ajax.php
+[ info ] [ RUN ] app\admin\controller\Ajax->lang[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Ajax.php ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/index.php
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001394s ]
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:08:50+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/ajax/lang?callback=define&controllername=dashboard&v=1548061728
+[运行时间：0.154050s] [吞吐率：6.49req/s] [内存消耗：2,477.00kb] [文件加载：75]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000024s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.007311s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'ajax',
+    2 => 'lang',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/dashboard?addtabs=1',
+  'accept' => '*/*',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'callback' => 'define',
+  'controllername' => 'dashboard',
+  'v' => '1548061728',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.002248s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.004108s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/ajax.php
+[ info ] [ RUN ] app\admin\controller\Ajax->lang[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Ajax.php ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/dashboard.php
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001338s ]
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:08:50+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/fastadmin.css.map
+[运行时间：0.137512s] [吞吐率：7.27req/s] [内存消耗：1,496.79kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000024s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.101088s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'fastadmin.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:08:51+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/fastadmin.css.map
+[运行时间：0.044981s] [吞吐率：22.23req/s] [内存消耗：1,496.79kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000026s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.007330s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'fastadmin.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:08:51+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/backend.css.map
+[运行时间：0.293103s] [吞吐率：3.41req/s] [内存消耗：1,496.75kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000227s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.141170s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'backend.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:08:51+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/ajax/lang?callback=define&controllername=addon&v=1548061728
+[运行时间：0.298405s] [吞吐率：3.35req/s] [内存消耗：2,480.19kb] [文件加载：75]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000023s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.010853s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'ajax',
+    2 => 'lang',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/addon?addtabs=1',
+  'accept' => '*/*',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'callback' => 'define',
+  'controllername' => 'addon',
+  'v' => '1548061728',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.003723s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.006026s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/ajax.php
+[ info ] [ RUN ] app\admin\controller\Ajax->lang[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Ajax.php ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/addon.php
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001311s ]
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:08:51+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/bootstrap.css.map
+[运行时间：0.184297s] [吞吐率：5.43req/s] [内存消耗：1,496.79kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000216s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.011568s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'bootstrap.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:08:51+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/skins/skin-green.css.map
+[运行时间：0.280888s] [吞吐率：3.56req/s] [内存消耗：1,496.74kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000465s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.008240s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'skins',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:08:58+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/addon/config?name=upyun&dialog=1
+[运行时间：0.537278s] [吞吐率：1.86req/s] [内存消耗：3,337.27kb] [文件加载：83]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000023s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.016007s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'addon',
+    2 => 'config',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/addon?addtabs=1',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'upgrade-insecure-requests' => '1',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'name' => 'upyun',
+  'dialog' => '1',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.004677s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.002224s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/addon.php
+[ info ] [ RUN ] app\admin\controller\Addon->config[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Addon.php ]
+[ info ] [ VIEW ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\view\addon\config.html [ array (
+  0 => 'breadcrumb',
+  1 => 'site',
+  2 => 'config',
+  3 => 'auth',
+  4 => 'admin',
+  5 => 'addon',
+) ]
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001193s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.114649s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.076578s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.074122s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.076846s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.077072s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:08:59+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/ajax/lang?callback=define&controllername=addon&v=1548061738
+[运行时间：0.078913s] [吞吐率：12.67req/s] [内存消耗：2,480.20kb] [文件加载：75]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000030s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.009350s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'ajax',
+    2 => 'lang',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/addon/config?name=upyun&dialog=1',
+  'accept' => '*/*',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'callback' => 'define',
+  'controllername' => 'addon',
+  'v' => '1548061738',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.001807s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.003995s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/ajax.php
+[ info ] [ RUN ] app\admin\controller\Ajax->lang[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Ajax.php ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/addon.php
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001175s ]
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:14:05+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/general/profile?addtabs=1
+[运行时间：0.598537s] [吞吐率：1.67req/s] [内存消耗：3,269.62kb] [文件加载：82]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000039s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.013435s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'general.profile',
+    2 => NULL,
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/general/profile?ref=addtabs',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'upgrade-insecure-requests' => '1',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'addtabs' => '1',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.004545s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.004777s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/general/profile.php
+[ info ] [ RUN ] app\admin\controller\general\Profile->index[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\general\Profile.php ]
+[ info ] [ VIEW ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\view\general\profile\index.html [ array (
+  0 => 'breadcrumb',
+  1 => 'site',
+  2 => 'config',
+  3 => 'auth',
+  4 => 'admin',
+) ]
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.002897s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.119173s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.078058s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.076425s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.079072s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.080025s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:14:05+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/ajax/lang?callback=define&controllername=general.profile&v=1548062044
+[运行时间：0.077147s] [吞吐率：12.96req/s] [内存消耗：2,474.48kb] [文件加载：75]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000028s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.006974s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'ajax',
+    2 => 'lang',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/general/profile?addtabs=1',
+  'accept' => '*/*',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'callback' => 'define',
+  'controllername' => 'general.profile',
+  'v' => '1548062044',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.002209s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.003449s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/ajax.php
+[ info ] [ RUN ] app\admin\controller\Ajax->lang[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Ajax.php ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/general/profile.php
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001195s ]
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:14:06+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/general/profile/index?sort=id&order=desc&offset=0&limit=10&_=1548062045573
+[运行时间：0.698543s] [吞吐率：1.43req/s] [内存消耗：3,262.59kb] [文件加载：83]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000032s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.011800s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'general.profile',
+    2 => 'index',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/general/profile?addtabs=1',
+  'content-type' => 'application/json',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'x-requested-with' => 'XMLHttpRequest',
+  'accept' => 'application/json, text/javascript, */*; q=0.01',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'sort' => 'id',
+  'order' => 'desc',
+  'offset' => '0',
+  'limit' => '10',
+  '_' => '1548062045573',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.002751s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.007750s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/general/profile.php
+[ info ] [ RUN ] app\admin\controller\general\Profile->index[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\general\Profile.php ]
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001184s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.100035s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.065026s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.064591s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.066502s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.066990s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_admin_log` [ RunTime:0.066508s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `czz_test_admin_log` WHERE  `admin_id` = 1 ORDER BY `id` DESC LIMIT 1 [ RunTime:0.065539s ]
+[ sql ] [ SQL ] SELECT * FROM `czz_test_admin_log` WHERE  `admin_id` = 1 ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.066706s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:14:17+08:00 ] 127.0.0.1 POST czz.jyqc.com/admin/general.profile/update
+[运行时间：0.972437s] [吞吐率：1.03req/s] [内存消耗：3,241.41kb] [文件加载：85]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000039s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.011427s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'general.profile',
+    2 => 'update',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/general/profile?addtabs=1',
+  'content-type' => 'application/x-www-form-urlencoded; charset=UTF-8',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'x-requested-with' => 'XMLHttpRequest',
+  'origin' => 'http://czz.jyqc.com',
+  'accept' => 'application/json, text/javascript, */*; q=0.01',
+  'content-length' => '156',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'row' => 
+  array (
+    'avatar' => '/uploads/20190121/2b90b99664167aa401e4a8fe4f5e4ea8.png',
+    'email' => 'glen92093@gmail.com',
+    'nickname' => 'Admin',
+    'password' => '',
+  ),
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.002508s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.005952s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/general/profile.php
+[ info ] [ RUN ] app\admin\controller\general\Profile->update[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\general\Profile.php ]
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.161978s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.114400s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.074853s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.074022s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.074524s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.075062s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_admin` [ RunTime:0.074547s ]
+[ sql ] [ SQL ] SELECT * FROM `czz_test_admin` WHERE  `id` = 1 LIMIT 1 [ RunTime:0.074708s ]
+[ sql ] [ SQL ] UPDATE `czz_test_admin`  SET `avatar`='/uploads/20190121/2b90b99664167aa401e4a8fe4f5e4ea8.png',`updatetime`=1548062056  WHERE  `id` = 1 [ RunTime:0.084760s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_admin_log` [ RunTime:0.075510s ]
+[ sql ] [ SQL ] INSERT INTO `czz_test_admin_log` (`title` , `content` , `url` , `admin_id` , `username` , `useragent` , `ip` , `createtime`) VALUES ('常规管理 个人配置 更新个人信息' , '{\"row\":{\"avatar\":\"\\/uploads\\/20190121\\/2b90b99664167aa401e4a8fe4f5e4ea8.png\",\"email\":\"glen92093@gmail.com\",\"nickname\":\"Admin\",\"password\":\"\"}}' , '/admin/general.profile/update' , 1 , 'czz' , 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' , '127.0.0.1' , 1548062057) [ RunTime:0.078507s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:35:58+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/backend.css.map
+[运行时间：0.075685s] [吞吐率：13.21req/s] [内存消耗：1,496.75kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000203s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.011711s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'backend.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:35:58+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/bootstrap.css.map
+[运行时间：0.068254s] [吞吐率：14.65req/s] [内存消耗：1,496.79kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000261s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.007492s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'bootstrap.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:35:59+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/skins/skin-green.css.map
+[运行时间：0.038408s] [吞吐率：26.04req/s] [内存消耗：1,496.74kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000023s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.004715s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'skins',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:35:59+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/fastadmin.css.map
+[运行时间：0.034722s] [吞吐率：28.80req/s] [内存消耗：1,496.79kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000027s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.005393s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'fastadmin.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:00+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/general/profile?ref=addtabs
+[运行时间：0.537638s] [吞吐率：1.86req/s] [内存消耗：2,900.95kb] [文件加载：77]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000034s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.011824s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'general.profile',
+    2 => NULL,
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/index/login.html',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'upgrade-insecure-requests' => '1',
+  'cache-control' => 'max-age=0',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'ref' => 'addtabs',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.008064s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001617s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.117229s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.074830s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.075489s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.076580s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.075352s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:36:00+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/index/index
+[运行时间：0.515737s] [吞吐率：1.94req/s] [内存消耗：3,455.11kb] [文件加载：94]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000025s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.005625s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'index',
+    2 => 'index',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/index/login.html',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'upgrade-insecure-requests' => '1',
+  'cache-control' => 'max-age=0',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.006093s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.001662s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/index.php
+[ info ] [ RUN ] app\admin\controller\Index->index[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Index.php ]
+[ info ] [ DB ] INIT mysql
+[ info ] [ VIEW ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\view\index\index.html [ array (
+  0 => 'breadcrumb',
+  1 => 'site',
+  2 => 'config',
+  3 => 'auth',
+  4 => 'admin',
+  5 => 'menulist',
+  6 => 'navlist',
+  7 => 'fixedmenu',
+  8 => 'referermenu',
+  9 => 'title',
+) ]
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001519s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.098168s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.064380s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.065986s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.065824s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.065993s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:36:01+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/general/profile?addtabs=1
+[运行时间：0.619346s] [吞吐率：1.61req/s] [内存消耗：3,269.76kb] [文件加载：82]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000022s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.004394s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'general.profile',
+    2 => NULL,
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/index/index',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'upgrade-insecure-requests' => '1',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'addtabs' => '1',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.004852s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.003687s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/general/profile.php
+[ info ] [ RUN ] app\admin\controller\general\Profile->index[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\general\Profile.php ]
+[ info ] [ VIEW ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\view\general\profile\index.html [ array (
+  0 => 'breadcrumb',
+  1 => 'site',
+  2 => 'config',
+  3 => 'auth',
+  4 => 'admin',
+) ]
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.006471s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.147532s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.073678s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.075322s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.077319s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.074685s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:36:02+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/dashboard?addtabs=1
+[运行时间：1.224154s] [吞吐率：0.82req/s] [内存消耗：3,323.23kb] [文件加载：84]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000025s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.005406s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'dashboard',
+    2 => NULL,
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/index/index',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'upgrade-insecure-requests' => '1',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'addtabs' => '1',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.051598s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.001701s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/dashboard.php
+[ info ] [ RUN ] app\admin\controller\Dashboard->index[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Dashboard.php ]
+[ info ] [ VIEW ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\view\dashboard\index.html [ array (
+  0 => 'breadcrumb',
+  1 => 'site',
+  2 => 'config',
+  3 => 'auth',
+  4 => 'admin',
+  5 => 'totaluser',
+  6 => 'totalviews',
+  7 => 'totalorder',
+  8 => 'totalorderamount',
+  9 => 'todayuserlogin',
+  10 => 'todayusersignup',
+  11 => 'todayorder',
+  12 => 'unsettleorder',
+  13 => 'sevendnu',
+  14 => 'sevendau',
+  15 => 'paylist',
+  16 => 'createlist',
+  17 => 'addonversion',
+  18 => 'uploadmode',
+) ]
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.005064s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.139141s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.074629s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.075517s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.073161s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.074801s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'dashboard' LIMIT 1 [ RunTime:0.077799s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:36:02+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/ajax/lang?callback=define&controllername=index&v=1548063360
+[运行时间：0.216366s] [吞吐率：4.62req/s] [内存消耗：2,478.41kb] [文件加载：75]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000029s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.004955s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'ajax',
+    2 => 'lang',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/index/index',
+  'accept' => '*/*',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'callback' => 'define',
+  'controllername' => 'index',
+  'v' => '1548063360',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.004782s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.134236s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/ajax.php
+[ info ] [ RUN ] app\admin\controller\Ajax->lang[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Ajax.php ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/index.php
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001691s ]
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:02+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/ajax/lang?callback=define&controllername=general.profile&v=1548063361
+[运行时间：0.262551s] [吞吐率：3.81req/s] [内存消耗：2,474.64kb] [文件加载：75]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000025s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.004677s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'ajax',
+    2 => 'lang',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/general/profile?addtabs=1',
+  'accept' => '*/*',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'callback' => 'define',
+  'controllername' => 'general.profile',
+  'v' => '1548063361',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.004452s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.003576s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/ajax.php
+[ info ] [ RUN ] app\admin\controller\Ajax->lang[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Ajax.php ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/general/profile.php
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001757s ]
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:03+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/backend.css.map
+[运行时间：0.215252s] [吞吐率：4.65req/s] [内存消耗：1,496.75kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000208s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.131590s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'backend.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:03+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/ajax/lang?callback=define&controllername=dashboard&v=1548063361
+[运行时间：0.164447s] [吞吐率：6.08req/s] [内存消耗：2,477.16kb] [文件加载：75]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000030s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.007011s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'ajax',
+    2 => 'lang',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/dashboard?addtabs=1',
+  'accept' => '*/*',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'callback' => 'define',
+  'controllername' => 'dashboard',
+  'v' => '1548063361',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.004664s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.003758s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/ajax.php
+[ info ] [ RUN ] app\admin\controller\Ajax->lang[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Ajax.php ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/dashboard.php
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001603s ]
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:03+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/bootstrap.css.map
+[运行时间：0.143608s] [吞吐率：6.96req/s] [内存消耗：1,496.79kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000210s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.010191s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'bootstrap.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:03+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/fastadmin.css.map
+[运行时间：0.035819s] [吞吐率：27.92req/s] [内存消耗：1,496.79kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000027s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.005011s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'fastadmin.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:03+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/skins/skin-green.css.map
+[运行时间：0.141040s] [吞吐率：7.09req/s] [内存消耗：1,496.74kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000230s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.014812s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'skins',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:04+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/general/profile/index?sort=id&order=desc&offset=0&limit=10&_=1548063362137
+[运行时间：0.747971s] [吞吐率：1.34req/s] [内存消耗：3,265.16kb] [文件加载：83]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000027s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.004981s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'general.profile',
+    2 => 'index',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/general/profile?addtabs=1',
+  'content-type' => 'application/json',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'x-requested-with' => 'XMLHttpRequest',
+  'accept' => 'application/json, text/javascript, */*; q=0.01',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'sort' => 'id',
+  'order' => 'desc',
+  'offset' => '0',
+  'limit' => '10',
+  '_' => '1548063362137',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.005002s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.001841s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/general/profile.php
+[ info ] [ RUN ] app\admin\controller\general\Profile->index[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\general\Profile.php ]
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.001646s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.113532s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.073764s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.072562s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.072456s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.073288s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_admin_log` [ RunTime:0.074114s ]
+[ sql ] [ SQL ] SELECT COUNT(*) AS tp_count FROM `czz_test_admin_log` WHERE  `admin_id` = 1 ORDER BY `id` DESC LIMIT 1 [ RunTime:0.073134s ]
+[ sql ] [ SQL ] SELECT * FROM `czz_test_admin_log` WHERE  `admin_id` = 1 ORDER BY `id` DESC LIMIT 0,10 [ RunTime:0.073590s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:36:06+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/dashboard?ref=addtabs
+[运行时间：0.453482s] [吞吐率：2.21req/s] [内存消耗：2,899.89kb] [文件加载：77]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000023s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.006448s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'dashboard',
+    2 => NULL,
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/index/login.html',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'upgrade-insecure-requests' => '1',
+  'cache-control' => 'max-age=0',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'ref' => 'addtabs',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.005079s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.002564s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.098734s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.066078s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.065188s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.064128s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.065421s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:36:07+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/index/index
+[运行时间：0.590621s] [吞吐率：1.69req/s] [内存消耗：3,453.91kb] [文件加载：94]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000030s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.005847s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'index',
+    2 => 'index',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/index/login.html',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'upgrade-insecure-requests' => '1',
+  'cache-control' => 'max-age=0',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.004413s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.001641s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/index.php
+[ info ] [ RUN ] app\admin\controller\Index->index[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Index.php ]
+[ info ] [ DB ] INIT mysql
+[ info ] [ VIEW ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\view\index\index.html [ array (
+  0 => 'breadcrumb',
+  1 => 'site',
+  2 => 'config',
+  3 => 'auth',
+  4 => 'admin',
+  5 => 'menulist',
+  6 => 'navlist',
+  7 => 'fixedmenu',
+  8 => 'referermenu',
+  9 => 'title',
+) ]
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.003391s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.112772s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.073957s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.074160s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.075585s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.074697s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:36:07+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/backend.css.map
+[运行时间：0.035633s] [吞吐率：28.06req/s] [内存消耗：1,496.75kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000021s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.005055s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'backend.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:07+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/bootstrap.css.map
+[运行时间：0.042334s] [吞吐率：23.62req/s] [内存消耗：1,496.79kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000024s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.004255s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'bootstrap.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:07+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/fastadmin.css.map
+[运行时间：0.042316s] [吞吐率：23.63req/s] [内存消耗：1,496.79kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000022s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.005199s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'fastadmin.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:07+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/skins/skin-green.css.map
+[运行时间：0.036720s] [吞吐率：27.23req/s] [内存消耗：1,496.74kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000022s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.006071s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'skins',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:08+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/dashboard?addtabs=1
+[运行时间：0.689776s] [吞吐率：1.45req/s] [内存消耗：3,323.23kb] [文件加载：84]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000024s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.019808s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'dashboard',
+    2 => NULL,
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/index/index',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'upgrade-insecure-requests' => '1',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'addtabs' => '1',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.004366s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.001651s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/dashboard.php
+[ info ] [ RUN ] app\admin\controller\Dashboard->index[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Dashboard.php ]
+[ info ] [ VIEW ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\view\dashboard\index.html [ array (
+  0 => 'breadcrumb',
+  1 => 'site',
+  2 => 'config',
+  3 => 'auth',
+  4 => 'admin',
+  5 => 'totaluser',
+  6 => 'totalviews',
+  7 => 'totalorder',
+  8 => 'totalorderamount',
+  9 => 'todayuserlogin',
+  10 => 'todayusersignup',
+  11 => 'todayorder',
+  12 => 'unsettleorder',
+  13 => 'sevendnu',
+  14 => 'sevendau',
+  15 => 'paylist',
+  16 => 'createlist',
+  17 => 'addonversion',
+  18 => 'uploadmode',
+) ]
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.005114s ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.109803s ] mysql:host=120.78.135.109;port=3306;dbname=czz_test;charset=utf8
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_group_access` [ RunTime:0.067061s ]
+[ sql ] [ SQL ] SELECT `aga`.`uid`,`aga`.`group_id`,`ag`.`id`,`ag`.`pid`,`ag`.`name`,`ag`.`rules` FROM `czz_test_auth_group_access` `aga` LEFT JOIN `czz_test_auth_group` `ag` ON `aga`.`group_id`=`ag`.`id` WHERE  (  aga.uid='1' and ag.status='normal' ) [ RunTime:0.067650s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `czz_test_auth_rule` [ RunTime:0.067754s ]
+[ sql ] [ SQL ] SELECT `id`,`pid`,`condition`,`icon`,`name`,`title`,`ismenu` FROM `czz_test_auth_rule` WHERE  `status` = 'normal' [ RunTime:0.067631s ]
+[ sql ] [ SQL ] SELECT `title`,`remark` FROM `czz_test_auth_rule` WHERE  `name` = 'dashboard' LIMIT 1 [ RunTime:0.068042s ]
+---------------------------------------------------------------
+[ 2019-01-21T17:36:08+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/ajax/lang?callback=define&controllername=index&v=1548063366
+[运行时间：0.373055s] [吞吐率：2.68req/s] [内存消耗：2,478.41kb] [文件加载：75]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000022s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.004375s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'ajax',
+    2 => 'lang',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/index/index',
+  'accept' => '*/*',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'callback' => 'define',
+  'controllername' => 'index',
+  'v' => '1548063366',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.005609s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.295056s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/ajax.php
+[ info ] [ RUN ] app\admin\controller\Ajax->lang[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Ajax.php ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/index.php
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.002479s ]
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:08+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/backend.css.map
+[运行时间：0.039968s] [吞吐率：25.02req/s] [内存消耗：1,496.75kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000022s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.004267s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'backend.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:08+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/bootstrap.css.map
+[运行时间：0.034341s] [吞吐率：29.12req/s] [内存消耗：1,496.79kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000021s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.004742s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'bootstrap.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:08+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/skins/skin-green.css.map
+[运行时间：0.039601s] [吞吐率：25.25req/s] [内存消耗：1,496.74kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000024s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.004868s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'skins',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:08+08:00 ] 127.0.0.1 GET czz.jyqc.com/assets/css/fastadmin.css.map
+[运行时间：0.152794s] [吞吐率：6.54req/s] [内存消耗：1,496.79kb] [文件加载：52]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000030s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.027201s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'assets',
+    1 => 'css',
+    2 => 'fastadmin.css.map',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ LOG ] INIT File
+---------------------------------------------------------------
+[ 2019-01-21T17:36:08+08:00 ] 127.0.0.1 GET czz.jyqc.com/admin/ajax/lang?callback=define&controllername=dashboard&v=1548063367
+[运行时间：0.092826s] [吞吐率：10.77req/s] [内存消耗：2,477.16kb] [文件加载：75]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000031s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.004638s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'admin',
+    1 => 'ajax',
+    2 => 'lang',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'cookie' => 'PHPSESSID=g90j61v06davfg547t2tdh3jf4; Hm_lvt_f8d0a8c400404989e195270b0bbf060a=1548059148; Hm_lpvt_f8d0a8c400404989e195270b0bbf060a=1548059148',
+  'accept-language' => 'zh-CN,zh;q=0.9',
+  'accept-encoding' => 'gzip, deflate',
+  'referer' => 'http://czz.jyqc.com/admin/dashboard?addtabs=1',
+  'accept' => '*/*',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+  'connection' => 'close',
+  'host' => 'czz.jyqc.com',
+)
+[ info ] [ PARAM ] array (
+  'callback' => 'define',
+  'controllername' => 'dashboard',
+  'v' => '1548063367',
+)
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin\lang\zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.005948s ]
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ BEHAVIOR ] Run \addons\upyun\Upyun @upload_config_init [ RunTime:0.003196s ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/ajax.php
+[ info ] [ RUN ] app\admin\controller\Ajax->lang[ D:\phpStudy\WWW\czz.junyiqiche.com\application\admin\controller\Ajax.php ]
+[ info ] [ LANG ] D:\phpStudy\WWW\czz.junyiqiche.com\public/../application/admin/lang/zh-cn/dashboard.php
+[ info ] [ BEHAVIOR ] Run app\admin\behavior\AdminLog @app_end [ RunTime:0.007254s ]
+[ info ] [ LOG ] INIT File
