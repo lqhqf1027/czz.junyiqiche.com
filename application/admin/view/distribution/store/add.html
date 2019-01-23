@@ -1,0 +1,100 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Cities_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-cities_id" data-rule="required" data-source="cities/index" class="form-control selectpage" name="row[cities_id]" type="text" value="">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Store_name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-store_name" data-rule="required" class="form-control" name="row[store_name]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Store_address')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-store_address" data-rule="required" class="form-control" name="row[store_address]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Phone')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-phone" data-rule="required" class="form-control" name="row[phone]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Statuss')}:</label>
+        <div class="col-xs-12 col-sm-8">
+                        
+            <select  id="c-statuss" data-rule="required" class="form-control selectpicker" name="row[statuss]">
+                {foreach name="statussList" item="vo"}
+                    <option value="{$key}" {in name="key" value="normal"}selected{/in}>{$vo}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Store_img')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-store_img" class="form-control" name="row[store_img]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Store_qrcode')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-store_qrcode" class="form-control" name="row[store_qrcode]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Longitude')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-longitude" data-rule="required" class="form-control" name="row[longitude]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Latitude')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-latitude" data-rule="required" class="form-control" name="row[latitude]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Mobile')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-mobile" data-rule="required" class="form-control" name="row[mobile]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Invitation_code')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-invitation_code" class="form-control" name="row[invitation_code]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Level_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-level_id" data-rule="required" data-source="level/index" class="form-control selectpage" name="row[level_id]" type="text" value="">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Store_description')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-store_description" class="form-control" name="row[store_description]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Store_user_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-store_user_id" data-rule="required" data-source="store/user/index" class="form-control selectpage" name="row[store_user_id]" type="text" value="">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>
