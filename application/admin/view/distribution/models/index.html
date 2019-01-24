@@ -1,33 +1,60 @@
-<div class="panel panel-default panel-intro">
-    {:build_heading()}
-
-    <div class="panel-body">
-        <div id="myTabContent" class="tab-content">
-            <div class="tab-pane fade active in" id="one">
-                <div class="widget-body no-padding">
-                    <div id="toolbar" class="toolbar">
-                        <a href="javascript:;" class="btn btn-primary btn-refresh" title="{:__('Refresh')}" ><i class="fa fa-refresh"></i> </a>
-                        <!-- <a href="javascript:;" class="btn btn-success btn-add {:$auth->check('distribution/models/add')?'':'hide'}" title="{:__('Add')}" ><i class="fa fa-plus"></i> {:__('Add')}</a> -->
-                        <!-- <a href="javascript:;" class="btn btn-success btn-edit btn-disabled disabled {:$auth->check('distribution/models/edit')?'':'hide'}" title="{:__('Edit')}" ><i class="fa fa-pencil"></i> {:__('Edit')}</a> -->
-                        <!-- <a href="javascript:;" class="btn btn-danger btn-del btn-disabled disabled {:$auth->check('distribution/models/del')?'':'hide'}" title="{:__('Delete')}" ><i class="fa fa-trash"></i> {:__('Delete')}</a> -->
-                        <!-- <a href="javascript:;" class="btn btn-danger btn-import {:$auth->check('distribution/models/import')?'':'hide'}" title="{:__('Import')}" id="btn-import-file" data-url="ajax/upload" data-mimetype="csv,xls,xlsx" data-multiple="false"><i class="fa fa-upload"></i> {:__('Import')}</a> -->
-
-                        <!-- <div class="dropdown btn-group {:$auth->check('distribution/models/multi')?'':'hide'}">
-                            <a class="btn btn-primary btn-more dropdown-toggle btn-disabled disabled" data-toggle="dropdown"><i class="fa fa-cog"></i> {:__('More')}</a>
-                            <ul class="dropdown-menu text-left" role="menu">
-                                <li><a class="btn btn-link btn-multi btn-disabled disabled" href="javascript:;" data-params="status=normal"><i class="fa fa-eye"></i> {:__('Set to normal')}</a></li>
-                                <li><a class="btn btn-link btn-multi btn-disabled disabled" href="javascript:;" data-params="status=hidden"><i class="fa fa-eye-slash"></i> {:__('Set to hidden')}</a></li>
-                            </ul>
-                        </div> -->
-                    </div>
-                    <table id="table" class="table table-striped table-bordered table-hover table-nowrap"
-                           data-operate-edit="{:$auth->check('distribution/models/edit')}" 
-                           data-operate-del="{:$auth->check('distribution/models/del')}" 
-                           width="100%">
-                    </table>
+<div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm" id="channelbar" style="padding-right:0;">
+        <div class="panel panel-default panel-intro">
+            
+            <div class="panel-heading">
+                <div class="panel-lead">
+                    <em>{:__('店铺列表')}</em>
+                </div>
+            </div>
+            <div class="panel-body">
+                <span class="text-muted"><input type="checkbox" name="" id="checkall" /> <label for="checkall"><small>{:__('Check all')}</small></label></span>
+                <span class="text-muted"><input type="checkbox" name="" id="expandall" checked="" /> <label for="expandall"><small>{:__('Expand all')}</small></label></span>
+                <div id="channeltree">
                 </div>
             </div>
 
         </div>
     </div>
+
+    <div class="col-xs-12 col-md-9" id="archivespanel">
+        <div class="panel panel-default panel-intro" style="background: #f1f4f6;padding-top: 0;padding-bottom: 0;box-shadow: none;">
+            {:build_heading()}
+
+            <div class="panel-body">
+                <div id="myTabContent" class="tab-content" style="background:#fff;padding:15px;">
+                    <div class="tab-pane fade active in" id="one">
+                        <div class="widget-body no-padding">
+                            <div id="toolbar" class="toolbar">
+                                <a href="javascript:;" class="btn btn-primary btn-refresh" title="{:__('Refresh')}" ><i class="fa fa-refresh"></i> </a>
+                                <!-- <a href="javascript:;" class="btn btn-success btn-add {:$auth->check('distribution/models/add')?'':'hide'}" title="{:__('Add')}" ><i class="fa fa-plus"></i> {:__('Add')}</a> -->
+                                <!-- <a href="javascript:;" class="btn btn-success btn-edit btn-disabled disabled {:$auth->check('distribution/models/edit')?'':'hide'}" title="{:__('Edit')}" ><i class="fa fa-pencil"></i> {:__('Edit')}</a> -->
+                                <!-- <a href="javascript:;" class="btn btn-danger btn-del btn-disabled disabled {:$auth->check('distribution/models/del')?'':'hide'}" title="{:__('Delete')}" ><i class="fa fa-trash"></i> {:__('Delete')}</a> -->
+                                <!-- <a href="javascript:;" class="btn btn-danger btn-import {:$auth->check('distribution/models/import')?'':'hide'}" title="{:__('Import')}" id="btn-import-file" data-url="ajax/upload" data-mimetype="csv,xls,xlsx" data-multiple="false"><i class="fa fa-upload"></i> {:__('Import')}</a> -->
+
+                                <!-- <div class="dropdown btn-group {:$auth->check('distribution/models/multi')?'':'hide'}">
+                                    <a class="btn btn-primary btn-more dropdown-toggle btn-disabled disabled" data-toggle="dropdown"><i class="fa fa-cog"></i> {:__('More')}</a>
+                                    <ul class="dropdown-menu text-left" role="menu">
+                                        <li><a class="btn btn-link btn-multi btn-disabled disabled" href="javascript:;" data-params="status=normal"><i class="fa fa-eye"></i> {:__('Set to normal')}</a></li>
+                                        <li><a class="btn btn-link btn-multi btn-disabled disabled" href="javascript:;" data-params="status=hidden"><i class="fa fa-eye-slash"></i> {:__('Set to hidden')}</a></li>
+                                    </ul>
+                                </div> -->
+
+                                <!-- 隐藏门店列表 -->
+                                <a href="javascript:;" class="btn btn-default btn-channel hidden-xs hidden-sm"><i class="fa fa-bars"></i></a>
+
+                            </div>
+                            <table id="table" class="table table-striped table-bordered table-hover table-nowrap"
+                                data-operate-edit="{:$auth->check('distribution/models/edit')}" 
+                                data-operate-del="{:$auth->check('distribution/models/del')}" 
+                                width="100%">
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
