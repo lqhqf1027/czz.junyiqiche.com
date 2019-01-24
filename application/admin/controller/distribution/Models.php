@@ -3,6 +3,8 @@
 namespace app\admin\controller\distribution;
 
 use app\common\controller\Backend;
+use app\admin\model\Cities;
+use app\admin\model\CompanyStore;
 
 /**
  * 店铺发放二手车型
@@ -21,6 +23,70 @@ class Models extends Backend
     public function _initialize()
     {
         parent::_initialize();
+
+        $storeList = [];
+        $disabledIds = [];
+        $ids = [];
+        $cities = collection(Cities::where('pid', '0')->field(['id, pid, shortname as name'])->select())->toArray();
+        foreach ($cities as $k => $v) {
+            $ids[] = $v['id'];
+        }
+        // print_r($ids);
+        // die;
+
+        $cities_all = collection(Cities::where('pid', 'in', $ids)->field(['id, pid, shortname as name'])->select())->toArray();
+        $store_all = collection(CompanyStore::where('statuss', 'normal')->field(['id, cities_id, store_name as name'])->select())->toArray();
+        
+        foreach ($cities as $k => $v) {
+
+            $state = ['opened' => true];
+
+            if ($v['pid'] == 0) {
+            
+                
+                $storeList[] = [
+                    'id'     => $v['id'],
+                    'parent' => '#',
+                    'text'   => __($v['name']),
+                    'state'  => $state
+                ];
+            }
+
+            foreach ($cities_all as $key => $value) {
+                
+                if ($v['id'] == $value['pid']) {
+                    
+                    $storeList[] = [
+                        'id'     => $value['id'],
+                        'parent' => $v['id'],
+                        'text'   => __($value['name']),
+                        'state'  => $state
+                    ];
+                }
+
+                // foreach ($store_all as $kk => $vv) {
+                
+                //     if ($value['id'] == $vv['cities_id']) {
+
+                //         $storeList[] = [
+                //             'id'     => $vv['id'],
+                //             'parent' => $value['id'],
+                //             'text'   => __($vv['name']),
+                //             'state'  => $state
+                //         ];
+                //     }
+                       
+                // }
+                   
+            }
+            
+        }
+        // print_r($storeList);
+        // die;
+        $this->assignconfig('storeList', $storeList);
+
+
+
         $this->model = new \app\admin\model\ModelsInfo;
         $this->view->assign("statusDataList", $this->model->getStatusDataList());
     }
