@@ -3,6 +3,11 @@
 namespace app\admin\controller\distribution;
 
 use app\common\controller\Backend;
+use app\admin\model\Cities;
+use app\admin\model\CompanyStore;
+use fast\Tree;
+use think\Db;
+use think\db\Query;
 
 /**
  * 公司门店
@@ -21,8 +26,56 @@ class Store extends Backend
     public function _initialize()
     {
         parent::_initialize();
+        
+        $storeList = [];
+        $disabledIds = [];
+        $cities_all = collection(Cities::where('pid', '0')->order("id desc")->field(['id, shortname as name'])->select())->toArray();
+        $store_all = collection(CompanyStore::order("id desc")->field(['id, cities_id, store_name as name'])->select())->toArray();
+        foreach ($cities_all as $k => $v) {
+
+            $cities_all[$k]['cities_id'] = 0;
+            
+        }
+
+        $all = array_merge($cities_all, $store_all);
+    
+        foreach ($all as $k => $v) {
+
+            $state = ['opened' => true];
+
+            if ($v['cities_id'] == 0) {
+            
+                $disabledIds[] = $v['id'];
+                $storeList[] = [
+                    'id'     => $v['id'],
+                    'parent' => '#',
+                    'text'   => __($v['name']),
+                    'state'  => $state
+                ];
+            }
+
+            foreach ($cities_all as $key => $value) {
+                
+                if ($v['cities_id'] == $value['id']) {
+                    $disabledIds[] = $v['id'];
+                    $storeList[] = [
+                        'id'     => $v['id'],
+                        'parent' => $value['id'],
+                        'text'   => __($v['name']),
+                        'state'  => $state
+                    ];
+                }
+                   
+            }
+            
+        }
+        // print_r($storeList);
+        // die;
+        $this->assignconfig('storeList', $storeList);
+
         $this->model = new \app\admin\model\CompanyStore;
         $this->view->assign("statussList", $this->model->getStatussList());
+
     }
     
     /**
