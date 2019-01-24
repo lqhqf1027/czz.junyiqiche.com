@@ -25,14 +25,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {checkbox: true},
                         {field: 'id', title: __('Id')},
-                        {field: 'store_id', title: __('Store_id')},
-                        {field: 'level_store_id', title: __('Level_store_id')},
+                        {field: 'store.store_name', title: __('店铺名称')},
+                        {field: 'storeuser.name', title: __('店铺所属人')},
+                        {field: 'storelevel.partner_rank', title: __('店铺等级')},
                         {field: 'percent', title: __('Percent'), operate:'BETWEEN'},
                         {field: 'earnings', title: __('Earnings'), operate:'BETWEEN'},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
-                        {field: 'store.store_name', title: __('Store.store_name')},
-                        {field: 'store.store_user_id', title: __('Store.store_user_id')},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
                 ]
