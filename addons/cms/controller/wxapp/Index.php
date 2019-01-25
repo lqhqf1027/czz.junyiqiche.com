@@ -88,6 +88,10 @@ class Index extends Base
     }
 
 
+    /**
+     * 支付成功后接口
+     * @throws \think\exception\DbException
+     */
     public function userInfo()
     {
 
@@ -144,6 +148,13 @@ class Index extends Base
 
     }
 
+    /**
+     * 支付后的页面接口
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function homepages()
     {
         $user_id = $this->request->post('user_id');
