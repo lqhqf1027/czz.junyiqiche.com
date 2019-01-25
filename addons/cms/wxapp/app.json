@@ -1,12 +1,7 @@
 {
   "pages": [
     "page/index/index",
-    "page/my/index",
-    "page/my/comment",
-    "page/my/profile",
-    "page/my/bind",
-    "page/my/aboutus",
-    "page/my/setting"
+    "page/my/index"
   ],
   "window": {
     "backgroundTextStyle": "dark",
