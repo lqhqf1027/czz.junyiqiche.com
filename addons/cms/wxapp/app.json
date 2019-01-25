@@ -6,7 +6,7 @@
   "window": {
     "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#DE3639",
-    "navigationBarTitleText": "FastAdmin",
+    "navigationBarTitleText": "友车圈",
     "navigationBarTextStyle": "white"
   },
   "tabBar": {

@@ -267,9 +267,6 @@ App({
   //全局信息
   globalData: {
     userInfo: null,
-    config: null,
-    indexTabList: [],
-    newsTabList: [],
-    productTabList: [],
+    config: null, 
   }
 })
