@@ -34,31 +34,12 @@ class Index extends Base
      */
     public function index()
     {
-//        $bannerList = [];
-//        $list = Block::getBlockList(['name' => 'focus', 'row' => 5]);
-//        foreach ($list as $index => $item) {
-//            $bannerList[] = ['image' => cdnurl($item['image'], true), 'url' => '/', 'title' => $item['title']];
-//        }
-//
-//        $tabList = [
-//            ['id' => 0, 'title' => '全部'],
-//        ];
-//        $channelList = Channel::where('status', 'normal')
-//            ->where('type', 'in', ['list'])
-//            ->field('id,parent_id,name,diyname')
-//            ->order('weigh desc,id desc')
-//            ->cache(false)
-//            ->select();
-//        foreach ($channelList as $index => $item) {
-//            $tabList[] = ['id' => $item['id'], 'title' => $item['name']];
-//        }
-//        $archivesList = Archives::getArchivesList([]);
-//        $data = [
-//            'bannerList' => $bannerList,
-//            'tabList' => $tabList,
-//            'archivesList' => $archivesList,
-//        ];
-//        $this->success('', $data);
+       $bannerList = [];
+       $list = Block::getBlockList(['name' => 'focus']);
+       foreach ($list as $index => $item) {
+          
+           $bannerList[] = ['image' => cdnurl($item['image'], true), 'url' => '/', 'title' => $item['title']];
+       }  
 
         //等级列表
         $levelList = collection(StoreLevel::all(function ($q) {
@@ -83,7 +64,7 @@ class Index extends Base
         //所有可用的邀请码
         $codeList = CompanyStore::column('invitation_code');
 
-        $this->success($levelList);
+        $this->success('请求成功',['levelList'=>$levelList,'bannerList'=>$bannerList]);
 
     }
 
