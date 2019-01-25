@@ -1,7 +1,90 @@
 <?php
-
 // 公共助手函数
+error_reporting( E_PARSE | E_ERROR | E_WARNING);
+use think\Request;
+// 应用公共文件
+///////////////////////////////////////////
+/**
+ * me function
+ */
+///////////////////////////////////////////
+if (!function_exists('__')) {
+    /**
+     * 打印变量
+     */
+    function pr($var) {
+        $template = PHP_SAPI !== 'cli' ? '<pre>%s</pre>' : "\n%s\n";
+        printf($template, print_r($var, true));
+    }
+}
 
+
+if (!function_exists('emoji_encode')) {
+    /**
+     * emoji 表情转义
+     * @param $nickname
+     * @return string
+     */
+    function emoji_encode($nickname)
+    {
+        $strEncode = '';
+        $length = mb_strlen($nickname, 'utf-8');
+        for ($i = 0; $i < $length; $i++) {
+            $_tmpStr = mb_substr($nickname, $i, 1, 'utf-8');
+            if (strlen($_tmpStr) >= 4) {
+                $strEncode .= '[[EMOJI:' . rawurlencode($_tmpStr) . ']]';
+            } else {
+                $strEncode .= $_tmpStr;
+            }
+        }
+        return $strEncode;
+    }
+}
+if (!function_exists('emoji_decode')) {
+    /**
+     * emoji 表情解密
+     * @param $nickname
+     * @return string
+     */
+    function emoji_decode($str)
+    {
+        $strDecode = preg_replace_callback('|\[\[EMOJI:(.*?)\]\]|', function ($matches) {
+            return rawurldecode($matches[1]);
+        }, $str);
+        return $strDecode;
+    }
+}
+
+if (!function_exists('arraySort')) {
+    function arraySort($array, $keys, $sort = 'asc')
+    {
+        $newArr = $valArr = array();
+        foreach ($array as $key => $value) {
+            $valArr[$key] = $value[$keys];
+        }
+        ($sort == 'asc') ? asort($valArr) : arsort($valArr);//先利用keys对数组排序，目的是把目标数组的key排好序
+        reset($valArr); //指针指向数组第一个值
+        foreach ($valArr as $key => $value) {
+            $newArr[$key] = $array[$key];
+        }
+        return $newArr;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////////
+/**
+ * fa function
+ */
+///////////////////////////////////////////
 if (!function_exists('__')) {
 
     /**

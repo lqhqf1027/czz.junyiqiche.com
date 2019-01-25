@@ -1,10 +1,6 @@
 {
   "pages": [
     "page/index/index",
-    "page/news/index",
-    "page/news/detail",
-    "page/product/index",
-    "page/product/detail",
     "page/my/index",
     "page/my/comment",
     "page/my/profile",
@@ -29,18 +25,6 @@
         "iconPath": "assets/images/tabbar/index.png",
         "selectedIconPath": "assets/images/tabbar/index-hl.png",
         "text": "首页"
-      },
-      {
-        "pagePath": "page/news/index",
-        "iconPath": "assets/images/tabbar/store.png",
-        "selectedIconPath": "assets/images/tabbar/store-hl.png",
-        "text": "资讯"
-      },
-      {
-        "pagePath": "page/product/index",
-        "iconPath": "assets/images/tabbar/addon.png",
-        "selectedIconPath": "assets/images/tabbar/addon-hl.png",
-        "text": "产品"
       },
       {
         "pagePath": "page/my/index",
