@@ -22,5 +22,8 @@ return array (
     '/cms/s' => 'cms/search/index',
     '/cms/c/[:diyname]' => 'cms/channel/index',
     '/cms/d/[:diyname]' => 'cms/diyform/index',
+    '/third$' => 'third/index/index',
+    '/third/connect/[:platform]' => 'third/index/connect',
+    '/third/callback/[:platform]' => 'third/index/callback',
   ),
 );

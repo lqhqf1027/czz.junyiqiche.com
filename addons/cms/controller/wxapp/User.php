@@ -51,7 +51,9 @@ class User extends Base
             $this->error("参数不正确");
         }
         $userInfo = (array)json_decode($rawData, true);
-
+        if($userInfo['nickName']){
+            $userInfo['nickName'] = emoji_encode($userInfo['nickName']);
+        }
         $params = [
             'appid'      => $config['wxappid'],
             'secret'     => $config['wxappsecret'],
@@ -88,7 +90,9 @@ class User extends Base
                 $ret = Service::connect($platform, $result, $extend);
                 if ($ret) {
                     $auth = Auth::instance();
-                    $this->success("登录成功", ['userInfo' => $auth->getUserinfo()]);
+                    $users = $auth->getUserinfo();
+                    $users['nickname'] = emoji_decode($users['nickname']);
+                    $this->success("登录成功", ['userInfo' => $users,'openid'=>$json['openid'],'session_key'=>$json['session_key']]);
                 } else {
                     $this->error("连接失败");
                 }

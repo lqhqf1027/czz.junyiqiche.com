@@ -114,7 +114,7 @@ class Index extends Backend
     {
         $this->auth->logout();
         Hook::listen("admin_logout_after", $this->request);
-        $this->success(__('Logout successful'), 'index/login');
+        $this->redirect('index/login');
     }
 
 }

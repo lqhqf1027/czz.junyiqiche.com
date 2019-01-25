@@ -2,7 +2,7 @@ var Towxml = require('/assets/libs/towxml/main.js');
 App({
   //请不要修改 /addons/cms/wxapp.这部分,只允许修改域名部分
   //请注意小程序只支持https
-  apiUrl: 'https://demo.fastadmin.net/addons/cms/wxapp.',
+  apiUrl: 'https://czz.junyiqiche.com/addons/cms/wxapp.',
   si: 0,
   //小程序启动
   onLaunch: function () {
@@ -15,24 +15,6 @@ App({
       
       //如果需要一进入小程序就要求授权登录,可在这里发起调用
       //that.check(function (ret) { });
-    }, function (data, ret) {
-      that.error(ret.msg);
-    });
-  },
-  //投票
-  vote: function (event, cb) {
-    var that = this;
-    var id = event.currentTarget.dataset.id;
-    var type = event.currentTarget.dataset.type;
-    var vote = wx.getStorageSync("vote") || [];
-    if (vote.indexOf(id)>-1){
-      that.info("你已经发表过意见了,请勿重复操作");
-      return;
-    }
-    vote.push(id);
-    wx.setStorageSync("vote", vote);
-    this.request('/archives/vote', { id: id, type: type }, function (data, ret) {
-      typeof cb == "function" && cb(data);
     }, function (data, ret) {
       that.error(ret.msg);
     });
