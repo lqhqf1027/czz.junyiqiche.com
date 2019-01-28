@@ -18,21 +18,7 @@ class StoreLevel extends Model
     // 定义全局的查询范围
     protected function base($query)
     {
-        $query->where('status', 1);
+        $query->where('status', 'normal');
     }
 
-//    public function getMoneyAttr($value)
-//    {
-//        $money = floatval($value) / 10000;
-//
-//        $money = round($money, 1);
-//
-//        if ($money >= 1) {
-//            return $money . '万';
-//        }
-//
-//        return ($money * 10) . '千';
-//
-//
-//    }
 }

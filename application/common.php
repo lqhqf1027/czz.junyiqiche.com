@@ -1,7 +1,9 @@
 <?php
 // 公共助手函数
-error_reporting( E_PARSE | E_ERROR | E_WARNING);
+error_reporting(E_PARSE | E_ERROR | E_WARNING);
+
 use think\Request;
+
 // 应用公共文件
 ///////////////////////////////////////////
 /**
@@ -12,7 +14,8 @@ if (!function_exists('__')) {
     /**
      * 打印变量
      */
-    function pr($var) {
+    function pr($var)
+    {
         $template = PHP_SAPI !== 'cli' ? '<pre>%s</pre>' : "\n%s\n";
         printf($template, print_r($var, true));
     }
@@ -70,14 +73,6 @@ if (!function_exists('arraySort')) {
         return $newArr;
     }
 }
-
-
-
-
-
-
-
-
 
 
 ///////////////////////////////////////////
@@ -379,6 +374,35 @@ if (!function_exists('var_export_short')) {
                 return $var ? "TRUE" : "FALSE";
             default:
                 return var_export($var, TRUE);
+        }
+    }
+
+    /**
+     * 得到字符串中的数字
+     */
+    if (!function_exists('findNum')) {
+        function findNum($str = '')
+        {
+
+            $str = trim($str);
+
+            if (empty($str)) {
+                return '';
+            }
+
+            $result = '';
+
+            for ($i = 0; $i < strlen($str); $i++) {
+
+                if (is_numeric($str[$i])) {
+
+                    $result .= $str[$i];
+
+                }
+
+            }
+
+            return $result;
         }
     }
 
