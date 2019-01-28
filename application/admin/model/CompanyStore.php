@@ -18,7 +18,8 @@ class CompanyStore extends Model
     
     // 追加属性
     protected $append = [
-        'statuss_text'
+        'statuss_text',
+        'auditstatus_text'
     ];
     
 
@@ -26,6 +27,11 @@ class CompanyStore extends Model
     public function getStatussList()
     {
         return ['normal' => __('Normal'),'hidden' => __('Hidden')];
+    }     
+
+    public function getAuditstatusList()
+    {
+        return ['audit_failed' => __('Audit_failed'),'pass_the_audit' => __('Pass_the_audit'),'wait_the_review' => __('Wait_the_review')];
     }     
 
 
@@ -37,12 +43,14 @@ class CompanyStore extends Model
     }
 
 
-
-
-    public function cities()
-    {
-        return $this->belongsTo('Cities', 'cities_id', 'id', [], 'LEFT')->setEagerlyType(0);
+    public function getAuditstatusTextAttr($value, $data)
+    {        
+        $value = $value ? $value : (isset($data['auditstatus']) ? $data['auditstatus'] : '');
+        $list = $this->getAuditstatusList();
+        return isset($list[$value]) ? $list[$value] : '';
     }
+
+
 
 
     public function storelevel()

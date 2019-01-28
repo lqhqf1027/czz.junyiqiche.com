@@ -18,33 +18,32 @@ class ModelsInfo extends Model
     
     // 追加属性
     protected $append = [
-        'status_data_text'
+        'car_licensetime_text',
+        'factorytime_text'
     ];
-    
 
-    protected static function init()
+    public function getCarLicensetimeTextAttr($value, $data)
     {
-        self::afterInsert(function ($row) {
-            $pk = $row->getPk();
-            $row->getQuery()->where($pk, $row[$pk])->update(['weigh' => $row[$pk]]);
-        });
-    }
-
-    
-    public function getStatusDataList()
-    {
-        return ['for_the_car' => __('Status_data for_the_car'),'the_car' => __('Status_data the_car'),'is_reviewing_pass' => __('Status_data is_reviewing_pass'),'take_the_car' => __('Status_data take_the_car'),'send_the_car' => __('Status_data send_the_car')];
-    }     
-
-
-    public function getStatusDataTextAttr($value, $data)
-    {        
-        $value = $value ? $value : (isset($data['status_data']) ? $data['status_data'] : '');
-        $list = $this->getStatusDataList();
-        return isset($list[$value]) ? $list[$value] : '';
+        $value = $value ? $value : (isset($data['car_licensetime']) ? $data['car_licensetime'] : '');
+        return is_numeric($value) ? date("Y-m-d H:i:s", $value) : $value;
     }
 
 
+    public function getFactorytimeTextAttr($value, $data)
+    {
+        $value = $value ? $value : (isset($data['factorytime']) ? $data['factorytime'] : '');
+        return is_numeric($value) ? date("Y-m-d H:i:s", $value) : $value;
+    }
+
+    protected function setCarLicensetimeAttr($value)
+    {
+        return $value && !is_numeric($value) ? strtotime($value) : $value;
+    }
+
+    protected function setFactorytimeAttr($value)
+    {
+        return $value && !is_numeric($value) ? strtotime($value) : $value;
+    }
 
 
     public function store()
