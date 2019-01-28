@@ -11,6 +11,7 @@ use addons\cms\model\StoreUser;
 use addons\cms\model\CompanyStore;
 use addons\cms\model\StoreLevel;
 use addons\cms\model\Config;
+use addons\cms\model\ModelsInfo;
 use app\common\model\Addon;
 use think\Cache;
 use think\Db;
@@ -34,169 +35,56 @@ class Index extends Base
      */
     public function index()
     {
-       $bannerList = [];
-       $list = Block::getBlockList(['name' => 'focus']);
-       foreach ($list as $index => $item) {
-          
-           $bannerList[] = ['image' => cdnurl($item['image'], true), 'url' => '/', 'title' => $item['title']];
-       }  
+        $bannerList = [];
+        $list = Block::getBlockList(['name' => 'focus']);
+        foreach ($list as $index => $item) {
 
-        //等级列表
-        $levelList = collection(StoreLevel::all(function ($q) {
-            $q->field('id,partner_rank,money,explain');
-        }))->toArray();
-
-        foreach ($levelList as $k => $v) {
-            $v['money'] = floatval($v['money']) / 10000;
-
-            $v['money'] = round($v['money'], 1);
-
-            if ($v['money'] >= 1) {
-                $v['money'] = $v['money'] . '万';
-            } else {
-                $v['money'] = ($v['money'] * 10) . '千';
-            }
-
-            $levelList[$k]['money'] = $v['money'];
-
+            $bannerList[] = ['image' => cdnurl($item['image'], true), 'url' => '/', 'title' => $item['title']];
         }
 
-        //所有可用的邀请码
-        $codeList = CompanyStore::column('invitation_code');
-
-        $this->success('请求成功',['levelList'=>$levelList,'bannerList'=>$bannerList]);
+        $this->success('请求成功', ['bannerList' => $bannerList]);
 
     }
 
-
     /**
-     * 支付成功后接口
-     * @throws \think\exception\DbException
+     * 发布车源接口
      */
-    public function userInfo()
+    public function uploadModels()
     {
-
 //        $arr = [
-//            'name' => 'kp',
-//            'phone' => '18683787363',
-//            'store_address' => '成都',
-//            'bank_card' => '6217003810028413121',
-//            'id_card_images' => [
-//                'positive' => '/uploads/20181116/c25d72c53440bd4580923a91e083b189.png',
-//                'negative' => '/uploads/20181116/c25d72c53440bd4580923a91e083b189.png',
-//            ],
-//            'level_id' => 2,
-//            'parent_id' => 15
+//            'modelsimages'=>'/uploads/20181220/246477e60375d326878811de4e2544e0.png,/uploads/20181220/246477e60375d326878811de4e2544e0.png,/uploads/20181220/246477e60375d326878811de4e2544e0.png,/uploads/20181220/246477e60375d326878811de4e2544e0.png,/uploads/20181220/246477e60375d326878811de4e2544e0.png,/uploads/20181220/246477e60375d326878811de4e2544e0.png',
+//            'models_name'=>'标致408 2018款 1.8L 手动领先版',
+//            'parkingposition'=>'成都',
+//            'license_plate'=>'北京',
+//            'guide_price'=>'20万元',
+//            'factorytime'=>'2013-11-01',
+//            'car_licensetime'=>'2015-01-08',
+//            'kilometres'=>'35万公里',
+//            'emission_standard'=>'1.0T',
+//            'phone'=>'18683787363',
+//            'store_description'=>'很漂亮的车',
+//            'brand_name'=>'标致'
 //        ];
+        $carInfo = $this->request->post('carInfo');
 
-
-        $infos = $this->request->post('info');
-        $infos = "{\"name\":\"qqqww\",\"phone\":\"18683787363\",\"store_address\":\"\\u6210\\u90fd\",\"bank_card\":\"6217003810028413121\",\"id_card_images\":{\"positive\":\"\\/uploads\\/20181116\\/c25d72c53440bd4580923a91e083b189.png\",\"negative\":\"\\/uploads\\/20181116\\/c25d72c53440bd4580923a91e083b189.png\"},\"level_id\":1,\"parent_id\":3}";
-        $infos = json_decode($infos, true);
-        $usersInfo = StoreUser::create([
-            'name' => $infos['name'],
-            'bank_card' => $infos['bank_card'],
-            'id_card_images' => $infos['id_card_images']['positive'] . ';' . $infos['id_card_images']['negative']
-        ]);
-
-        $company = CompanyStore::create([
-            'phone' => $infos['phone'],
-            'store_address' => $infos['store_address'],
-            'invitation_code' => 'QdU15',
-            'store_user_id' => $usersInfo->id,
-            'level_id' => $infos['level_id']
-        ]);
-
-
-        if (!empty($infos['parent_id'])) {
-            $money = StoreLevel::get($infos['level_id'])->money;
-            $gradeOne = Config::where(['group' => 'rate'])->column('value');
-
-            $profit = floatval($gradeOne[0]) * $money;
-
-            $second_profit = floatval($gradeOne[1]) * $money;
-
-            Distribution::create([
-                'store_id' => $infos['parent_id'],
-                'level_store_id' => $company->id,
-                'earnings' => $profit,
-                'second_earnings' => $second_profit
-            ]);
-        }
-
-        $this->success('请求成功', 'success');
-
-
-    }
-
-    /**
-     * 支付后的页面接口
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     */
-    public function homepages()
-    {
         $user_id = $this->request->post('user_id');
+//$this->success(json_encode($arr));
+        $carInfo = "{\"modelsimages\":\"\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png,\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png,\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png,\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png,\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png,\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png\",\"models_name\":\"\\u6807\\u81f4408 2018\\u6b3e 1.8L \\u624b\\u52a8\\u9886\\u5148\\u7248\",\"parkingposition\":\"\\u6210\\u90fd\",\"license_plate\":\"\\u5317\\u4eac\",\"guide_price\":\"20\\u4e07\\u5143\",\"factorytime\":\"2013-11-01\",\"car_licensetime\":\"2015-01-08\",\"kilometres\":\"35\\u4e07\\u516c\\u91cc\",\"emission_standard\":\"1.0T\",\"phone\":\"18683787363\",\"store_description\":\"\\u5f88\\u6f02\\u4eae\\u7684\\u8f66\",\"brand_name\":\"\\u6807\\u81f4\"}";
 
-        $users = StoreUser::field('id,name,avatar')
-            ->with(['companystoreone' => function ($q) {
-                $q->withField('id,store_qrcode');
-            }])->find($user_id);
+        $store_id = Db::name('store_user')
+            ->alias('a')
+            ->join('company_store b', 'a.id = b.store_user_id')
+            ->where('a.id', $user_id)
+            ->value('b.id');
 
-        $partner = StoreUser::field('id,name,avatar')->with(['companystore' => function ($q) use ($users) {
-            $q->with(['sondistribution' => function ($sondistribution) use ($users) {
-                $sondistribution->where('store_id', $users['companystoreone']['id']);
-            }]);
-        }])->select();
+        $carInfo = json_decode($carInfo, true);
 
-        $commission = 0;     //佣金收益
-        $people_number = 0;  //总人数
+        $carInfo['store_id'] = $store_id;
 
-        //去除不是下级店铺的数据
-        foreach ($partner as $k => $v) {
-            if (empty($v['companystore'][0]['sondistribution'])) {
-                unset($partner[$k]);
-            }
-        }
+        $modelsInfo = new ModelsInfo();
 
-        $partner = array_values($partner);
-
-        foreach ($partner as $k => $v) {
-            //得到下1级店铺所有下2级店铺的收益
-            $partner[$k]['allProfit'] = Db::name('distribution')
-                ->where('store_id', $v['companystore'][0]['id'])
-                ->sum('second_earnings');
-
-            //得到下1级店铺所有下2级店铺的数量
-            $partner[$k]['memberNumber'] = Db::name('distribution')
-                ->where('store_id', $v['companystore'][0]['id'])
-                ->count('id');
-
-            $partner[$k]['memberNumber'] = $partner[$k]['memberNumber'] + 1;
-
-            $partner[$k]['allProfit'] = $partner[$k]['allProfit'] + $v['companystore'][0]['sondistribution'][0]['earnings'];
-
-            $commission = $commission + $partner[$k]['allProfit'];
-            $people_number += $partner[$k]['memberNumber'];
-
-            unset($partner[$k]['companystore']);
-
-//            unset($partner[$k]['id_card'],$partner[$k]['sex'],$partner[$k]['store_id'],$partner[$k]['bank_card'],
-//                $partner[$k]['id_card_images'],$partner[$k]['createtime'],$partner[$k]['updatetime']);
-        }
-        $users['allProfit'] = $commission;
-        $users['memberNumber'] = $people_number;
-
-        $data = [
-            'userInfo' => $users,
-            'memeberList' => $partner
-        ];
-
-        $this->success($data);
-
+        $modelsInfo->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
+        $this->success($carInfo);
     }
-
 
 }

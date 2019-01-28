@@ -16,6 +16,12 @@ class CompanyStore extends Model
     // 表名
     protected $name = 'company_store';
 
+    protected $autoWriteTimestamp = true;
+
+    protected $createTime = 'createtime';
+
+    protected $updateTime = 'updatetime';
+
     // 定义全局的查询范围
     protected function base($query)
     {
