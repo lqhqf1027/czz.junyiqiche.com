@@ -25,7 +25,7 @@ class StoreLevel extends Model
     
     public function getStatusList()
     {
-        return ['1' => __('Status 1'),'0' => __('Status 0')];
+        return ['normal' => __('Normal'),'hidden' => __('Hidden')];
     }     
 
 

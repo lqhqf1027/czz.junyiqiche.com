@@ -1,0 +1,70 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Models_name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-models_name" data-rule="required" class="form-control" name="row[models_name]" type="text" value="{$row.models_name}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Kilometres')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-kilometres" class="form-control" name="row[kilometres]" type="number" value="{$row.kilometres}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Store_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-store_id" data-rule="required" data-source="store/index" class="form-control selectpage" name="row[store_id]" type="text" value="{$row.store_id}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Shelfismenu')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-shelfismenu" class="form-control" name="row[shelfismenu]" type="number" value="{$row.shelfismenu}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Note')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-note" class="form-control" name="row[note]" type="text" value="{$row.note}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('License_plate')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-license_plate" class="form-control" name="row[license_plate]" type="text" value="{$row.license_plate}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Phone')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-phone" data-rule="required" class="form-control" name="row[phone]" type="number" value="{$row.phone}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Parkingposition')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-parkingposition" class="form-control" name="row[parkingposition]" type="text" value="{$row.parkingposition}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Brand_name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-brand_name" data-rule="required" class="form-control" name="row[brand_name]" type="text" value="{$row.brand_name}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Store_description')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-store_description" class="form-control" name="row[store_description]" type="text" value="{$row.store_description}">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

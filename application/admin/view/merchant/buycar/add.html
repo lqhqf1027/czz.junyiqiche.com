@@ -1,0 +1,70 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Models_name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-models_name" data-rule="required" class="form-control" name="row[models_name]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Kilometres')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-kilometres" class="form-control" name="row[kilometres]" type="number">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Store_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-store_id" data-rule="required" data-source="store/index" class="form-control selectpage" name="row[store_id]" type="text" value="">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Shelfismenu')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-shelfismenu" class="form-control" name="row[shelfismenu]" type="number" value="1">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Note')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-note" class="form-control" name="row[note]" type="text" value="">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('License_plate')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-license_plate" class="form-control" name="row[license_plate]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Phone')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-phone" data-rule="required" class="form-control" name="row[phone]" type="number">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Parkingposition')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-parkingposition" class="form-control" name="row[parkingposition]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Brand_name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-brand_name" data-rule="required" class="form-control" name="row[brand_name]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Store_description')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-store_description" class="form-control" name="row[store_description]" type="text">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

@@ -4,10 +4,10 @@ namespace app\admin\model;
 
 use think\Model;
 
-class Earnings extends Model
+class Clue extends Model
 {
     // 表名
-    protected $name = 'distribution';
+    protected $name = 'clue';
     
     // 自动写入时间戳字段
     protected $autoWriteTimestamp = 'int';
@@ -21,14 +21,6 @@ class Earnings extends Model
 
     ];
     
-
-    
-
-
-
-
-
-
 
     public function store()
     {

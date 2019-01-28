@@ -1,0 +1,177 @@
+<form id="auditResult-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <h2>
+        <center>审核店铺资料
+
+        </center>
+    </h2>
+    <br>
+
+    <div class="container-fulid" style="background-color: #ddd">
+    
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-12 text-center">
+                <h3  class="text-info">店铺所有人的相关信息</h3>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-6">
+                <strong>{:__('店铺所有人姓名')}：</strong> {$row.user_name|default="<span class='text-info'>暂无</span>"}
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-6">
+                <strong>{:__('银行卡号')}：</strong>{$row.bank_card|default="<span class='text-info'>暂无</span>"}
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-6">
+                {empty name="$avatar|default=''"}
+                <p style="margin-top: 8%"><strong>{:__('头像')}：</strong><span class="text-info">暂无</span></p>
+        
+                {else /}
+                <strong class="imgClickTitle">{:__('头像')}：</strong>
+                {foreach $avatar as $k => $v}
+        
+                <img src="{$cdnurl}{$v}" alt="头像" class="imgBorder">
+                {/foreach}
+                {/empty}
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-6">
+                {empty name="$id_card_images|default=''"}
+                <p style="margin-top: 8%"><strong>{:__('身份证正反面(多图)')}：</strong><span class="text-info">暂无</span></p>
+        
+                {else /}
+                <strong class="imgClickTitle">{:__('身份证正反面(多图)')}：</strong>
+                {foreach $id_card_images as $k => $v}
+        
+                <img src="{$cdnurl}{$v}" alt="身份证正反面" class="imgBorder">
+                {/foreach}
+                {/empty}
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-12 text-center">
+                <h3  class="text-info">店铺的相关信息</h3>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-3">
+                <strong >{:__('店铺等级')}：</strong>{$row.partner_rank|default="<span class='text-info'>暂无</span>"}
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-3">
+                <strong >{:__('所在城市')}：</strong>{$row.cities_name|default="<span class='text-info'>暂无</span>"}
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-3">
+                <strong >{:__('店铺名称')}：</strong>{$row.store_name|default="<span class='text-info'>暂无</span>"}
+    
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-3">
+                <strong >{:__('店铺联系电话')}：</strong>{$row.phone|default="<span class='text-info'>暂无</span>"}
+    
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-3">
+                <strong >{:__('店铺具体位置')}：</strong>{$row.store_address|default="<span class='text-info'>暂无</span>"}
+            
+             </div>
+            <div class="col-xs-12 col-sm-8 col-md-3">
+                <strong >{:__('主营品牌')}：</strong>{$row.main_camp|default="<span class='text-info'>暂无</span>"}
+    
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-3">
+                <strong >{:__('经营年限')}：</strong>{$row.business_life|default="<span class='text-info'>暂无</span>"}
+    
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-3">
+                <strong >{:__('店铺描述')}：</strong>{$row.store_description|default="<span class='text-info'>暂无</span>"}
+
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-4">
+                {empty name="$store_img|default=''"}
+                <p style="margin-top: 8%"><strong>{:__('店铺展示图')}：</strong><span class="text-info">暂无</span></p>
+    
+                {else /}
+                <strong class="imgClickTitle">{:__('店铺展示图')}：</strong>
+                {foreach $store_img as $k => $v}
+    
+                <img src="{$cdnurl}{$v}" alt="店铺展示图" class="imgBorder">
+                {/foreach}
+                {/empty}
+            </div>
+            
+        </div>
+        <hr>
+    </div>
+
+    <!-- 隐藏店铺id -->
+    <input type="hidden" name="hidden1" id="hidden1" value="{$row.id}" />
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-5"></label>
+        <div class="col-xs-12 col-sm-7">
+            <button type="button" class="btn btn-success btn-embossed" id="pass">{:__('店铺审核通过')}</button>
+            <button type="button" class="btn btn-danger btn-embossed" id="nopass">{:__('店铺审核不通过，需修改资料')}</button>
+        </div>
+    </div>
+
+</form>
+<script>
+    var id = $('#hidden1').val();
+    $('#pass').on('click',function () {
+        var confirm = layer.confirm(
+            __('确定通过店铺审核吗?'),
+            {icon: 3, title: __('Warning'), shadeClose: true},
+            function (index) {
+
+                Fast.api.ajax({
+                    url: 'merchant/store/pass',
+                    data: {id: JSON.stringify(id)}
+                }, function (data, ret) {
+                    parent.$('#toolbar .btn-refresh', parent.document).trigger('click')
+                    Layer.close(confirm);
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(index);
+                    return false;
+                }, function (data, ret) {
+                    //失败的回调
+                    return false;
+                });
+
+            }
+        );
+    })
+    $('#nopass').on('click',function () {
+        var prompt = Layer.prompt(
+            {title: '输入需要修改的资料，并确认', shadeClose: true},
+
+            function (text, index) {
+                // console.log(text);
+                Fast.api.ajax({
+                    url: 'merchant/store/nopass',
+                    data: {id: JSON.stringify(id), text: text}
+                }, function (data, ret) {
+
+                    parent.$('#toolbar .btn-refresh', parent.document).trigger('click')
+
+                    Layer.close(prompt);
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(index);
+                    return false;
+                }, function (data, ret) {
+                    //失败的回调
+
+                    return false;
+                });
+
+
+            }
+        );
+    })
+
+</script>
