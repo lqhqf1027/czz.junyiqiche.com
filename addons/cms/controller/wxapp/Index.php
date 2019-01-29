@@ -12,6 +12,7 @@ use addons\cms\model\CompanyStore;
 use addons\cms\model\StoreLevel;
 use addons\cms\model\Config;
 use addons\cms\model\ModelsInfo;
+use addons\cms\model\BuycarModel;
 use app\common\model\Addon;
 use think\Cache;
 use think\Db;
@@ -85,6 +86,48 @@ class Index extends Base
 
         $modelsInfo->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
         $this->success($carInfo);
+    }
+
+    public function wantBuyCar()
+    {
+        $arr = [
+            'brand_name' => '标致',
+            'models_name' => '标致408 2018款 1.8L 手动领先版',
+            'parkingposition' => '成都',
+            'psychology_price' => '20万元',
+            'phone' => '18683787363',
+
+            'kilometres' => '',
+            'license_plate' => ''
+        ];
+
+        $carInfo = $this->request->post('carInfo');
+        $user_id = $this->request->post('user_id');
+//        $this->success(json_encode($arr));
+
+        $carInfo = "{\"brand_name\":\"\\u6807\\u81f4\",\"models_name\":\"\\u6807\\u81f4408 2018\\u6b3e 1.8L \\u624b\\u52a8\\u9886\\u5148\\u7248\",\"parkingposition\":\"\\u6210\\u90fd\",\"psychology_price\":\"20\\u4e07\\u5143\",\"phone\":\"18683787363\",\"kilometres\":\"\",\"license_plate\":\"\"}";
+
+        $store_id = Db::name('store_user')
+            ->alias('a')
+            ->join('company_store b', 'a.id = b.store_user_id')
+            ->where('a.id', $user_id)
+            ->value('b.id');
+
+        $carInfo = json_decode($carInfo,true);
+
+        if($store_id){
+            $carInfo['store_id'] = $store_id;
+        }
+
+        $buyModels = new BuycarModel();
+
+        $buyModels->allowField(true)->save($carInfo)?$this->success('添加成功', 'success') : $this->error('添加失败', 'error');
+
+    }
+
+    public function submit_tailwind()
+    {
+
     }
 
 }
