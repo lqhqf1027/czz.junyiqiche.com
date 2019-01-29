@@ -3,26 +3,25 @@
 namespace app\admin\controller\merchant;
 
 use app\common\controller\Backend;
-use think\Db;
 
 /**
- * 分销收益管理
+ * 会员管理
  *
- * @icon fa fa-circle-o
+ * @icon fa fa-user
  */
-class Earnings extends Backend
+class People extends Backend
 {
     
     /**
-     * Distribution模型对象
-     * @var \app\admin\model\Distribution
+     * User模型对象
+     * @var \app\admin\model\User
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\Distribution;
+        $this->model = new \app\admin\model\User;
 
     }
     
@@ -63,11 +62,9 @@ class Earnings extends Backend
                     ->limit($offset, $limit)
                     ->select();
 
-            foreach ($list as $key => $row) {
+            foreach ($list as $row) {
                 
-                $row->getRelation('store')->visible(['store_name']);
-                $list[$key]['level_store_id'] = Db::name('company_store')->where('id', $list[$key]['level_store_id'])->value('store_name');
-
+                
             }
             $list = collection($list)->toArray();
             $result = array("total" => $total, "rows" => $list);
