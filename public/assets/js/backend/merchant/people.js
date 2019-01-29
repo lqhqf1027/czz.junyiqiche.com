@@ -5,12 +5,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             // 初始化表格参数配置
             Table.api.init({
                 extend: {
-                    index_url: 'merchant/earnings/index',
-                    add_url: 'merchant/earnings/add',
-                    edit_url: 'merchant/earnings/edit',
-                    del_url: 'merchant/earnings/del',
-                    multi_url: 'merchant/earnings/multi',
-                    table: 'distribution',
+                    index_url: 'merchant/people/index',
+                    add_url: 'merchant/people/add',
+                    edit_url: 'merchant/people/edit',
+                    del_url: 'merchant/people/del',
+                    multi_url: 'merchant/people/multi',
+                    table: 'user',
                 }
             });
 
@@ -25,11 +25,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {checkbox: true},
                         {field: 'id', title: __('Id')},
+                        {field: 'nickname', title: __('Nickname')},
+                        {field: 'name', title: __('Name')},
+                        {field: 'bank_card', title: __('Bank_card')},
+                        {field: 'id_card_images', title: __('Id_card_images'), formatter: Table.api.formatter.images},
+                        {field: 'avatar', title: __('Avatar'), formatter: Table.api.formatter.images},
                         {field: 'store.store_name', title: __('Store.store_name')},
-                        {field: 'level_store_id', title: __('Level_store_id')},
-                        // {field: 'percent', title: __('Percent'), operate:'BETWEEN'},
-                        {field: 'earnings', title: __('Earnings'), operate:'BETWEEN'},
-                        {field: 'second_earnings', title: __('Second_earnings'), operate:'BETWEEN'},
+                        {field: 'gender', title: __('Gender')},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}

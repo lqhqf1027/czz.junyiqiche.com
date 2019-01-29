@@ -151,7 +151,7 @@
             {title: '输入需要修改的资料，并确认', shadeClose: true},
 
             function (text, index) {
-                // console.log(text);
+                console.log(text);
                 Fast.api.ajax({
                     url: 'merchant/store/nopass',
                     data: {id: JSON.stringify(id), text: text}

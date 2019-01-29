@@ -86,7 +86,7 @@ class Store extends Backend
     {
         $row = Db::name('company_store')->alias('a')
             ->join('store_level b', 'b.id=a.level_id', 'LEFT')
-            ->join('store_user c', 'c.id = a.store_user_id', 'LEFT')
+            ->join('user c', 'c.id = a.store_user_id', 'LEFT')
             ->field('a.id,a.cities_name,a.store_name,a.store_address,a.phone,a.store_img,a.store_description,a.main_camp,a.business_life,
                 b.partner_rank,
                 c.name as user_name,c.avatar,c.bank_card,c.id_card_images')
@@ -153,7 +153,6 @@ class Store extends Backend
             $text = input("text");
 
             $id = json_decode($id, true);
-            $text = json_decode($text, true);
 
             $result = $this->model->save(['auditstatus' => 'audit_failed', 'text' => $text], function ($query) use ($id) {
                 $query->where('id', $id);
