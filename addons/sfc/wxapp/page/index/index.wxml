@@ -1,0 +1,10 @@
+<import src="/assets/libs/zanui/tab/index.wxml" />
+<import src="/assets/libs/zanui/loadmore/index.wxml" />
+<view class="container">
+  <!-- S 焦点图 -->
+  <view  >
+    <text>顺丰友车</text>
+  </view>
+  <!-- E 焦点图 -->
+ 
+</view>

@@ -1,0 +1,16 @@
+<view class="container">
+  <view class="header">
+    <view class="avatar">
+      <image bindtap="uploadAvatar" src='{{ userInfo.avatar }}'></image>
+    </view>
+    <view class="account">
+      <navigator url="profile">
+        <view class="zan-font-16">
+          {{ userInfo.nickname }}
+        </view>
+      </navigator>
+      <view class="zan-font-12" wx:if="{{ userInfo.id }}">{{ userInfo.bio ? userInfo.bio : '写点什么介绍下自己吧!' }}</view>
+      <button wx:if="{{ userInfo.id==0 }}" open-type="getUserInfo" bindgetuserinfo="login" class="zan-btn zan-btn--mini btn-auth">立即登录</button>
+    </view>
+  </view>
+</view>
