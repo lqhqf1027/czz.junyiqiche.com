@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: EDZ
  * Date: 2019/1/29
- * Time: 11:13
+ * Time: 17:45
  */
 
 namespace addons\cms\model;
@@ -11,18 +11,33 @@ namespace addons\cms\model;
 
 use think\Model;
 
-class BuycarModel extends Model
+class Clue extends Model
 {
-    protected $name = 'buycar_model';
+    protected $name = 'clue';
+
     protected $autoWriteTimestamp = true;
+
     protected $createTime = 'createtime';
+
     protected $updateTime = 'updatetime';
+
     public function setKilometresAttr($value)
     {
         return floatval(findNum($value))*10000;
     }
-    public function setPsychologyPriceAttr($value)
+
+    public function setGuidePriceAttr($value)
     {
         return floatval(findNum($value))*10000;
+    }
+
+    public function setFactoryTimeAttr($value)
+    {
+        return strtotime($value);
+    }
+
+    public function setBrandtimeAttr($value)
+    {
+        return strtotime($value);
     }
 }
