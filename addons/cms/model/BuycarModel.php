@@ -19,10 +19,26 @@ class BuycarModel extends Model
     protected $updateTime = 'updatetime';
     public function setKilometresAttr($value)
     {
-        return floatval(findNum($value))*10000;
+        return !$value?'':floatval(findNum($value))*10000;
     }
-    public function setPsychologyPriceAttr($value)
+    public function setGuidePriceAttr($value)
     {
         return floatval(findNum($value))*10000;
+    }
+
+    public function setFactoryTimeAttr($value)
+    {
+        return strtotime($value);
+    }
+
+    public function setCarLicensetimeAttr($value)
+    {
+        return strtotime($value);
+    }
+
+    // 定义全局的查询范围
+    protected function base($query)
+    {
+        $query->where('shelfismenu','1');
     }
 }

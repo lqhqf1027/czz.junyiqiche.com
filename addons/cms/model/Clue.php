@@ -36,8 +36,14 @@ class Clue extends Model
         return strtotime($value);
     }
 
-    public function setBrandtimeAttr($value)
+    public function setCarLicensetimeAttr($value)
     {
         return strtotime($value);
+    }
+
+    // 定义全局的查询范围
+    protected function base($query)
+    {
+        $query->where('shelfismenu','1');
     }
 }

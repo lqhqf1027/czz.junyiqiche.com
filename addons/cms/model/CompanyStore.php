@@ -37,5 +37,10 @@ class CompanyStore extends Model
         return $this->hasMany('Distribution','level_store_id','id')->field('id,store_id,level_store_id,earnings');
     }
 
+    public function modelsinfo()
+    {
+        return $this->hasMany('ModelsInfo','store_id','id');
+    }
+
 
 }

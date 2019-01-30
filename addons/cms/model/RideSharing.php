@@ -28,7 +28,7 @@ class RideSharing extends Model
 
     public function getStartingTimeAttr($value)
     {
-        return date('Y-m-d H:i:s',$value);
+        return date('Y-m-d H:i',$value);
     }
 
     // 定义全局的查询范围
