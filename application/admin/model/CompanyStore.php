@@ -61,6 +61,6 @@ class CompanyStore extends Model
 
     public function storeuser()
     {
-        return $this->belongsTo('StoreUser', 'store_user_id', 'id', [], 'LEFT')->setEagerlyType(0);
+        return $this->belongsTo('StoreUser', 'user_id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
 }
