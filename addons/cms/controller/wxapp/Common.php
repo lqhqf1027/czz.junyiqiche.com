@@ -4,6 +4,7 @@ namespace addons\cms\controller\wxapp;
 
 use addons\cms\model\Block;
 use addons\cms\model\Channel;
+use addons\cms\model\Config as ConfigModel;
 use app\common\model\Addon;
 use think\Config;
 
@@ -26,29 +27,29 @@ class Common extends Base
     public function init()
     {
         //焦点图
-        $bannerList = [];
-        $list = Block::getBlockList(['name' => 'focus', 'row' => 5]);
-        foreach ($list as $index => $item) {
-            $bannerList[] = ['image' => cdnurl($item['image'], true), 'url' => '/', 'title' => $item['title']];
-        }
-
-        //首页Tab列表
-        $indexTabList = $newsTabList = $productTabList = [['id' => 0, 'title' => '全部']];
-        $channelList = Channel::where('status', 'normal')
-            ->where('type', 'in', ['list'])
-            ->field('id,parent_id,model_id,name,diyname')
-            ->order('weigh desc,id desc')
-            ->select();
-        foreach ($channelList as $index => $item) {
-            $data = ['id' => $item['id'], 'title' => $item['name']];
-            $indexTabList[] = $data;
-            if ($item['model_id'] == 1) {
-                $newsTabList[] = $data;
-            }
-            if ($item['model_id'] == 2) {
-                $productTabList[] = $data;
-            }
-        }
+//        $bannerList = [];
+//        $list = Block::getBlockList(['name' => 'focus', 'row' => 5]);
+//        foreach ($list as $index => $item) {
+//            $bannerList[] = ['image' => cdnurl($item['image'], true), 'url' => '/', 'title' => $item['title']];
+//        }
+//
+//        //首页Tab列表
+//        $indexTabList = $newsTabList = $productTabList = [['id' => 0, 'title' => '全部']];
+//        $channelList = Channel::where('status', 'normal')
+//            ->where('type', 'in', ['list'])
+//            ->field('id,parent_id,model_id,name,diyname')
+//            ->order('weigh desc,id desc')
+//            ->select();
+//        foreach ($channelList as $index => $item) {
+//            $data = ['id' => $item['id'], 'title' => $item['name']];
+//            $indexTabList[] = $data;
+//            if ($item['model_id'] == 1) {
+//                $newsTabList[] = $data;
+//            }
+//            if ($item['model_id'] == 2) {
+//                $productTabList[] = $data;
+//            }
+//        }
 
         //配置信息
         $upload = Config::get('upload');
@@ -59,11 +60,12 @@ class Common extends Base
         ];
 
         $data = [
-            'bannerList'     => $bannerList,
-            'indexTabList'   => $indexTabList,
-            'newsTabList'    => $newsTabList,
-            'productTabList' => $productTabList,
-            'config'         => $config
+//            'bannerList'     => $bannerList,
+//            'indexTabList'   => $indexTabList,
+//            'newsTabList'    => $newsTabList,
+//            'productTabList' => $productTabList,
+            'config'         => $config,
+            'default_image' => ConfigModel::get(['name'=>'default_picture'])->value
         ];
         $this->success('', $data);
 
