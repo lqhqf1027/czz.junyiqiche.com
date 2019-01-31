@@ -57,11 +57,28 @@ class My extends Base
         $this->success('', ['pageInfo' => $pageInfo]);
     }
 
+    /**
+     * 我的首页数据
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function index()
     {
         $user_id = $this->request->post('user_id');
 
+        $userInfo = User::field('id,nickname,avatar,name,id_card_images')
+            ->with(['companystoreone' => function ($q) {
+                $q->withField('id,store_qrcode');
+            }])->find($user_id);
+        $userInfo['isRealName'] = 0;
+        if ($userInfo['name'] && $userInfo['id_card_images']) {
+            $userInfo['isRealName'] = 1;
+        }
 
+        unset($userInfo['name'],$userInfo['id_card_images']);
+
+        $this->success('请求成功',['userInfo'=>$userInfo]);
     }
 
 

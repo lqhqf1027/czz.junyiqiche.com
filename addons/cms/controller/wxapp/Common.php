@@ -4,6 +4,9 @@ namespace addons\cms\controller\wxapp;
 
 use addons\cms\model\Block;
 use addons\cms\model\Channel;
+use addons\cms\model\ModelsInfo;
+use addons\cms\model\BuycarModel;
+use addons\cms\model\Clue;
 use addons\cms\model\Config as ConfigModel;
 use app\common\model\Addon;
 use think\Config;
@@ -69,6 +72,41 @@ class Common extends Base
         ];
         $this->success('', $data);
 
+    }
+
+    public function car_details()
+    {
+        $car_id = $this->request->post('car_id');
+
+        $type = $this->request->post('type');
+
+        $modelName = null;
+        switch ($type) {
+            case 'sell':
+                $modelName = new ModelsInfo();
+                break;
+            case 'buy':
+                $modelName = new BuycarModel();
+                break;
+            case 'clue':
+                $modelName = new Clue();
+                break;
+            default:
+                $this->error('传入错误参数','error');
+                break;
+        }
+
+        $condition = ['id','models_name','car_licensetime','kilometres','guide_price','parkingposition','phone','store_id','modelsimages'];
+
+        $detail = $modelName->find($car_id)->visible($condition)->toArray();
+
+        $detail['modelsimages'] = empty($detail['modelsimages'])?[self::$default_image]:explode(';',$detail['modelsimages']);
+
+//        $this->success(gettype($detail));
+        $detail['kilometres'] = $detail['kilometres'] ? ($detail['kilometres'] / 10000) . '万公里' : null;
+        $detail['guide_price'] = $detail['guide_price'] ? ($detail['guide_price'] / 10000) . '万' : null;
+        $detail['car_licensetime'] = $detail['car_licensetime'] ? date('Y', $detail['car_licensetime']) : null;
+        $this->success('请求成功',['detail'=>$detail]);
     }
 
 
