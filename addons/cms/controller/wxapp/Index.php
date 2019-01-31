@@ -33,6 +33,7 @@ class Index extends Base
         parent::_initialize();
     }
 
+
     /**
      * 首页
      */
@@ -58,12 +59,11 @@ class Index extends Base
         $this->success('请求成功', [
             'bannerList' => $bannerList,
             'storeList' => $storeList,
-            'carModelList'=>[
-                'modelsInfoList'=>$modelsInfoList,
-                'buycarModelList'=>$buycarModelList,
-                'clueList'=>$clueList
+            'carModelList' => [
+                'modelsInfoList' => $modelsInfoList,
+                'buycarModelList' => $buycarModelList,
+                'clueList' => $clueList
             ]
-
 
         ]);
 
@@ -77,7 +77,7 @@ class Index extends Base
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function typeCar($modelType)
+    public static function typeCar($modelType, $isBrand = 0)
     {
         $modelName = null;
         switch ($modelType) {
@@ -92,15 +92,20 @@ class Index extends Base
                 break;
         }
 
-        $else = $modelType == 2 ? null : ',modelsimages';
+        $else = $modelType == 2 ? '' : ',modelsimages';
+
+        if ($isBrand == 1) {
+            $else .= ',brand_name';
+        }
 
         $modelsInfoList = collection($modelName->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition' . $else)
             ->order('createtime desc')->select())->toArray();
 
+        $default_image = self::$default_image;
+
         foreach ($modelsInfoList as $k => $v) {
-            if($modelType != 2){
-                $modelsInfoList[$k]['modelsimages'] = !empty($v['modelsimages']) ? explode(';', $v['modelsimages'])[0] : null;
-            }
+
+            $modelsInfoList[$k]['modelsimages'] = !empty($v['modelsimages']) ? explode(';', $v['modelsimages'])[0] : $default_image;
             $modelsInfoList[$k]['kilometres'] = $v['kilometres'] ? ($v['kilometres'] / 10000) . '万公里' : null;
             $modelsInfoList[$k]['guide_price'] = $v['guide_price'] ? ($v['guide_price'] / 10000) . '万' : null;
             $modelsInfoList[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y', $v['car_licensetime']) : null;

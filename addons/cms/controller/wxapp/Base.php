@@ -6,6 +6,7 @@ use app\common\controller\Api;
 use app\common\library\Auth;
 use think\Config;
 use think\Lang;
+use addons\cms\model\Config as ConfigModel;
 
 class Base extends Api
 {
@@ -14,6 +15,8 @@ class Base extends Api
     protected $noNeedRight = ['*'];
     //设置返回的会员字段
     protected $allowFields = ['id', 'username', 'nickname', 'mobile', 'avatar', 'score', 'level', 'bio', 'balance'];
+
+    protected static $default_image = null;
 
     public function _initialize()
     {
@@ -25,6 +28,8 @@ class Base extends Api
         //这里手动载入语言包
         Lang::load(ROOT_PATH . '/addons/cms/lang/zh-cn.php');
         Lang::load(APP_PATH . '/index/lang/zh-cn/user.php');
+
+        self::$default_image = ConfigModel::get(['name'=>'default_picture'])->value;
     }
 
 

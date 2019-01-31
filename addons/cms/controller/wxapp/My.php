@@ -57,6 +57,13 @@ class My extends Base
         $this->success('', ['pageInfo' => $pageInfo]);
     }
 
+    public function index()
+    {
+        $user_id = $this->request->post('user_id');
+
+
+    }
+
 
     public function myStore()
     {
