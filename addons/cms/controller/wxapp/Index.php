@@ -114,6 +114,7 @@ class Index extends Base
         return $modelsInfoList;
     }
 
+
     /**
      * 发布车源接口
      */
@@ -219,7 +220,7 @@ class Index extends Base
         if (!$user_id || !$carInfo) {
             $this->error('缺少参数，请求失败', 'error');
         }
-        $carInfo = "{\"brand_name\":\"\\u6807\\u81f4\",\"phone\":\"18683787363\",\"parkingposition\":\"\\u6210\\u90fd\",\"modelsimages\":\"\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png\",\"models_name\":\"\\u6807\\u81f4408 2018\\u6b3e 1.8L \\u624b\\u52a8\\u9886\\u5148\\u7248\",\"license_plate\":\"\",\"factorytime\":\"\",\"car_licensetime\":\"2015-01-08\",\"kilometres\":\"35\\u4e07\\u516c\\u91cc\",\"emission_standard\":\"1.0T\",\"store_description\":\"\"}";
+//        $carInfo = "{\"brand_name\":\"\\u6807\\u81f4\",\"phone\":\"18683787363\",\"parkingposition\":\"\\u6210\\u90fd\",\"modelsimages\":\"\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png\",\"models_name\":\"\\u6807\\u81f4408 2018\\u6b3e 1.8L \\u624b\\u52a8\\u9886\\u5148\\u7248\",\"license_plate\":\"\",\"factorytime\":\"\",\"car_licensetime\":\"2015-01-08\",\"kilometres\":\"35\\u4e07\\u516c\\u91cc\",\"emission_standard\":\"1.0T\",\"store_description\":\"\"}";
         $store_id = $store_id = CompanyStore::get(['user_id' => $user_id])->id;
         $carInfo = json_decode($carInfo, true);
         if ($store_id) {
