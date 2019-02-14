@@ -11,7 +11,7 @@ use addons\cms\model\Distribution;
 use addons\cms\model\StoreUser;
 use addons\cms\model\CompanyStore;
 use addons\cms\model\StoreLevel;
-use addons\cms\model\Config;
+use addons\cms\model\Config as ConfigModel;
 use addons\cms\model\ModelsInfo;
 use addons\cms\model\RideSharing;
 use addons\cms\model\BuycarModel;
@@ -56,6 +56,14 @@ class Index extends Base
         $clueList = $this->typeCar(3);
 //        $this->success($modelsInfoList);
 
+        $share = collection(ConfigModel::all(function ($q){
+            $q->where('group','shares')->field('name,value');
+        }))->toArray();
+
+//        pr($share);die();
+
+
+
         $this->success('请求成功', [
             'bannerList' => $bannerList,
             'storeList' => $storeList,
@@ -63,7 +71,15 @@ class Index extends Base
                 'modelsInfoList' => $modelsInfoList,
                 'buycarModelList' => $buycarModelList,
                 'clueList' => $clueList
+            ],
+            'default_image' => ConfigModel::get(['name'=>'default_picture'])->value,
+            'share'=>[
+                $share[0]['name'] =>  $share[0]['value'],
+                $share[1]['name'] =>  $share[1]['value'],
+                $share[2]['name'] =>  $share[2]['value'],
+                $share[3]['name'] =>  $share[3]['value']
             ]
+
 
         ]);
 
@@ -113,7 +129,6 @@ class Index extends Base
 
         return $modelsInfoList;
     }
-
 
     /**
      * 发布车源接口
@@ -211,23 +226,22 @@ class Index extends Base
             'kilometres' => '35万公里',
             'emission_standard' => '1.0T',
             'store_description' => ''
-
         ];
-//$this->success(json_encode($arr));
+//        $this->success(json_decode($this->request->post('carInfo'),true)['parkingposition']);
         $carInfo = $this->request->post('carInfo');
         $user_id = $this->request->post('user_id');
-
         if (!$user_id || !$carInfo) {
             $this->error('缺少参数，请求失败', 'error');
         }
 //        $carInfo = "{\"brand_name\":\"\\u6807\\u81f4\",\"phone\":\"18683787363\",\"parkingposition\":\"\\u6210\\u90fd\",\"modelsimages\":\"\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png\",\"models_name\":\"\\u6807\\u81f4408 2018\\u6b3e 1.8L \\u624b\\u52a8\\u9886\\u5148\\u7248\",\"license_plate\":\"\",\"factorytime\":\"\",\"car_licensetime\":\"2015-01-08\",\"kilometres\":\"35\\u4e07\\u516c\\u91cc\",\"emission_standard\":\"1.0T\",\"store_description\":\"\"}";
-        $store_id = $store_id = CompanyStore::get(['user_id' => $user_id])->id;
+
+        $store_id = CompanyStore::get(['user_id' => $user_id])->id;
         $carInfo = json_decode($carInfo, true);
         if ($store_id) {
             $carInfo['store_id'] = $store_id;
         }
         $carInfo['user_id'] = $user_id;
-//        $this->success($carInfo);
+//$this->success($carInfo);
         $clue = new Clue();
         $clue->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
     }
