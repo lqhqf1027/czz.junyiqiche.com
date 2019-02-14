@@ -21,6 +21,16 @@ class Clue extends Model
 
     protected $updateTime = 'updatetime';
 
+    // 追加属性
+    protected $append = [
+        'type',
+    ];
+
+    public function getTypeAttr($value)
+    {
+        return 'clue';
+    }
+
     public function setKilometresAttr($value)
     {
         return floatval(findNum($value))*10000;
@@ -45,5 +55,10 @@ class Clue extends Model
     protected function base($query)
     {
         $query->where('shelfismenu','1');
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo('BrandCate', 'brand_id', 'id')->setEagerlyType(0);
     }
 }

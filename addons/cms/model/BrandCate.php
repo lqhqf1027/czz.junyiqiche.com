@@ -13,7 +13,9 @@ use think\Model;
 
 class BrandCate extends Model
 {
-    protected $name = 'brand_cate';
+
+       protected $name = 'brand_cate';
+
 
 
 }

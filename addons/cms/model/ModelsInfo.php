@@ -21,6 +21,16 @@ class ModelsInfo extends Model
 
     protected $updateTime = 'updatetime';
 
+    // 追加属性
+    protected $append = [
+        'type',
+    ];
+
+    public function getTypeAttr($value)
+    {
+        return 'sell';
+    }
+
     // 定义全局的查询范围
     protected function base($query)
     {
@@ -50,6 +60,11 @@ class ModelsInfo extends Model
     public function companystore()
     {
         return $this->belongsTo('CompanyStore', 'store_id', 'id')->setEagerlyType(0);
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo('BrandCate', 'brand_id', 'id')->setEagerlyType(0);
     }
 
 }
