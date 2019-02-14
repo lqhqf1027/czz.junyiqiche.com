@@ -17,6 +17,17 @@ class BuycarModel extends Model
     protected $autoWriteTimestamp = true;
     protected $createTime = 'createtime';
     protected $updateTime = 'updatetime';
+
+    // 追加属性
+    protected $append = [
+        'type',
+    ];
+
+    public function getTypeAttr($value)
+    {
+        return 'buy';
+    }
+
     public function setKilometresAttr($value)
     {
         return !$value?'':floatval(findNum($value))*10000;
@@ -40,5 +51,10 @@ class BuycarModel extends Model
     protected function base($query)
     {
         $query->where('shelfismenu','1');
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo('BrandCate', 'brand_id', 'id')->setEagerlyType(0);
     }
 }

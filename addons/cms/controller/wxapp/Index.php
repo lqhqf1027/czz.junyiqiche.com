@@ -93,7 +93,7 @@ class Index extends Base
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function typeCar($modelType, $isBrand = 0)
+    public static function typeCar($modelType)
     {
         $modelName = null;
         switch ($modelType) {
@@ -110,11 +110,12 @@ class Index extends Base
 
         $else = $modelType == 2 ? '' : ',modelsimages';
 
-        if ($isBrand == 1) {
-            $else .= ',brand_name';
-        }
 
-        $modelsInfoList = collection($modelName->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition' . $else)
+
+        $modelsInfoList = collection($modelName->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition'.$else)
+            ->with(['brand'=>function ($q){
+                $q->withField('id,name,bfirstletter');
+            }])
             ->order('createtime desc')->select())->toArray();
 
         $default_image = self::$default_image;
