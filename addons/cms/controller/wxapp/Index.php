@@ -171,17 +171,19 @@ class Index extends Base
 
                 if ($v == $value['bfirstletter']) {
                     unset($check[$k]);
-                    $check[$v][]['name'] = $value['name'];
-                    $check[$v][]['thumb'] = $value['thumb'];
+                    $check[$v][] = [
+                        'id' => $value['id'],
+                        'name' => $value['name']
+                    ];
                 }
     
             }
 
         }
         //缓冲品牌
-        Cache::set('brandCateList', $check);
+        Cache::set('brandCate', $check);
 
-        return Cache::get('brandCateList');
+        return Cache::get('brandCate');
 
     }
 
@@ -199,14 +201,14 @@ class Index extends Base
         $userData = User::where('id', $user_id)->find();
 
         //得到所有的品牌列表
-        if (Cache::get('brandCateList')) {
-            $brand = Cache::get('brandCateList');
+        if (Cache::get('brandCate')) {
+            $brand = Cache::get('brandCate');
         } else {
-            Cache::set('brandCateList', $this->brand());
-            $brand = Cache::get('brandCateList');
+            Cache::set('brandCate', $this->brand());
+            $brand = Cache::get('brandCate');
         }
 
-        $this->success('请求成功', ['brandCateList' => $brand, 'mobile' => $userData['mobile']]);
+        $this->success('请求成功', ['brand' => $brand, 'mobile' => $userData['mobile']]);
     }
 
 
