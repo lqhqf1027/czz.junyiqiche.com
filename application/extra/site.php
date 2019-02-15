@@ -40,6 +40,7 @@ return array (
   'mail_from' => '10000@qq.com',
   'grade_one' => '0.35',
   'grade_two' => '0.15',
+
   'default_picture' => '/uploads/20190121/2b90b99664167aa401e4a8fe4f5e4ea8.png',
   'shares_title' => '来友车圈看好车！',
   'shares_img' => '/uploads/20190213/cf0983c686b9a61391a28baaea8064c5.jpg',
