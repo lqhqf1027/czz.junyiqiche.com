@@ -8,7 +8,8 @@
 
 namespace addons\cms\controller\wxapp;
 use fast\wxapp;
-
+use think\Db;
+use addons\cms\model\User as userModel;
 class Wechat extends Base
 {
 
@@ -25,39 +26,6 @@ class Wechat extends Base
 
     public function sendXcxTemplateMsg($data='')
     {
-        /*   $arr = [
-           'city'=>[
-               ['name'=>'成都'],
-               ['name'=>'北京'],
-           ],
-           'brand'=>[
-               ['zimu'=>'A','brand_list'=>
-                   ['id'=>1,'name'=>'奥迪'],
-                   ['id'=>2,'name'=>'阿斯顿马丁']
-               ],
-               ['zimu'=>'B','brand_list'=>
-                   ['id'=>1,'name'=>'标志'],
-                   ['id'=>2,'name'=>'保时捷' ]
-               ],
-           ],
-           'carList'=>[
-               'sell'=>[
-                   ['id'=>1,'name'=>'大众新捷达2016款'],
-                   ['id'=>2,'name'=>'标志2015款']
-               ],
-               'buy'=>[
-                   ['id'=>1,'name'=>'大众新捷达2015款'],
-                   ['id'=>2,'name'=>'标志2015款']
-
-               ],
-               'clue'=>[
-                   ['id'=>1,'name'=>'大众新捷达2015款'],
-                   ['id'=>2,'name'=>'标志2015款']
-               ],
-           ],
-       ];*/
-
-
         $access_token = getAccessToken();
         $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={$access_token}";
         return $this->https_request($url, $data);
@@ -73,10 +41,18 @@ class Wechat extends Base
     public function sendTemplateMessage()
     {
 //        $uid,$form_id,$template_id
+        $user_id = $this->request->post('user_id');
+        $phone = $this->request->post('phone');
+        $money = $this->request->post('money');
         $form_id = $this->request->post('formId');
-        $openid = $this->request->post('openid');
+        $openid = self::getUserOpenId($user_id)['openid'];
+        if(!$user_id || !$money || $form_id || !checkPhoneNumberValidate($phone)){
+            $this->error('缺少参数或手机号格式错误');
+        }
+        if($phone){
+            Db::name('user')->where(['id'=>$user_id])->setField('phone',$phone);
+        }
         if ($openid) {
-
             $temp_msg = array(
                 'touser' => "{$openid}",
                 'template_id' => "KSNfO5CSLfKZps8Ua-GOS7pzik9hwiOCQLWmzJ-UVko",
@@ -99,6 +75,9 @@ class Wechat extends Base
                 'emphasis_keyword' => "test"
             );
             $res = $this->sendXcxTemplateMsg(json_encode($temp_msg));
+            if($res['errcode']==0){
+                $this->success( '报价成功',$res);
+            }
             pr($res);
             die;
             exit;
@@ -130,6 +109,14 @@ class Wechat extends Base
         curl_close($curl);
         return $output;
     }
-
+    /**
+     * 根据用户id 查询Third表中的openid
+     * @param $user_id
+     * @return array
+     * @throws \think\exception\DbException
+     */
+    public static function  getUserOpenId($user_id){
+        return collection(Third::get(['user_id'=>$user_id]))->toArray();
+    }
 
 }

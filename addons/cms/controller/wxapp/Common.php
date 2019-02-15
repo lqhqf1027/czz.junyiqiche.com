@@ -10,7 +10,7 @@ use addons\cms\model\Clue;
 use addons\cms\model\Config as ConfigModel;
 use app\common\model\Addon;
 use think\Config;
-
+use addons\third\model\Third;
 /**
  * 公共
  */
@@ -29,6 +29,7 @@ class Common extends Base
      */
     public function init()
     {
+
         //焦点图
 //        $bannerList = [];
 //        $list = Block::getBlockList(['name' => 'focus', 'row' => 5]);
@@ -115,6 +116,8 @@ class Common extends Base
         $detail['car_licensetime'] = $detail['car_licensetime'] ? date('Y', $detail['car_licensetime']) : null;
         $this->success('请求成功',['detail'=>$detail]);
     }
+
+
 
 
 }

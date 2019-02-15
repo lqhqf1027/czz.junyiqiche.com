@@ -7,7 +7,7 @@
  */
 
 namespace addons\cms\controller\wxapp;
-
+use think\Cache;
 
 use think\Cache;
 
@@ -139,5 +139,11 @@ class Carselect extends Base
         ]);
     }
 
+    /**
+     * 清除严选车源缓存
+     */
+    public  function rmCacheCar_list(){
 
+        Cache::rm('CAR_LIST');
+    }
 }
