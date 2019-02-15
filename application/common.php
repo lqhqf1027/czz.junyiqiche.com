@@ -3,7 +3,8 @@
 error_reporting(E_PARSE | E_ERROR | E_WARNING);
 
 use think\Request;
-
+use think\Config;
+use think\Cache;
 // 应用公共文件
 ///////////////////////////////////////////
 /**
@@ -74,7 +75,52 @@ if (!function_exists('arraySort')) {
     }
 }
 
+if (!function_exists('getAccessToken')) {
+    /**
+     * 该公共方法获取和全局缓存js-sdk需要使用的access_token
+     * @param $appid
+     * @param $secret
+     * @return mixed
+     */
+    function getAccessToken()
+    {
 
+        $appid =  Config::get('oauth')['appid'];
+        $secret = Config::get('oauth')['appsecret'];
+
+        //我们将access_token全局缓存在文件中,每次获取的时候,先判断是否过期,如果过期重新获取再全局缓存
+        //我们缓存的在文件中的数据，包括access_token和该access_token的过期时间戳.
+        //获取缓存的access_token
+        $access_token_data = json_decode(Cache::get('access_token'), true);
+
+        //判断缓存的access_token是否存在和过期，如果不存在和过期则重新获取.
+        if ($access_token_data !== null && $access_token_data['access_token'] && $access_token_data['expires_in'] > time()) {
+            return $access_token_data['access_token'];
+        } else {
+            //重新获取access_token,并全局缓存
+            $curl = curl_init();
+
+            curl_setopt($curl, CURLOPT_URL, 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . $appid . '&secret=' . $secret);
+
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+            //获取access_token
+            $data = json_decode(curl_exec($curl), true);
+            if ($data != null && $data['access_token']) {
+                //设置access_token的过期时间,有效期是7200s
+                $data['expires_in'] = $data['expires_in'] + time();
+
+                //将access_token全局缓存，快速缓存到文件中.
+                Cache::set('access_token', json_encode($data));
+
+                //返回access_token
+                return $data['access_token'];
+            } else {
+                exit('微信获取access_token失败');
+            }
+        }
+    }
+}
 ///////////////////////////////////////////
 /**
  * fa function
