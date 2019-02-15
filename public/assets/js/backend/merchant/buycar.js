@@ -28,6 +28,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'store.store_name', title: __('Store.store_name')},
                         {field: 'brand_name', title: __('Brand_name')},
                         {field: 'models_name', title: __('Models_name')},
+                        {field: 'guide_price', title: __('心理价（元）')},
                         {field: 'phone', title: __('Phone')},
                         {field: 'kilometres', title: __('Kilometres'), operate:'BETWEEN'},
                         {field: 'license_plate', title: __('License_plate')},
