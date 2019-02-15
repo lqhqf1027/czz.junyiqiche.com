@@ -47,13 +47,13 @@ class Index extends Base
         }
 
         //推荐店铺
-        $storeList = CompanyStore::field('id,cities_name,main_camp')
+        $storeList = CompanyStore::field('id,store_name,cities_name,main_camp')
             ->withCount(['modelsinfo'])->where('recommend', 1)->select();
 
 //        $this->success($storeList);
         $modelsInfoList = $this->typeCar(1);
         $buycarModelList = $this->typeCar(2);
-        $clueList = $this->typeCar(3);
+//        $clueList = $this->typeCar(3);
 //        $this->success($modelsInfoList);
 
         $share = collection(ConfigModel::all(function ($q){
@@ -62,15 +62,13 @@ class Index extends Base
 
 //        pr($share);die();
 
-
-
         $this->success('请求成功', [
             'bannerList' => $bannerList,
             'storeList' => $storeList,
             'carModelList' => [
                 'modelsInfoList' => $modelsInfoList,
                 'buycarModelList' => $buycarModelList,
-                'clueList' => $clueList
+//                'clueList' => $clueList
             ],
             'default_image' => ConfigModel::get(['name'=>'default_picture'])->value,
             'share'=>[
@@ -112,7 +110,7 @@ class Index extends Base
 
 
 
-        $modelsInfoList = collection($modelName->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition'.$else)
+        $modelsInfoList = collection($modelName->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume'.$else)
             ->with(['brand'=>function ($q){
                 $q->withField('id,name,bfirstletter');
             }])

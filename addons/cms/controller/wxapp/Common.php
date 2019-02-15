@@ -74,6 +74,13 @@ class Common extends Base
 
     }
 
+    /**
+     * 车辆详情
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function car_details()
     {
         $car_id = $this->request->post('car_id');
