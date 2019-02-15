@@ -182,16 +182,16 @@ class Backend extends Controller
 
         // 配置信息
         $config = [
-            'site'           => array_intersect_key($site, array_flip(['name', 'indexurl', 'cdnurl', 'version', 'timezone', 'languages'])),
-            'upload'         => $upload,
-            'modulename'     => $modulename,
+            'site' => array_intersect_key($site, array_flip(['name', 'indexurl', 'cdnurl', 'version', 'timezone', 'languages'])),
+            'upload' => $upload,
+            'modulename' => $modulename,
             'controllername' => $controllername,
-            'actionname'     => $actionname,
-            'jsname'         => 'backend/' . str_replace('.', '/', $controllername),
-            'moduleurl'      => rtrim(url("/{$modulename}", '', false), '/'),
-            'language'       => $lang,
-            'fastadmin'      => Config::get('fastadmin'),
-            'referer'        => Session::get("referer")
+            'actionname' => $actionname,
+            'jsname' => 'backend/' . str_replace('.', '/', $controllername),
+            'moduleurl' => rtrim(url("/{$modulename}", '', false), '/'),
+            'language' => $lang,
+            'fastadmin' => Config::get('fastadmin'),
+            'referer' => Session::get("referer")
         ];
         $config = array_merge($config, Config::get("view_replace_str"));
 
@@ -462,12 +462,15 @@ class Backend extends Controller
                 unset($item['password'], $item['salt']);
                 $list[] = [
                     $primarykey => isset($item[$primarykey]) ? $item[$primarykey] : '',
-                    $field      => isset($item[$field]) ? $item[$field] : ''
+                    $field => isset($item[$field]) ? $item[$field] : ''
                 ];
             }
         }
         //这里一定要返回有list这个字段,total是可选的,如果total<=list的数量,则会隐藏分页按钮
         return json(['list' => $list, 'total' => $total]);
     }
+
+
+
 
 }

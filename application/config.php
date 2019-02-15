@@ -276,4 +276,9 @@ return [
         //API接口地址
         'api_url'             => 'https://api.fastadmin.net',
     ],
+    //微信appid & APPSECRET
+    'oauth' => [
+        'appid' => 'wxfcfa12424279d3e2',
+        'appsecret' => '1037a9b6a1e577365b96f6a4633e4601'
+    ]
 ];
