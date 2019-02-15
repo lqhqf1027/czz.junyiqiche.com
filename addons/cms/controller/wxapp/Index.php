@@ -105,7 +105,7 @@ class Index extends Base
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function typeCar($modelType)
+    public static function typeCar($modelType,$is_transformation = 0)
     {
         $modelName = null;
         switch ($modelType) {
@@ -124,7 +124,7 @@ class Index extends Base
 
 
 
-        $modelsInfoList = collection($modelName->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume'.$else)
+        $modelsInfoList = collection($modelName->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime'.$else)
             ->with(['brand'=>function ($q){
                 $q->withField('id,name,bfirstletter');
             }])
@@ -135,8 +135,11 @@ class Index extends Base
         foreach ($modelsInfoList as $k => $v) {
 
             $modelsInfoList[$k]['modelsimages'] = !empty($v['modelsimages']) ? explode(';', $v['modelsimages'])[0] : $default_image;
-            $modelsInfoList[$k]['kilometres'] = $v['kilometres'] ? ($v['kilometres'] / 10000) . '万公里' : null;
-            $modelsInfoList[$k]['guide_price'] = $v['guide_price'] ? ($v['guide_price'] / 10000) . '万' : null;
+            if(!$is_transformation){
+                $modelsInfoList[$k]['kilometres'] = $v['kilometres'] ? ($v['kilometres'] / 10000) . '万公里' : null;
+                $modelsInfoList[$k]['guide_price'] = $v['guide_price'] ? ($v['guide_price'] / 10000) . '万' : null;
+            }
+
             $modelsInfoList[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y', $v['car_licensetime']) : null;
         }
 
