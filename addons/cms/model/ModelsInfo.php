@@ -57,11 +57,19 @@ class ModelsInfo extends Model
         return strtotime($value);
     }
 
+    /**
+     * 关联店铺表
+     * @return \think\model\relation\BelongsTo
+     */
     public function companystore()
     {
         return $this->belongsTo('CompanyStore', 'store_id', 'id')->setEagerlyType(0);
     }
 
+    /**
+     * 关联品牌表
+     * @return \think\model\relation\BelongsTo
+     */
     public function brand()
     {
         return $this->belongsTo('BrandCate', 'brand_id', 'id')->setEagerlyType(0);

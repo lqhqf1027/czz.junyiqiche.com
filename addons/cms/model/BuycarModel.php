@@ -53,6 +53,10 @@ class BuycarModel extends Model
         $query->where('shelfismenu','1');
     }
 
+    /**
+     * 关联品牌表
+     * @return \think\model\relation\BelongsTo
+     */
     public function brand()
     {
         return $this->belongsTo('BrandCate', 'brand_id', 'id')->setEagerlyType(0);
