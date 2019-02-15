@@ -214,7 +214,7 @@ class Index extends Base
 
 
     /**
-     * 有默认手机号，点击提交发布车源按钮后，弹框接口
+     * 有默认手机号，点击提交发布车源按钮后，弹框验证接口
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
@@ -229,20 +229,20 @@ class Index extends Base
         $code = $this->request->post('code');
 
 
-        //如果是手机号码授权  必须传递 iv 、encryptedData 、 sessionKey参数
-        $iv = $this->request->post('iv');
-        $encryptedData = $this->request->post('encryptedData');
-        $sessionKey = $this->request->post('sessionKey');
-        //解密手机号
-        if ($sessionKey && $iv && $sessionKey) {
-            $pc = new WxBizDataCrypt('wxf789595e37da2838', $sessionKey);
-            $result = $pc->decryptData($encryptedData, $iv, $data);
-            if ($result == 0) {
-                $mobile = json_decode($data, true)['phoneNumber'];
-            } else {
-                $this->error('手机号解密失败', json_decode($data, true));
-            }
-        }
+        // //如果是手机号码授权  必须传递 iv 、encryptedData 、 sessionKey参数
+        // $iv = $this->request->post('iv');
+        // $encryptedData = $this->request->post('encryptedData');
+        // $sessionKey = $this->request->post('sessionKey');
+        // //解密手机号
+        // if ($sessionKey && $iv && $sessionKey) {
+        //     $pc = new WxBizDataCrypt('wxf789595e37da2838', $sessionKey);
+        //     $result = $pc->decryptData($encryptedData, $iv, $data);
+        //     if ($result == 0) {
+        //         $mobile = json_decode($data, true)['phoneNumber'];
+        //     } else {
+        //         $this->error('手机号解密失败', json_decode($data, true));
+        //     }
+        // }
         if (!$user_id) {
             $this->error('缺少参数,请求失败', 'error');
         }
@@ -254,14 +254,14 @@ class Index extends Base
             }
         }
 
-        //如果是手机授权，手机号码更新到用户表
-        if ($mobile) {
-            User::where('id', $user_id)->update([
-                'mobile' => $mobile
-            ]);
-        } else {
-            $mobile = User::get($user_id)->mobile;
-        }
+        // //如果是手机授权，手机号码更新到用户表
+        // if ($mobile) {
+        //     User::where('id', $user_id)->update([
+        //         'mobile' => $mobile
+        //     ]);
+        // } else {
+        //     $mobile = User::get($user_id)->mobile;
+        // }
 
         $this->success('发布成功', 'success');
     }
