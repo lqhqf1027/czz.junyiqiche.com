@@ -45,9 +45,15 @@ class ModelsInfo extends Model
         return $value && !is_numeric($value) ? strtotime($value) : $value;
     }
 
-
+    //关联店铺
     public function store()
     {
         return $this->belongsTo('CompanyStore', 'store_id', 'id', [], 'LEFT')->setEagerlyType(0);
+    }
+
+    //关联品牌
+    public function brand()
+    {
+        return $this->belongsTo('BrandCate', 'brand_id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
 }
