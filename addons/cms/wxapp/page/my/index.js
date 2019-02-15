@@ -12,6 +12,7 @@ Page({
     }
   },
   onLoad: function () {
+    console.log(app.globalData.config.upload.uploadurl);
     var that = this;
   },
   onShow: function () {
@@ -51,6 +52,7 @@ Page({
         var tempFilePaths = res.tempFilePaths;
         wx.uploadFile({
           url: app.globalData.config.upload.uploadurl,
+          // url:'https://v0.api.upyun.com/static-czz-jy',
           filePath: tempFilePaths[0],
           name: 'file',
           formData: app.globalData.config.upload.multipart,

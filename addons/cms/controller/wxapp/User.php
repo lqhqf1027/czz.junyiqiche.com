@@ -71,7 +71,7 @@ class User extends Base
                     if ($this->auth->isLogin()) {
                         $third = Third::where(['openid' => $json['openid'], 'platform' => 'wxapp'])->find();
                         if ($third && $third['user_id'] == $this->auth->id) {
-                            $this->success("登录成功", ['userInfo' => $this->auth->getUserinfo()]);
+                            $this->success("登录成功", ['userInfo' => $this->auth->getUserinfo(),'openid' => $json['openid']]);
                         }
                     }
                 }

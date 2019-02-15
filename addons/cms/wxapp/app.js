@@ -9,6 +9,7 @@ App({
     var that = this;
     that.request('/common/init', {}, function (data, ret) {
       that.globalData.config = data.config;
+      console.log(data.config);
       that.globalData.indexTabList = data.indexTabList;
       that.globalData.newsTabList = data.newsTabList;
       that.globalData.productTabList = data.productTabList;
