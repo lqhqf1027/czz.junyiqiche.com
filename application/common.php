@@ -5,6 +5,7 @@ error_reporting(E_PARSE | E_ERROR | E_WARNING);
 use think\Request;
 use think\Config;
 use think\Cache;
+
 // 应用公共文件
 ///////////////////////////////////////////
 /**
@@ -85,7 +86,7 @@ if (!function_exists('getAccessToken')) {
     function getAccessToken()
     {
 
-        $appid =  Config::get('oauth')['appid'];
+        $appid = Config::get('oauth')['appid'];
         $secret = Config::get('oauth')['appsecret'];
 
         //我们将access_token全局缓存在文件中,每次获取的时候,先判断是否过期,如果过期重新获取再全局缓存
@@ -452,4 +453,34 @@ if (!function_exists('var_export_short')) {
         }
     }
 
+    /**
+     * 二维数组根据某个字段排序
+     */
+    if (!function_exists('list_sort_by')) {
+        function list_sort_by($list, $field, $sortby = 'asc')
+        {
+            if (is_array($list)) {
+                $refer = $resultSet = array();
+                foreach ($list as $i => $data) {
+                    $refer[$i] = &$data[$field];
+                }
+                switch ($sortby) {
+                    case 'asc': // 正向排序
+                        asort($refer);
+                        break;
+                    case 'desc': // 逆向排序
+                        arsort($refer);
+                        break;
+                    case 'nat': // 自然排序
+                        natcasesort($refer);
+                        break;
+                }
+                foreach ($refer as $key => $val) {
+                    $resultSet[] = &$list[$key];
+                }
+                return $resultSet;
+            }
+            return false;
+        }
+    }
 }
