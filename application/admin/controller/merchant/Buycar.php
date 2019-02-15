@@ -50,13 +50,13 @@ class Buycar extends Backend
             }
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
             $total = $this->model
-                    ->with(['store'])
+                    ->with(['store','brand'])
                     ->where($where)
                     ->order($sort, $order)
                     ->count();
 
             $list = $this->model
-                    ->with(['store'])
+                    ->with(['store', 'brand'])
                     ->where($where)
                     ->order($sort, $order)
                     ->limit($offset, $limit)
@@ -65,6 +65,7 @@ class Buycar extends Backend
             foreach ($list as $row) {
                 
                 $row->getRelation('store')->visible(['store_name']);
+                $row->getRelation('brand')->visible(['name']);
             }
             $list = collection($list)->toArray();
             $result = array("total" => $total, "rows" => $list);
