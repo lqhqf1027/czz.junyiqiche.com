@@ -11,6 +11,8 @@ use addons\cms\model\StoreLevel;
 use addons\cms\model\Config;
 use addons\cms\model\User;
 use addons\cms\model\ModelsInfo;
+use addons\cms\model\BuycarModel;
+use addons\cms\model\Config as ConfigModel;
 use think\Db;
 
 /**
@@ -310,4 +312,37 @@ class My extends Base
         $this->success($data);
 
     }
+
+    /**
+     * 我的页面---我想买的
+     */
+     public function buyCar()
+     {
+        $user_id = $this->request->post('user_id');
+
+        if (!$user_id) {
+            $this->error('缺少参数');
+        }
+
+        $buyCarList = collection(BuycarModel::field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime')
+            ->with(['brand'=>function ($q){
+                $q->withField('id,name,bfirstletter');
+        }])
+        ->order('createtime desc')->where('user_id', $user_id)->select())->toArray();
+
+        $default_image = ConfigModel::get(['name'=>'default_picture'])->value;
+
+        foreach ($buyCarList as $k => $v) {
+
+            $modelsInfoList[$k]['modelsimages'] = $default_image;
+            
+            $modelsInfoList[$k]['kilometres'] = $v['kilometres'] ? ($v['kilometres'] / 10000) . '万公里' : null;
+            $modelsInfoList[$k]['guide_price'] = $v['guide_price'] ? ($v['guide_price'] / 10000) . '万' : null;
+            
+            $modelsInfoList[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y', $v['car_licensetime']) : null;
+        }
+
+        $this->success('请求成功', ['buyCarList' => $buyCarList]);
+ 
+     }
 }
