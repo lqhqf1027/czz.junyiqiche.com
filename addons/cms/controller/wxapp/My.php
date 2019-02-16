@@ -13,6 +13,7 @@ use addons\cms\model\User;
 use addons\cms\model\ModelsInfo;
 use addons\cms\model\BuycarModel;
 use addons\cms\model\Config as ConfigModel;
+use addons\cms\model\QuotedPrice;
 use think\Db;
 
 /**
@@ -324,7 +325,7 @@ class My extends Base
             $this->error('缺少参数');
         }
 
-        $buyCarList = collection(BuycarModel::field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime')
+        $buyCarList = collection(BuycarModel::field('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime')
             ->with(['brand'=>function ($q){
                 $q->withField('id,name,bfirstletter');
         }])
@@ -345,4 +346,27 @@ class My extends Base
         $this->success('请求成功', ['buyCarList' => $buyCarList]);
  
      }
+
+     /**
+     * 我的页面---我的报价
+     */
+     public function myQuoted()
+     {
+        $user_id = $this->request->post('user_id');
+
+        if (!$user_id) {
+            $this->error('缺少参数');
+        }
+
+        $myQuotedList = collection(QuotedPrice::field('id,money,quotationtime')
+            ->with(['ModelsInfo'=>function ($q){
+                $q->withField('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime');
+        }])
+        ->order('createtime desc')->where('user_id', $user_id)->select())->toArray();
+
+        $this->success('请求成功', ['myQuotedList' => $myQuotedList]);
+ 
+     }
+
+
 }
