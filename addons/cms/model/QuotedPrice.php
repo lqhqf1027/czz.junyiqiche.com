@@ -33,4 +33,13 @@ class QuotedPrice extends Model
          return $this->belongsTo('ModelsInfo', 'models_id', 'id')->setEagerlyType(0);
      }
 
+     /**
+     * 关联车型
+     * @return \think\model\relation\BelongsTo
+     */
+     public function BuycarModel()
+     {
+         return $this->belongsTo('BuycarModel', 'models_id', 'id')->setEagerlyType(0);
+     }
+
 }

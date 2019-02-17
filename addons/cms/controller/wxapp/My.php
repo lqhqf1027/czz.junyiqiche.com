@@ -358,13 +358,35 @@ class My extends Base
             $this->error('缺少参数');
         }
 
-        $myQuotedList = collection(QuotedPrice::field('id,money,quotationtime')
+        $ModelsInfoList = collection(QuotedPrice::field('id,user_ids,money,quotationtime,type')
             ->with(['ModelsInfo'=>function ($q){
                 $q->withField('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime');
         }])
-        ->order('createtime desc')->where('user_id', $user_id)->select())->toArray();
+        ->where('type', 'sell')->where('user_ids', $user_id)->select())->toArray();
 
-        $this->success('请求成功', ['myQuotedList' => $myQuotedList]);
+        $BuycarModelList = collection(QuotedPrice::field('id,user_ids,money,quotationtime,type')
+            ->with(['BuycarModel'=>function ($q){
+                $q->withField('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime');
+        }])
+        ->where('type', 'buy')->where('user_ids', $user_id)->select())->toArray();
+
+        $myQuotedList = array_merge($ModelsInfoList, $BuycarModelList);
+
+        foreach ($myQuotedList as $k => $v) {
+
+            $myQuotedList[$k]['quotationtime'] = $v['quotationtime'] ? date('Y', $v['quotationtime']) : null;
+
+            if ($v['type'] == 'sell') {
+
+                $QuotedPriceList['sell'][] = $v;
+            }
+            if ($v['type'] == 'buy') {
+
+                $QuotedPriceList['buy'][] = $v;
+            }
+        }
+
+        $this->success('请求成功', ['QuotedPriceList' => $QuotedPriceList]);
  
      }
 
