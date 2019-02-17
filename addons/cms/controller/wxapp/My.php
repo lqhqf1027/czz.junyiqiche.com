@@ -390,5 +390,33 @@ class My extends Base
  
      }
 
+     /**
+     * 我的页面---我想买的---上下架
+     */
+     public function Buyshelf()
+     {
+        $id = $this->request->post('id');
+
+        $shelfismenu = $this->request->post('shelfismenu');
+
+        
+        if (!$id || !$shelfismenu) {
+            $this->error('缺少参数');
+        }
+        //上架
+        if ($shelfismenu == 1) {
+
+            BuycarModel::update(['id' => $id, 'shelfismenu' => $shelfismenu]) ? $this->success('上架成功', 'success') : $this->error('上架失败', 'error');
+
+        }
+        //下架
+        if ($shelfismenu == 0) {
+
+            BuycarModel::update(['id' => $id, 'shelfismenu' => $shelfismenu]) ? $this->success('下架成功', 'success') : $this->error('下架失败', 'error');
+            
+        }
+ 
+     }
+
 
 }
