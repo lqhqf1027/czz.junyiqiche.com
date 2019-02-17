@@ -4,7 +4,7 @@
 /runtime/*
 #/addons/*
 /application/admin/command/Install/*.lock
-/public/uploads/*
+#/public/uploads/*
 #/application/config.php
 
 .idea
