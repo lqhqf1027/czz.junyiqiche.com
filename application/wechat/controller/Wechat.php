@@ -17,6 +17,8 @@ class Wechat extends  Controller{
     /**
      * 微信验证
      */
+    protected $noNeedLogin = '*';
+    protected $noNeedRight = '*';
     public function wx()
     {
         define("TOKEN", "YOUCHEQUAN");
@@ -47,6 +49,8 @@ class Wechat extends  Controller{
             return false;
         }
     }
-
+    public function uploadsfiles(){
+        return  action('api/common/upload');
+    }
 
 }

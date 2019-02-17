@@ -21,8 +21,8 @@ use app\common\model\Addon;
 use think\Cache;
 use think\Db;
 use GuzzleHttp\Client;
-
-
+use think\Config;
+use fast\Random;
 /**
  * 首页
  */
@@ -70,8 +70,8 @@ class Index extends Base
 //        $clueList = $this->typeCar(3);
 //        $this->success($modelsInfoList);
 
-        $share = collection(ConfigModel::all(function ($q){
-            $q->where('group','shares')->field('name,value');
+        $share = collection(ConfigModel::all(function ($q) {
+            $q->where('group', 'shares')->field('name,value');
         }))->toArray();
 
 //        pr($share);die();
@@ -84,12 +84,12 @@ class Index extends Base
                 'buycarModelList' => $buycarModelList,
 //                'clueList' => $clueList
             ],
-            'default_image' => ConfigModel::get(['name'=>'default_picture'])->value,
-            'share'=>[
-                $share[0]['name'] =>  $share[0]['value'],
-                $share[1]['name'] =>  $share[1]['value'],
-                $share[2]['name'] =>  $share[2]['value'],
-                $share[3]['name'] =>  $share[3]['value']
+            'default_image' => ConfigModel::get(['name' => 'default_picture'])->value,
+            'share' => [
+                $share[0]['name'] => $share[0]['value'],
+                $share[1]['name'] => $share[1]['value'],
+                $share[2]['name'] => $share[2]['value'],
+                $share[3]['name'] => $share[3]['value']
             ]
 
 
@@ -105,7 +105,7 @@ class Index extends Base
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function typeCar($modelType,$is_transformation = 0)
+    public static function typeCar($modelType, $is_transformation = 0)
     {
         $modelName = null;
         switch ($modelType) {
@@ -123,9 +123,8 @@ class Index extends Base
         $else = $modelType == 2 ? '' : ',modelsimages';
 
 
-
-        $modelsInfoList = collection($modelName->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime'.$else)
-            ->with(['brand'=>function ($q){
+        $modelsInfoList = collection($modelName->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime' . $else)
+            ->with(['brand' => function ($q) {
                 $q->withField('id,name,bfirstletter');
             }])
             ->order('createtime desc')->select())->toArray();
@@ -135,7 +134,7 @@ class Index extends Base
         foreach ($modelsInfoList as $k => $v) {
 
             $modelsInfoList[$k]['modelsimages'] = !empty($v['modelsimages']) ? explode(';', $v['modelsimages'])[0] : $default_image;
-            if(!$is_transformation){
+            if (!$is_transformation) {
                 $modelsInfoList[$k]['kilometres'] = $v['kilometres'] ? ($v['kilometres'] / 10000) . '万公里' : null;
                 $modelsInfoList[$k]['guide_price'] = $v['guide_price'] ? ($v['guide_price'] / 10000) . '万' : null;
             }
@@ -157,7 +156,7 @@ class Index extends Base
         foreach ($brandList as $k => $v) {
 
             if (in_array($v['bfirstletter'], $check)) {
-               
+
                 continue;
             } else {
                 $check[] = $v['bfirstletter'];
@@ -178,7 +177,7 @@ class Index extends Base
                         'name' => $value['name']
                     ];
                 }
-    
+
             }
 
         }
@@ -340,9 +339,8 @@ class Index extends Base
     }
 
 
-
     /**
-     * 发布车源接口
+     * 发布车源接口  ->卖车
      */
     public function uploadModels()
     {
@@ -360,27 +358,111 @@ class Index extends Base
             'store_description' => '很漂亮的车',
             'brand_name' => '标致'
         ];
-        $carInfo = $this->request->post('carInfo');
-
+        $carInfo = $this->request->post('carInfo/a');
         $user_id = $this->request->post('user_id');
-
+        $modelsimages = $this->request->post('modelsimages');
         if (!$user_id || !$carInfo) {
             $this->error('缺少参数，请求失败', 'error');
         }
-//$this->success(json_encode($arr));
-//        $carInfo = "{\"modelsimages\":\"\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png\",\"models_name\":\"\\u6807\\u81f4408 2018\\u6b3e 1.8L \\u624b\\u52a8\\u9886\\u5148\\u7248\",\"parkingposition\":\"\\u6210\\u90fd\",\"license_plate\":\"\\u5317\\u4eac\",\"guide_price\":\"20\\u4e07\\u5143\",\"factorytime\":\"2013-11-01\",\"car_licensetime\":\"2015-01-08\",\"kilometres\":\"35\\u4e07\\u516c\\u91cc\",\"emission_standard\":\"1.0T\",\"phone\":\"18683787363\",\"store_description\":\"\\u5f88\\u6f02\\u4eae\\u7684\\u8f66\",\"brand_name\":\"\\u6807\\u81f4\"}";
-
         $store_id = CompanyStore::get(['user_id' => $user_id])->id;
-        $carInfo = json_decode($carInfo, true);
 
         $carInfo['store_id'] = $store_id;
         $carInfo['user_id'] = $user_id;
-//        $this->success('',$carInfo);
-
         $modelsInfo = new ModelsInfo();
         $modelsInfo->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
     }
 
+    /**
+     * 上传文件
+     * @ApiMethod (POST)
+     * @param File $file 文件流
+     */
+    public function upModelImg()
+    {
+        $file = $this->request->file('file');
+        if (empty($file)) {
+            $this->error(__('No file upload or server upload limit exceeded'));
+        }
+
+        //判断是否已经存在附件
+        $sha1 = $file->hash();
+
+        $upload = Config::get('upload');
+
+        preg_match('/(\d+)(\w+)/', $upload['maxsize'], $matches);
+        $type = strtolower($matches[2]);
+        $typeDict = ['b' => 0, 'k' => 1, 'kb' => 1, 'm' => 2, 'mb' => 2, 'gb' => 3, 'g' => 3];
+        $size = (int)$upload['maxsize'] * pow(1024, isset($typeDict[$type]) ? $typeDict[$type] : 0);
+        $fileInfo = $file->getInfo();
+        $suffix = strtolower(pathinfo($fileInfo['name'], PATHINFO_EXTENSION));
+        $suffix = $suffix ? $suffix : 'file';
+
+        $mimetypeArr = explode(',', strtolower($upload['mimetype']));
+        $typeArr = explode('/', $fileInfo['type']);
+
+        //验证文件后缀
+        if ($upload['mimetype'] !== '*' &&
+            (
+                !in_array($suffix, $mimetypeArr)
+                || (stripos($typeArr[0] . '/', $upload['mimetype']) !== false && (!in_array($fileInfo['type'], $mimetypeArr) && !in_array($typeArr[0] . '/*', $mimetypeArr)))
+            )
+        ) {
+            $this->error(__('Uploaded file format is limited'));
+        }
+        $replaceArr = [
+            '{year}'     => date("Y"),
+            '{mon}'      => date("m"),
+            '{day}'      => date("d"),
+            '{hour}'     => date("H"),
+            '{min}'      => date("i"),
+            '{sec}'      => date("s"),
+            '{random}'   => Random::alnum(16),
+            '{random32}' => Random::alnum(32),
+            '{filename}' => $suffix ? substr($fileInfo['name'], 0, strripos($fileInfo['name'], '.')) : $fileInfo['name'],
+            '{suffix}'   => $suffix,
+            '{.suffix}'  => $suffix ? '.' . $suffix : '',
+            '{filemd5}'  => md5_file($fileInfo['tmp_name']),
+        ];
+        $savekey = $upload['savekey'];
+        $savekey = str_replace(array_keys($replaceArr), array_values($replaceArr), $savekey);
+
+        $uploadDir = substr($savekey, 0, strripos($savekey, '/') + 1);
+        $fileName = substr($savekey, strripos($savekey, '/') + 1);
+        //
+        $splInfo = $file->validate(['size' => $size])->move(ROOT_PATH . '/public' . $uploadDir, $fileName);
+        if ($splInfo) {
+            $imagewidth = $imageheight = 0;
+            if (in_array($suffix, ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'swf'])) {
+                $imgInfo = getimagesize($splInfo->getPathname());
+                $imagewidth = isset($imgInfo[0]) ? $imgInfo[0] : $imagewidth;
+                $imageheight = isset($imgInfo[1]) ? $imgInfo[1] : $imageheight;
+            }
+            $params = array(
+                'admin_id'    => 0,
+                'user_id'     => (int)$this->auth->id,
+                'filesize'    => $fileInfo['size'],
+                'imagewidth'  => $imagewidth,
+                'imageheight' => $imageheight,
+                'imagetype'   => $suffix,
+                'imageframes' => 0,
+                'mimetype'    => $fileInfo['type'],
+                'url'         => $uploadDir . $splInfo->getSaveName(),
+                'uploadtime'  => time(),
+                'storage'     => 'local',
+                'sha1'        => $sha1,
+            );
+//            $attachment = model("attachment");
+//            $attachment->data(array_filter($params));
+//            $attachment->save();
+//            \think\Hook::listen("upload_after", $attachment);
+            $this->success(__('Upload successful'), [
+                'url' => $uploadDir . $splInfo->getSaveName()
+            ]);
+        } else {
+            // 上传失败获取错误信息
+            $this->error($file->getError());
+        }
+    }
     /**
      * 我想买车接口
      */
@@ -400,7 +482,7 @@ class Index extends Base
             'car_licensetime' => '2014-01-07'
 
         ];
-        $carInfo = $this->request->post('carInfo');
+        $carInfo = $this->request->post('carInfo/a');
         $user_id = $this->request->post('user_id');
 
         if (!$user_id || !$carInfo) {
@@ -408,14 +490,13 @@ class Index extends Base
         }
 //        $this->success(json_encode($arr));
 //        $carInfo = "{\"brand_name\":\"\\u6807\\u81f4\",\"models_name\":\"\\u6807\\u81f4408 2018\\u6b3e 1.8L \\u624b\\u52a8\\u9886\\u5148\\u7248\",\"parkingposition\":\"\\u6210\\u90fd\",\"guide_price\":\"20\\u4e07\\u5143\",\"phone\":\"18683787363\",\"kilometres\":\"\",\"emission_standard\":\"2.5T\",\"license_plate\":\"\",\"store_description\":\"\",\"factorytime\":\"2018-06-05\",\"car_licensetime\":\"2014-01-07\"}";
-        $store_id = $store_id = CompanyStore::get(['user_id' => $user_id])->id;
-        $carInfo = json_decode($carInfo, true);
+        $store_id = CompanyStore::get(['user_id' => $user_id])->id;
         if ($store_id) {
             $carInfo['store_id'] = $store_id;
         }
         $carInfo['user_id'] = $user_id;
         $buyModels = new BuycarModel();
-        $buyModels->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
+        return $buyModels->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
     }
 
     /**
