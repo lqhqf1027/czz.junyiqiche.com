@@ -7,6 +7,7 @@ use addons\cms\model\Channel;
 use addons\cms\model\ModelsInfo;
 use addons\cms\model\BuycarModel;
 use addons\cms\model\Clue;
+use addons\cms\model\QuotedPrice;
 use addons\cms\model\Config as ConfigModel;
 use app\common\model\Addon;
 use think\Config;
@@ -88,6 +89,12 @@ class Common extends Base
 
         $type = $this->request->post('type');
 
+        $user_id = $this->request->post('user_id');
+
+        if(!$car_id || !$type || !$user_id){
+            $this->error('缺少参数','error');
+        }
+
         $modelName = null;
         switch ($type) {
             case 'sell':
@@ -104,6 +111,9 @@ class Common extends Base
                 break;
         }
 
+        //判断该用户该车辆是否报价
+        $isOffer = QuotedPrice::get(['models_id'=>$car_id,'type'=>$type,'user_ids'=>$user_id]);
+
         $condition = ['id','models_name','car_licensetime','kilometres','guide_price','parkingposition','phone','store_id','modelsimages'];
 
         $detail = $modelName->find($car_id)->visible($condition)->toArray();
@@ -114,6 +124,7 @@ class Common extends Base
         $detail['kilometres'] = $detail['kilometres'] ? ($detail['kilometres'] / 10000) . '万公里' : null;
         $detail['guide_price'] = $detail['guide_price'] ? ($detail['guide_price'] / 10000) . '万' : null;
         $detail['car_licensetime'] = $detail['car_licensetime'] ? date('Y', $detail['car_licensetime']) : null;
+        $detail['isOffer'] = $isOffer?1:0;
         $this->success('请求成功',['detail'=>$detail]);
     }
 

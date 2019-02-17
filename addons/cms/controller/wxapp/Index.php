@@ -346,7 +346,7 @@ class Index extends Base
      */
     public function uploadModels()
     {
-        $arr = [
+       $arr = [
             'modelsimages' => '/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png',
             'models_name' => '标致408 2018款 1.8L 手动领先版',
             'parkingposition' => '成都',
@@ -374,11 +374,10 @@ class Index extends Base
         $carInfo = json_decode($carInfo, true);
 
         $carInfo['store_id'] = $store_id;
-
-//        $this->success($carInfo);
+        $carInfo['user_id'] = $user_id;
+//        $this->success('',$carInfo);
 
         $modelsInfo = new ModelsInfo();
-
         $modelsInfo->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
     }
 
