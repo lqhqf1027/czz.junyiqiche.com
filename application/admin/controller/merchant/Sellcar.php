@@ -17,6 +17,7 @@ class Sellcar extends Backend
      * @var \app\admin\model\ModelsInfo
      */
     protected $model = null;
+    protected $multiFields = 'shelfismenu';
 
     public function _initialize()
     {
