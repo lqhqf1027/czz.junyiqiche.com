@@ -8,6 +8,7 @@ use addons\cms\model\ModelsInfo;
 use addons\cms\model\BuycarModel;
 use addons\cms\model\Clue;
 use addons\cms\model\QuotedPrice;
+use addons\cms\model\User;
 use addons\cms\model\Config as ConfigModel;
 use app\common\model\Addon;
 use think\Config;
@@ -125,6 +126,7 @@ class Common extends Base
         $detail['guide_price'] = $detail['guide_price'] ? ($detail['guide_price'] / 10000) . '万' : null;
         $detail['car_licensetime'] = $detail['car_licensetime'] ? date('Y', $detail['car_licensetime']) : null;
         $detail['isOffer'] = $isOffer?1:0;
+        $detail['user'] = User::get($user_id)?User::get($user_id)->visible(['id','mobile'])->toArray():['id'=>'','mobile'=>''];
         $this->success('请求成功',['detail'=>$detail]);
     }
 
