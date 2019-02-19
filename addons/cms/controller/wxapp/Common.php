@@ -13,6 +13,7 @@ use addons\cms\model\Config as ConfigModel;
 use app\common\model\Addon;
 use think\Config;
 use addons\third\model\Third;
+
 /**
  * 公共
  */
@@ -70,8 +71,8 @@ class Common extends Base
 //            'indexTabList'   => $indexTabList,
 //            'newsTabList'    => $newsTabList,
 //            'productTabList' => $productTabList,
-            'config'         => $config,
-            'default_image' => ConfigModel::get(['name'=>'default_picture'])->value
+            'config' => $config,
+            'default_image' => ConfigModel::get(['name' => 'default_picture'])->value
         ];
         $this->success('', $data);
 
@@ -92,8 +93,8 @@ class Common extends Base
 
         $user_id = $this->request->post('user_id');
 
-        if(!$car_id || !$type || !$user_id){
-            $this->error('缺少参数','error');
+        if (!$car_id || !$type || !$user_id) {
+            $this->error('缺少参数', 'error');
         }
 
         $modelName = null;
@@ -108,29 +109,37 @@ class Common extends Base
                 $modelName = new Clue();
                 break;
             default:
-                $this->error('传入错误参数','error');
+                $this->error('传入错误参数', 'error');
                 break;
         }
 
-        $car_id_key = $type=='buy'?'buy_car_id':'models_info_id';
+        $car_id_key = $type == 'buy' ? 'buy_car_id' : 'models_info_id';
 
         //判断该用户该车辆是否报价
-        $isOffer = QuotedPrice::get([$car_id_key=>$car_id,'type'=>$type,'user_ids'=>$user_id]);
+        $isOffer = QuotedPrice::get([$car_id_key => $car_id, 'type' => $type, 'user_ids' => $user_id]);
 
-        $condition = ['id','models_name','car_licensetime','kilometres','guide_price','parkingposition','phone','store_id','modelsimages','user_id'];
+        $condition = 'id,models_name,car_licensetime,kilometres,guide_price,parkingposition,phone,store_id,user_id,store_description';
 
-        $detail = $modelName->find($car_id)->visible($condition)->toArray();
-        $detail['modelsimages'] = empty($detail['modelsimages'])?[self::$default_image]:explode(',',$detail['modelsimages']);
+        if($type=='sell'){
+            $condition= $condition.',modelsimages';
+        }
+
+        $detail = $modelName->field($condition)
+            ->with(['brand'=>function ($q){
+                $q->withField('id,name');
+            }])
+            ->find($car_id);
+
+//        $detail = $modelName->find($car_id)->visible($condition)->toArray();
+        $detail['modelsimages'] = empty($detail['modelsimages']) ? [self::$default_image] : explode(',', $detail['modelsimages']);
 
         $detail['kilometres'] = $detail['kilometres'] ? ($detail['kilometres'] / 10000) . '万公里' : null;
         $detail['guide_price'] = $detail['guide_price'] ? ($detail['guide_price'] / 10000) . '万' : null;
         $detail['car_licensetime'] = $detail['car_licensetime'] ? date('Y', $detail['car_licensetime']) : null;
-        $detail['isOffer'] = $isOffer?1:0;
-        $detail['user'] = User::get($user_id)?User::get($user_id)->visible(['id','mobile'])->toArray():['id'=>'','mobile'=>''];
-        $this->success('请求成功',['detail'=>$detail]);
+        $detail['isOffer'] = $isOffer ? 1 : 0;
+        $detail['user'] = User::get($user_id) ? User::get($user_id)->visible(['id', 'mobile'])->toArray() : ['id' => '', 'mobile' => ''];
+        $this->success('请求成功', ['detail' => $detail]);
     }
-
-
 
 
 }
