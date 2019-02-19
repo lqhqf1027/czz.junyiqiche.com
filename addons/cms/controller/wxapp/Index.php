@@ -16,6 +16,7 @@ use addons\cms\model\ModelsInfo;
 use addons\cms\model\RideSharing;
 use addons\cms\model\BuycarModel;
 use addons\cms\model\BrandCate;
+use addons\cms\model\Brand;
 use addons\cms\model\User;
 use app\common\model\Addon;
 use think\Cache;
@@ -23,6 +24,7 @@ use think\Db;
 use GuzzleHttp\Client;
 use think\Config;
 use fast\Random;
+
 /**
  * 首页
  */
@@ -53,7 +55,7 @@ class Index extends Base
      */
     public function index()
     {
-        $bannerList = [];
+        $bannerList = $modelsInfoList = $buycarModelList = [];
         $list = Block::getBlockList(['name' => 'focus']);
         foreach ($list as $index => $item) {
 
@@ -64,17 +66,25 @@ class Index extends Base
         $storeList = CompanyStore::field('id,store_name,cities_name,main_camp')
             ->withCount(['modelsinfo'])->where('recommend', 1)->select();
 
-//        $this->success($storeList);
-        $modelsInfoList = $this->typeCar(1);
-        $buycarModelList = $this->typeCar(2);
-//        $clueList = $this->typeCar(3);
-//        $this->success($modelsInfoList);
 
+        if (!Cache::get('CAR_LIST')) {
+
+            Cache::set('CAR_LIST', Carselect::getCarCache());
+        }
+
+        $dataList = Cache::get('CAR_LIST')['carList'];
+
+        foreach ($dataList as $v){
+            if($v['type']=='sell'){
+                $modelsInfoList[] = $v;
+            }else{
+                $buycarModelList[] = $v;
+            }
+
+        }
         $share = collection(ConfigModel::all(function ($q) {
             $q->where('group', 'shares')->field('name,value');
         }))->toArray();
-
-//        pr($share);die();
 
         $this->success('请求成功', [
             'bannerList' => $bannerList,
@@ -105,7 +115,9 @@ class Index extends Base
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function typeCar($modelType, $is_transformation = 0)
+
+
+    public static function typeCar($modelType, $is_transformation = 0, $where = null, $field = null)
     {
         $modelName = null;
         switch ($modelType) {
@@ -122,8 +134,10 @@ class Index extends Base
 
         $else = $modelType == 2 ? '' : ',modelsimages';
 
+        $fields = $field ? $field : 'id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime,store_description' . $else;
 
-        $modelsInfoList = collection($modelName->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime' . $else)
+        $modelsInfoList = collection($modelName->field($fields)
+
             ->with(['brand' => function ($q) {
                 $q->withField('id,name,bfirstletter');
             }])
@@ -133,13 +147,15 @@ class Index extends Base
 
         foreach ($modelsInfoList as $k => $v) {
 
-            $modelsInfoList[$k]['modelsimages'] = !empty($v['modelsimages']) ? explode(';', $v['modelsimages'])[0] : $default_image;
             if (!$is_transformation) {
                 $modelsInfoList[$k]['kilometres'] = $v['kilometres'] ? ($v['kilometres'] / 10000) . '万公里' : null;
                 $modelsInfoList[$k]['guide_price'] = $v['guide_price'] ? ($v['guide_price'] / 10000) . '万' : null;
             }
+            if ($field == null) {
+                $modelsInfoList[$k]['modelsimages'] = !empty($v['modelsimages']) ? explode(',', $v['modelsimages'])[0] : $default_image;
 
-            $modelsInfoList[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y', $v['car_licensetime']) : null;
+                $modelsInfoList[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y', $v['car_licensetime']) : null;
+            }
         }
 
         return $modelsInfoList;
@@ -211,6 +227,93 @@ class Index extends Base
 
         $this->success('请求成功', ['brand' => $brand, 'mobile' => $userData['mobile']]);
     }
+
+    /**
+     * 获取车辆品牌和车系
+     */
+    public function getBrand()
+    {
+        $brandList = Brand::where('pid', 0)->field('id,name,brand_initials,brand_logoimage')->select();
+        $check = [];
+        $series = [];
+
+        foreach ($brandList as $k => $v) {
+
+            if (in_array($v['brand_initials'], $check)) {
+
+                continue;
+            } else {
+                $check[] = $v['brand_initials'];
+            }
+
+        }
+
+        sort($check);
+
+        foreach ($check as $k => $v) {
+
+            foreach ($brandList as $key => $value) {
+
+                if ($value['brand_initials'] == $v) {
+                    unset($check[$k]);
+
+                    $seriesList = Brand::where('pid', $value['id'])->field('id,name,pid')->select();
+
+                    foreach ($seriesList as $kk => $vv) {
+
+                            $series[] = [
+                                'id' => $vv['id'],
+                                'name' => $vv['name'],
+                                'pid' => $vv['pid']
+                            ];       
+
+                    }
+                    
+                    $check[$v]['brand'][] = [
+                        'id' => $value['id'],
+                        'name' => $value['name'],
+                        'series' => $series
+                    ];
+
+                    $series = [];
+
+                }
+
+            }
+
+        }
+
+        //缓冲品牌
+        Cache::set('brandCatesList', $check);
+
+        return Cache::get('brandCatesList');
+
+    }
+
+    /**
+     * 发布车源接口中的车辆品牌
+     */
+    public function getBrandCates()
+    {
+        $user_id = $this->request->post('user_id');
+
+        if (!$user_id) {
+            $this->error('缺少参数,请求失败', 'error');
+        }
+        //用户信息
+        $userData = User::where('id', $user_id)->find();
+
+        //得到所有的品牌列表
+        if (Cache::get('brandCatesList')) {
+            $brand = Cache::get('brandCatesList');
+        } else {
+            Cache::set('brandCatesList', $this->getBrand());
+            $brand = Cache::get('brandCatesList');
+        }
+
+        $this->success('请求成功', ['brandList' => $brand, 'mobile' => $userData['mobile']]);
+    }
+
 
 
     /**
@@ -537,76 +640,70 @@ class Index extends Base
         $clue->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
     }
 
-    /**
-     *司机发布顺风车接口
-     */
-    public function submit_tailwind()
+
+    public function search()
     {
-//        $arr = [
-//            'phone' => '18683787363',
-//            'starting_time' => '2019-02-19 10:56:09',
-//            'starting_point' => '火车北站',
-//            'destination' => '万年场',
-//            'money' => '70',
-//            'number_people' => 2,
-//            'note' => '马上开了',
-//            'type'=>'driver'
-//        ];
+        $query = $this->request->post('query_criteria');
 
-        $user_id = $this->request->post('user_id');
+        $brand_id = BrandCate::where('name', 'like', '%' . $query . '%')->column('id');
 
-        $info = $this->request->post('info');
 
-        if (!$user_id || !$info) {
-            $this->error('缺少参数，请求失败', 'error');
+        if ($brand_id) {
+            $modelInfoList = self::typeCar(1, 1, ['brand_id' => ['in', $brand_id]], 'id,models_name');
+            $buyCarList = self::typeCar(2, 1, ['brand_id' => ['in', $brand_id]], 'id,models_name');
+        } else {
+            $modelInfoList = self::typeCar(1, 1, ['models_name' => ['like', '%' . $query . '%']], 'id,models_name');
+            $buyCarList = self::typeCar(2, 1, ['models_name' => ['like', '%' . $query . '%']], 'id,models_name');
         }
-//        $info = "{\"phone\":\"18683787363\",\"starting_time\":\"2019-02-19 10:56:09\",\"starting_point\":\"\\u706b\\u8f66\\u5317\\u7ad9\",\"destination\":\"\\u4e07\\u5e74\\u573a\",\"money\":\"70\",\"number_people\":2,\"note\":\"\\u9a6c\\u4e0a\\u5f00\\u4e86\",\"type\":\"passenger\"}";
 
-//        $this->success(json_encode($arr));
-        $info = json_decode($info, true);
+//        $all = array_merge($modelInfoList,$buyCarList);
 
-        $info['user_id'] = $user_id;
+//        $check =$real = [];
+//        foreach ($all as $k=>$v){
+//            if(!in_array($v['brand']['id'],$check)){
+//                   $check[] = $v['brand']['id'];
+//                   $real[] = ['id'=>$v['brand']['id'],'name'=>$v['brand']['name'],'carList'=>[['id'=>$v['id'],'models_name'=>$v['models_name']]]];
+//            }else{
+//                foreach ($real as $key=>$value){
+//                       if($v['brand']['id']==$value['id']){
+//                           $real[$key]['carList'][] = ['id'=>$v['id'],'models_name'=>$v['models_name']];
+//                       }
+//                }
+//            }
+//        }
 
-        RideSharing::create($info) ? $this->success('发布成功', 'success') : $this->error('发布失败', 'error');
+        if($modelInfoList){
+            $modelInfoList = $this->getCarList($modelInfoList);
+        }
 
+        if($buyCarList){
+            $buyCarList = $this->getCarList($buyCarList);
+        }
+
+        $this->success('请求成功',['sell'=>$modelInfoList,'buy'=>$buyCarList]);
     }
 
-    /**
-     * 顺风车列表接口
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     */
-    public function downwind()
+    public function getCarList($arr)
     {
-        $time = time();
-        $type = $this->request->post('type');
-
-        if (!$type) {
-            $this->error('缺少参数，请求失败', 'error');
-        }
-
-        $field = $type == 'driver' ? ',money' : null;
-
-        $takeCarList = RideSharing::field('id,starting_point,destination,starting_time,number_people,note,phone' . $field)
-            ->order('createtime desc')->where('type', $type)->select();
-        $overdueId = [];
-
-        $takeCar = [];
-
-        foreach ($takeCarList as $k => $v) {
-            if ($time > strtotime($v['starting_time'])) {
-                $overdueId[] = $v['id'];
-            } else {
-                $takeCar[] = $v;
+        $check =$real = [];
+        foreach ($arr as $k=>$v){
+            if(!in_array($v['brand']['id'],$check)){
+                $check[] = $v['brand']['id'];
+                $real[] = ['id'=>$v['brand']['id'],'name'=>$v['brand']['name'],'carList'=>[['models_name'=>$v['models_name']]]];
+            }else{
+                foreach ($real as $key=>$value){
+                    if($v['brand']['id']==$value['id']){
+                        foreach ($real[$key]['carList'] as $kk=>$vv){
+                            
+                        }
+                        $real[$key]['carList'][] = ['models_name'=>$v['models_name']];
+                    }
+                }
             }
         }
 
-        if ($overdueId) {
-            RideSharing::where('id', 'in', $overdueId)->update(['status' => 'hidden']);
-        }
 
-        $this->success('请求成功', ['takeCarList' => $takeCar]);
+        return $real;
     }
 
 }
