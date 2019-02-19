@@ -64,7 +64,7 @@ class Index extends Base
         $storeList = CompanyStore::field('id,store_name,cities_name,main_camp')
             ->withCount(['modelsinfo'])->where('recommend', 1)->select();
 
-
+        Cache::rm('CAR_LIST');
         if (!Cache::get('CAR_LIST')) {
 
             Cache::set('CAR_LIST', Carselect::getCarCache());
@@ -72,10 +72,10 @@ class Index extends Base
 
         $dataList = Cache::get('CAR_LIST')['carList'];
 
-        foreach ($dataList as $v){
-            if($v['type']=='sell'){
+        foreach ($dataList as $v) {
+            if ($v['type'] == 'sell') {
                 $modelsInfoList[] = $v;
-            }else{
+            } else {
                 $buycarModelList[] = $v;
             }
 
@@ -113,7 +113,7 @@ class Index extends Base
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function typeCar($modelType, $is_transformation = 0)
+    public static function typeCar($modelType, $is_transformation = 0,$where = null)
     {
         $modelName = null;
         switch ($modelType) {
@@ -131,11 +131,11 @@ class Index extends Base
         $else = $modelType == 2 ? '' : ',modelsimages';
 
 
-        $modelsInfoList = collection($modelName->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime' . $else)
+        $modelsInfoList = collection($modelName->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime,store_description' . $else)
             ->with(['brand' => function ($q) {
                 $q->withField('id,name,bfirstletter');
             }])
-            ->order('createtime desc')->select())->toArray();
+            ->where($where)->order('createtime desc')->select())->toArray();
 
         $default_image = self::$default_image;
 
@@ -262,6 +262,11 @@ class Index extends Base
             }
         }
 
+        User::update([
+            'id' => $user_id,
+            'mobile' => $mobile
+        ]);
+
         // //如果是手机授权，手机号码更新到用户表
         // if ($mobile) {
         //     User::where('id', $user_id)->update([
@@ -352,7 +357,7 @@ class Index extends Base
      */
     public function uploadModels()
     {
-       $arr = [
+        $arr = [
             'modelsimages' => '/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png',
             'models_name' => '标致408 2018款 1.8L 手动领先版',
             'parkingposition' => '成都',
@@ -418,18 +423,18 @@ class Index extends Base
             $this->error(__('Uploaded file format is limited'));
         }
         $replaceArr = [
-            '{year}'     => date("Y"),
-            '{mon}'      => date("m"),
-            '{day}'      => date("d"),
-            '{hour}'     => date("H"),
-            '{min}'      => date("i"),
-            '{sec}'      => date("s"),
-            '{random}'   => Random::alnum(16),
+            '{year}' => date("Y"),
+            '{mon}' => date("m"),
+            '{day}' => date("d"),
+            '{hour}' => date("H"),
+            '{min}' => date("i"),
+            '{sec}' => date("s"),
+            '{random}' => Random::alnum(16),
             '{random32}' => Random::alnum(32),
             '{filename}' => $suffix ? substr($fileInfo['name'], 0, strripos($fileInfo['name'], '.')) : $fileInfo['name'],
-            '{suffix}'   => $suffix,
-            '{.suffix}'  => $suffix ? '.' . $suffix : '',
-            '{filemd5}'  => md5_file($fileInfo['tmp_name']),
+            '{suffix}' => $suffix,
+            '{.suffix}' => $suffix ? '.' . $suffix : '',
+            '{filemd5}' => md5_file($fileInfo['tmp_name']),
         ];
         $savekey = $upload['savekey'];
         $savekey = str_replace(array_keys($replaceArr), array_values($replaceArr), $savekey);
@@ -446,18 +451,18 @@ class Index extends Base
                 $imageheight = isset($imgInfo[1]) ? $imgInfo[1] : $imageheight;
             }
             $params = array(
-                'admin_id'    => 0,
-                'user_id'     => (int)$this->auth->id,
-                'filesize'    => $fileInfo['size'],
-                'imagewidth'  => $imagewidth,
+                'admin_id' => 0,
+                'user_id' => (int)$this->auth->id,
+                'filesize' => $fileInfo['size'],
+                'imagewidth' => $imagewidth,
                 'imageheight' => $imageheight,
-                'imagetype'   => $suffix,
+                'imagetype' => $suffix,
                 'imageframes' => 0,
-                'mimetype'    => $fileInfo['type'],
-                'url'         => $uploadDir . $splInfo->getSaveName(),
-                'uploadtime'  => time(),
-                'storage'     => 'local',
-                'sha1'        => $sha1,
+                'mimetype' => $fileInfo['type'],
+                'url' => $uploadDir . $splInfo->getSaveName(),
+                'uploadtime' => time(),
+                'storage' => 'local',
+                'sha1' => $sha1,
             );
 //            $attachment = model("attachment");
 //            $attachment->data(array_filter($params));
@@ -471,6 +476,7 @@ class Index extends Base
             $this->error($file->getError());
         }
     }
+
     /**
      * 我想买车接口
      */
@@ -543,6 +549,23 @@ class Index extends Base
 //$this->success($carInfo);
         $clue = new Clue();
         $clue->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
+    }
+
+    public function search()
+    {
+        $query = $this->request->post('query_criteria');
+
+        $brand_id = BrandCate::where('name',$query)->value('id');
+
+//        if($brand_id){
+//            BuycarModel::field('id,');
+//        }
+pr($brand_id);
+        $a = self::typeCar(1,'1',['brand_id'=>$brand_id]);
+        pr($a);die();
+
+
+//        ModelsInfo::where('models_name|parkingposition','like','%'.$query.'%');
     }
 
 

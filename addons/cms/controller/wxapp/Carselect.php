@@ -9,7 +9,8 @@
 namespace addons\cms\controller\wxapp;
 
 use think\Cache;
-
+use think\Db;
+use addons\cms\model\User;
 class Carselect extends Base
 {
     protected $noNeedLogin = '*';
@@ -28,7 +29,7 @@ class Carselect extends Base
             $this->error('缺少参数');
         }
 
-//        Cache::rm('CAR_LIST');
+        Cache::rm('CAR_LIST');
 
         if (!Cache::get('CAR_LIST')) {
 
@@ -41,7 +42,6 @@ class Carselect extends Base
 
         $city = $this->request->post('city');
         $brand_id = $this->request->post('brand_id');
-
 
         $realCarList = [];
         if ($city || $brand_id) {
@@ -150,5 +150,11 @@ class Carselect extends Base
         ];
 
         return $arr;
+    }
+
+
+    public function test()
+    {
+        User::where('id',5)->setInc('store_id');
     }
 }
