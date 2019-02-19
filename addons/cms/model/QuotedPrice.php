@@ -30,7 +30,7 @@ class QuotedPrice extends Model
      */
      public function ModelsInfo()
      {
-         return $this->belongsTo('ModelsInfo', 'models_id', 'id')->setEagerlyType(0);
+         return $this->belongsTo('ModelsInfo', 'models_info_id', 'id')->setEagerlyType(0);
      }
 
      /**
@@ -39,7 +39,7 @@ class QuotedPrice extends Model
      */
      public function BuycarModel()
      {
-         return $this->belongsTo('BuycarModel', 'models_id', 'id')->setEagerlyType(0);
+         return $this->belongsTo('BuycarModel', 'buy_car_id', 'id')->setEagerlyType(0);
      }
 
 }
