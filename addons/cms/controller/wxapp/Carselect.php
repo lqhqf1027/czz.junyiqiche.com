@@ -101,7 +101,10 @@ class Carselect extends Base
 
     public static function getCarCache()
     {
-        $all = array_merge(Index::typeCar(1, 1), Index::typeCar(2, 1));
+        $modelsInfoList = Index::typeCar(1);
+        $buyCarModelList = Index::typeCar(2);
+
+        $all = array_merge($modelsInfoList, $buyCarModelList);
 
         $cityList = $brandList = $brandNameList = [];
 
@@ -133,6 +136,8 @@ class Carselect extends Base
                 }
 
             }
+
+//            $all[$k][]
 
         }
         //二维数组根据某个字段a-z顺序排列数组
