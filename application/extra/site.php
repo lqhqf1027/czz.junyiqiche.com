@@ -30,6 +30,7 @@ return array (
     'rate' => '收益率配置',
     'default_image' => '车辆默认图片',
     'shares' => '小程序分享配置',
+    'agreement' => '用户协议',
   ),
   'mail_type' => '1',
   'mail_smtp_host' => 'smtp.qq.com',
@@ -40,10 +41,10 @@ return array (
   'mail_from' => '10000@qq.com',
   'grade_one' => '0.35',
   'grade_two' => '0.15',
-
-  'default_picture' => '/uploads/20190121/2b90b99664167aa401e4a8fe4f5e4ea8.png',
+  'default_picture' => '/uploads/20190219/cf0983c686b9a61391a28baaea8064c5.jpg',
   'shares_title' => '来友车圈看好车！',
   'shares_img' => '/uploads/20190213/cf0983c686b9a61391a28baaea8064c5.jpg',
   'shares_bg_img' => '/uploads/20190213/8105e6eb128185d115158a74f9765b64.jpg',
   'shares_bk_qrocde' => '/uploads/20190213/d1f75cbaeea2f8e09bc4e8477c6bb48a.jpg',
+  'agreement' => '',
 );
