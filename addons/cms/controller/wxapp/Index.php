@@ -435,6 +435,7 @@ class Index extends Base
 
         $carInfo['store_id'] = $store_id;
         $carInfo['user_id'] = $user_id;
+        $carInfo['browse_volume'] = rand(500,2000);
         $modelsInfo = new ModelsInfo();
         $modelsInfo->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
     }
@@ -547,6 +548,7 @@ class Index extends Base
             $carInfo['store_id'] = $store_id;
         }
         $carInfo['user_id'] = $user_id;
+        $carInfo['browse_volume'] = rand(500,2000);
         $buyModels = new BuycarModel();
         return $buyModels->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
     }

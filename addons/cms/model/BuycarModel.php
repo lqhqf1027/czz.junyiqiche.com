@@ -37,21 +37,21 @@ class BuycarModel extends Model
 //        return floatval(findNum($value))*10000;
 //    }
 
-    public function setFactoryTimeAttr($value)
-    {
-        return strtotime($value);
-    }
-
-    public function setCarLicensetimeAttr($value)
-    {
-        return strtotime($value);
-    }
+//    public function setFactoryTimeAttr($value)
+//    {
+//        return strtotime($value);
+//    }
+//
+//    public function setCarLicensetimeAttr($value)
+//    {
+//        return strtotime($value);
+//    }
 
     // 定义全局的查询范围
-    protected function base($query)
-    {
-        $query->where('shelfismenu','1');
-    }
+//    protected function base($query)
+//    {
+//        $query->where('shelfismenu','1');
+//    }
 
     /**
      * 关联品牌表
@@ -70,4 +70,16 @@ class BuycarModel extends Model
     {
         return $this->belongsTo('QuotedPrice', 'buy_car_id', 'id')->setEagerlyType(0);
     }
+
+
+    protected function setFactorytimeAttr($value)
+    {
+        return $value && !is_numeric($value) ? strtotime($value) : $value;
+    }
+
+    protected function setCarLicensetimeAttr($value)
+    {
+        return $value && !is_numeric($value) ? strtotime($value) : $value;
+    }
+
 }

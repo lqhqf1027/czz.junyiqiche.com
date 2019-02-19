@@ -32,10 +32,10 @@ class ModelsInfo extends Model
     }
 
     // 定义全局的查询范围
-    protected function base($query)
-    {
-        $query->where('shelfismenu','1');
-    }
+//    protected function base($query)
+//    {
+//        $query->where('shelfismenu','1');
+//    }
 
 //    public function setKilometresAttr($value)
 //    {
@@ -47,15 +47,15 @@ class ModelsInfo extends Model
 //        return floatval(findNum($value))*10000;
 //    }
 
-    public function setFactoryTimeAttr($value)
-    {
-        return strtotime($value);
-    }
-
-    public function setCarLicenseTimeAttr($value)
-    {
-        return strtotime($value);
-    }
+//    public function setFactoryTimeAttr($value)
+//    {
+//        return strtotime($value);
+//    }
+//
+//    public function setCarLicenseTimeAttr($value)
+//    {
+//        return strtotime($value);
+//    }
 
     /**
      * 关联店铺表
@@ -85,4 +85,13 @@ class ModelsInfo extends Model
         return $this->belongsTo('QuotedPrice', 'models_info_id', 'id')->setEagerlyType(0);
     }
 
+    protected function setFactorytimeAttr($value)
+    {
+        return $value && !is_numeric($value) ? strtotime($value) : $value;
+    }
+
+    protected function setCarLicensetimeAttr($value)
+    {
+        return $value && !is_numeric($value) ? strtotime($value) : $value;
+    }
 }
