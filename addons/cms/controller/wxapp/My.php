@@ -370,7 +370,7 @@ class My extends Base
         foreach ($ModelsInfoList as $k=>$v){
 
             $ModelsInfoList[$k]['models_info']['modelsimages'] = explode(',', $ModelsInfoList[$k]['models_info']['modelsimages'])[0];
-           
+            
         }
         
         //我的报价
@@ -388,6 +388,7 @@ class My extends Base
         foreach ($BuycarModelList as $k=>$v){
             $BuycarModelList[$k]['models_info']  = $v['buycar_model'];
             $BuycarModelList[$k]['models_info']['modelsimages'] = $default_image;
+            
             unset($BuycarModelList[$k]['buycar_model']);
         }
 
@@ -395,8 +396,10 @@ class My extends Base
 
         foreach ($myQuotedList as $k => $v) {
 
-            $myQuotedList[$k]['quotationtime'] = $v['quotationtime'] ? date('Y', $v['quotationtime']) : null;
-
+            $v['quotationtime'] = $v['quotationtime'] ? date('Y', $v['quotationtime']) : null;
+            $v['models_info']['kilometres'] = $v['models_info']['kilometres'] ? ($v['models_info']['kilometres'] / 10000) . '万' : null;
+            $v['models_info']['guide_price'] = $v['models_info']['guide_price'] ? ($v['models_info']['guide_price'] / 10000) : null;
+           
             if ($v['type'] == 'sell') {
 
                 $QuotedPriceList['sell'][] = $v;
