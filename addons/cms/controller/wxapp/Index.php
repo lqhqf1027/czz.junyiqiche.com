@@ -24,6 +24,7 @@ use think\Db;
 use GuzzleHttp\Client;
 use think\Config;
 use fast\Random;
+
 /**
  * 首页
  */
@@ -114,7 +115,7 @@ class Index extends Base
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function typeCar($modelType, $is_transformation = 0,$where = null)
+    public static function typeCar($modelType, $is_transformation = 0, $where = null, $field = null)
     {
         $modelName = null;
         switch ($modelType) {
@@ -131,8 +132,10 @@ class Index extends Base
 
         $else = $modelType == 2 ? '' : ',modelsimages';
 
+        $fields = $field ? $field : 'id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime,store_description' . $else;
 
-        $modelsInfoList = collection($modelName->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime,store_description' . $else)
+
+        $modelsInfoList = collection($modelName->field($fields)
             ->with(['brand' => function ($q) {
                 $q->withField('id,name,bfirstletter');
             }])
@@ -142,13 +145,15 @@ class Index extends Base
 
         foreach ($modelsInfoList as $k => $v) {
 
-            $modelsInfoList[$k]['modelsimages'] = !empty($v['modelsimages']) ? explode(';', $v['modelsimages'])[0] : $default_image;
             if (!$is_transformation) {
                 $modelsInfoList[$k]['kilometres'] = $v['kilometres'] ? ($v['kilometres'] / 10000) . '万公里' : null;
                 $modelsInfoList[$k]['guide_price'] = $v['guide_price'] ? ($v['guide_price'] / 10000) . '万' : null;
             }
+            if ($field == null) {
+                $modelsInfoList[$k]['modelsimages'] = !empty($v['modelsimages']) ? explode(',', $v['modelsimages'])[0] : $default_image;
 
-            $modelsInfoList[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y', $v['car_licensetime']) : null;
+                $modelsInfoList[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y', $v['car_licensetime']) : null;
+            }
         }
 
         return $modelsInfoList;
@@ -266,7 +271,7 @@ class Index extends Base
             }
 
         }
-        
+
         $this->success('请求成功', ['brand' => $check]);
 
     }
@@ -606,19 +611,64 @@ class Index extends Base
     {
         $query = $this->request->post('query_criteria');
 
-        $brand_id = BrandCate::where('name',$query)->value('id');
+        $brand_id = BrandCate::where('name', 'like', '%' . $query . '%')->column('id');
 
-//        if($brand_id){
-//            BuycarModel::field('id,');
+
+        if ($brand_id) {
+            $modelInfoList = self::typeCar(1, 1, ['brand_id' => ['in', $brand_id]], 'id,models_name');
+            $buyCarList = self::typeCar(2, 1, ['brand_id' => ['in', $brand_id]], 'id,models_name');
+        } else {
+            $modelInfoList = self::typeCar(1, 1, ['models_name' => ['like', '%' . $query . '%']], 'id,models_name');
+            $buyCarList = self::typeCar(2, 1, ['models_name' => ['like', '%' . $query . '%']], 'id,models_name');
+        }
+
+//        $all = array_merge($modelInfoList,$buyCarList);
+
+//        $check =$real = [];
+//        foreach ($all as $k=>$v){
+//            if(!in_array($v['brand']['id'],$check)){
+//                   $check[] = $v['brand']['id'];
+//                   $real[] = ['id'=>$v['brand']['id'],'name'=>$v['brand']['name'],'carList'=>[['id'=>$v['id'],'models_name'=>$v['models_name']]]];
+//            }else{
+//                foreach ($real as $key=>$value){
+//                       if($v['brand']['id']==$value['id']){
+//                           $real[$key]['carList'][] = ['id'=>$v['id'],'models_name'=>$v['models_name']];
+//                       }
+//                }
+//            }
 //        }
-pr($brand_id);
-        $a = self::typeCar(1,'1',['brand_id'=>$brand_id]);
-        pr($a);die();
 
+        if($modelInfoList){
+            $modelInfoList = $this->getCarList($modelInfoList);
+        }
 
-//        ModelsInfo::where('models_name|parkingposition','like','%'.$query.'%');
+        if($buyCarList){
+            $buyCarList = $this->getCarList($buyCarList);
+        }
+
+        $this->success('请求成功',['sell'=>$modelInfoList,'buy'=>$buyCarList]);
     }
 
+    public function getCarList($arr)
+    {
+        $check =$real = [];
+        foreach ($arr as $k=>$v){
+            if(!in_array($v['brand']['id'],$check)){
+                $check[] = $v['brand']['id'];
+                $real[] = ['id'=>$v['brand']['id'],'name'=>$v['brand']['name'],'carList'=>[['models_name'=>$v['models_name']]]];
+            }else{
+                foreach ($real as $key=>$value){
+                    if($v['brand']['id']==$value['id']){
+                        foreach ($real[$key]['carList'] as $kk=>$vv){
+                            
+                        }
+                        $real[$key]['carList'][] = ['models_name'=>$v['models_name']];
+                    }
+                }
+            }
+        }
 
+        return $real;
+    }
 
 }
