@@ -207,7 +207,7 @@ class Wechat extends Base
 
 
     /*
-     *小程序模板消息
+     *报价
      *@param uid 用户id
      *$param template_id 模板id
      *@param form_id 表单提交场景下formId(只能用一次)
@@ -249,8 +249,9 @@ class Wechat extends Base
             if ($response) {
                 $result = json_decode($response->getBody(), true);
                 if ($result['code'] == '000000') { //发送成功
+                    $field = $type == 'buy' ? 'buy_car_id' : 'models_info_id';
                     $res = QuotedPrice::create(
-                        ['user_ids' => $user_id, 'money' => $money, 'models_id' => $models_id, 'type' => $type, 'quotationtime' => time()]
+                        ['user_ids' => $user_id, 'money' => $money, $field => $models_id, 'type' => $type, 'quotationtime' => time(),'is_see'=>2]
                     ) ? $this->success('报价成功', '') : $this->error('报价失败', '');
                 }
                 $this->error('短信通知失败');
