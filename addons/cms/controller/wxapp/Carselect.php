@@ -7,10 +7,10 @@
  */
 
 namespace addons\cms\controller\wxapp;
-use think\Cache;
 
 use think\Cache;
-
+use think\Db;
+use addons\cms\model\User;
 class Carselect extends Base
 {
     protected $noNeedLogin = '*';
@@ -29,60 +29,12 @@ class Carselect extends Base
             $this->error('缺少参数');
         }
 
-//        Cache::rm('CAR_LIST');
+        Cache::rm('CAR_LIST');
 
         if (!Cache::get('CAR_LIST')) {
-            $all = array_merge(Index::typeCar(1, 1), Index::typeCar(2, 1));
 
-            $cityList = $brandList = $brandNameList = [];
-
-            foreach ($all as $k => $v) {
-                //去重得到城市
-                if (!in_array($v['parkingposition'], $cityList)) {
-                    $cityList[] = $v['parkingposition'];
-                }
-
-                //根据品牌名去重并加入品牌数组
-                if (!in_array($v['brand']['id'], $brandNameList)) {
-                    $brandNameList[] = $v['brand']['id'];
-
-                    if (!$brandList) {
-                        $brandList[] = ['zimu' => $v['brand']['bfirstletter'], 'brand_list' => [['id' => $v['brand']['id'], 'name' => $v['brand']['name']]]];
-                    } else {
-                        $flag = -1;
-                        foreach ($brandList as $key => $value) {
-                            if ($v['brand']['bfirstletter'] == $value['zimu']) {
-                                $brandList[$key]['brand_list'][] = ['id' => $v['brand']['id'], 'name' => $v['brand']['name']];
-                                $flag = -2;
-                            }
-                        }
-
-                        if ($flag == -1) {
-                            $brandList[] = ['zimu' => $v['brand']['bfirstletter'], 'brand_list' => [['id' => $v['brand']['id'], 'name' => $v['brand']['name']]]];
-                        }
-
-                    }
-
-                }
-
-            }
-            //二维数组根据某个字段a-z顺序排列数组
-            array_multisort(array_column($brandList, 'zimu'), SORT_ASC, $brandList);
-
-
-            foreach ($cityList as $k => $v) {
-                $cityList[$k] = ['name' => $v];
-            }
-
-            $arr = [
-                'city' => $cityList,
-                'brand' => $brandList,
-                'carList' => $all
-            ];
-
-            Cache::set('CAR_LIST', $arr);
+            Cache::set('CAR_LIST', self::getCarCache());
         }
-
         $alls = Cache::get('CAR_LIST');
 
         $carLists = $alls['carList'];
@@ -90,7 +42,6 @@ class Carselect extends Base
 
         $city = $this->request->post('city');
         $brand_id = $this->request->post('brand_id');
-
 
         $realCarList = [];
         if ($city || $brand_id) {
@@ -142,8 +93,73 @@ class Carselect extends Base
     /**
      * 清除严选车源缓存
      */
-    public  function rmCacheCar_list(){
+    public function rmCacheCar_list()
+    {
 
         Cache::rm('CAR_LIST');
+    }
+
+    public static function getCarCache()
+    {
+        $modelsInfoList = Index::typeCar(1);
+        $buyCarModelList = Index::typeCar(2);
+
+        $all = array_merge($modelsInfoList, $buyCarModelList);
+
+        $cityList = $brandList = $brandNameList = [];
+
+        foreach ($all as $k => $v) {
+            //去重得到城市
+            if (!in_array($v['parkingposition'], $cityList)) {
+                $cityList[] = $v['parkingposition'];
+            }
+
+            //根据品牌名去重并加入品牌数组
+            if (!in_array($v['brand']['id'], $brandNameList)) {
+                $brandNameList[] = $v['brand']['id'];
+
+                if (!$brandList) {
+                    $brandList[] = ['zimu' => $v['brand']['bfirstletter'], 'brand_list' => [['id' => $v['brand']['id'], 'name' => $v['brand']['name']]]];
+                } else {
+                    $flag = -1;
+                    foreach ($brandList as $key => $value) {
+                        if ($v['brand']['bfirstletter'] == $value['zimu']) {
+                            $brandList[$key]['brand_list'][] = ['id' => $v['brand']['id'], 'name' => $v['brand']['name']];
+                            $flag = -2;
+                        }
+                    }
+
+                    if ($flag == -1) {
+                        $brandList[] = ['zimu' => $v['brand']['bfirstletter'], 'brand_list' => [['id' => $v['brand']['id'], 'name' => $v['brand']['name']]]];
+                    }
+
+                }
+
+            }
+
+//            $all[$k][]
+
+        }
+        //二维数组根据某个字段a-z顺序排列数组
+        array_multisort(array_column($brandList, 'zimu'), SORT_ASC, $brandList);
+
+
+        foreach ($cityList as $k => $v) {
+            $cityList[$k] = ['name' => $v];
+        }
+
+        $arr = [
+            'city' => $cityList,
+            'brand' => $brandList,
+            'carList' => $all
+        ];
+
+        return $arr;
+    }
+
+
+    public function test()
+    {
+        User::where('id',5)->setInc('store_id');
     }
 }
