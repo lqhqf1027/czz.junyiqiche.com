@@ -14,6 +14,7 @@ use addons\cms\model\ModelsInfo;
 use addons\cms\model\BuycarModel;
 use addons\cms\model\Config as ConfigModel;
 use addons\cms\model\QuotedPrice;
+use addons\cms\model\BrandCate;
 use think\Db;
 
 /**
@@ -387,58 +388,75 @@ class My extends Base
             QuotedPrice::where('id','in',$quotedPriceId)->setField('is_see',1);
         }
         //收到报价
-        $ModelsInfoList = collection(QuotedPrice::field('id,user_ids,models_id,money,quotationtime,type')
-            ->with(['ModelsInfo' => function ($q) {
-                $q->withField('id,models_name,guide_price,user_id,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,modelsimages');
+        $ModelsInfoList = collection(QuotedPrice::field('id,user_ids,models_info_id,money,quotationtime,type')
+            ->with(['ModelsInfo'=>function ($q) use ($user_id){
+                $q->where(['user_id'=>$user_id])->withField('id,models_name,guide_price,user_id,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,modelsimages,brand_id');
             },
-                'user' => function ($q) {
-                    $q->withField('id,nickname,avatar,mobile');
-                }])
-            ->where('type', 'sell')->select())->toArray();
+            'user'=>function ($q){
+                $q->withField('id,nickname,avatar,mobile');
+            }])
+        ->where(['type'=>'sell'])->select())->toArray();
+
 
         foreach ($ModelsInfoList as $k => $v) {
 
             $ModelsInfoList[$k]['models_info']['modelsimages'] = explode(',', $ModelsInfoList[$k]['models_info']['modelsimages'])[0];
 
+            $ModelsInfoList[$k]['models_info']['brand_name'] = BrandCate::where('id', $ModelsInfoList[$k]['models_info']['brand_id'])->value('name');
+            $ModelsInfoList[$k]['quotationtime'] = $ModelsInfoList[$k]['quotationtime'] ? date('Y', $ModelsInfoList[$k]['quotationtime']) : null;
+            $ModelsInfoList[$k]['money'] = $ModelsInfoList[$k]['money'] ? ($ModelsInfoList[$k]['money'] / 10000) : null;
+            $ModelsInfoList[$k]['models_info']['kilometres'] = $ModelsInfoList[$k]['models_info']['kilometres'] ? ($ModelsInfoList[$k]['models_info']['kilometres'] / 10000) . '万' : null;
+            $ModelsInfoList[$k]['models_info']['guide_price'] = $ModelsInfoList[$k]['models_info']['guide_price'] ? ($ModelsInfoList[$k]['models_info']['guide_price'] / 10000) : null;
+            
+        }
+        //我的报价----卖车
+        $SellcarModelList = collection(QuotedPrice::field('id,user_ids,money,quotationtime,type,models_info_id')
+            ->with(['ModelsInfo'=>function ($q){
+                $q->withField('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,modelsimages,brand_id');
+            },
+            'user'=>function ($q){
+                $q->withField('mobile');
+        }])
+        ->where('user_ids', $user_id)->select())->toArray();
+
+        foreach ($SellcarModelList as $k=>$v){
+            $SellcarModelList[$k]['models_info']['modelsimages'] = explode(',', $SellcarModelList[$k]['models_info']['modelsimages'])[0];
+            $SellcarModelList[$k]['models_info']['brand_name'] = BrandCate::where('id', $SellcarModelList[$k]['models_info']['brand_id'])->value('name');
+            $SellcarModelList[$k]['quotationtime'] = $SellcarModelList[$k]['quotationtime'] ? date('Y', $SellcarModelList[$k]['quotationtime']) : null;
+            $SellcarModelList[$k]['money'] = $SellcarModelList[$k]['money'] ? ($SellcarModelList[$k]['money'] / 10000) : null;
+            $SellcarModelList[$k]['models_info']['kilometres'] = $SellcarModelList[$k]['models_info']['kilometres'] ? ($SellcarModelList[$k]['models_info']['kilometres'] / 10000) . '万' : null;
+            $SellcarModelList[$k]['models_info']['guide_price'] = $SellcarModelList[$k]['models_info']['guide_price'] ? ($SellcarModelList[$k]['models_info']['guide_price'] / 10000) : null;
         }
 
-        //我的报价
-        $BuycarModelList = collection(QuotedPrice::field('id,user_ids,money,quotationtime,type')
-            ->with(['BuycarModel' => function ($q) {
-                $q->withField('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime');
+        //我的报价---买车
+        $BuycarModelList = collection(QuotedPrice::field('id,user_ids,money,quotationtime,type,buy_car_id')
+            ->with(['BuycarModel'=>function ($q){
+                $q->withField('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,brand_id');
             },
-                'user' => function ($q) {
-                    $q->withField('mobile');
-                }])
-            ->where('type', 'buy')->where('user_ids', $user_id)->select())->toArray();
-
-        $default_image = ConfigModel::get(['name' => 'default_picture'])->value;
-
-        foreach ($BuycarModelList as $k => $v) {
-            $BuycarModelList[$k]['models_info'] = $v['buycar_model'];
+            'user'=>function ($q){
+                $q->withField('mobile');
+        }])
+        ->where('user_ids', $user_id)->select())->toArray();
+        //卖车默认---图片
+        $default_image = ConfigModel::get(['name'=>'default_picture'])->value;
+        foreach ($BuycarModelList as $k=>$v){
+            $BuycarModelList[$k]['models_info']  = $v['buycar_model'];
             $BuycarModelList[$k]['models_info']['modelsimages'] = $default_image;
-
+            $BuycarModelList[$k]['models_info']['brand_name'] = BrandCate::where('id', $BuycarModelList[$k]['models_info']['brand_id'])->value('name');
+            $BuycarModelList[$k]['quotationtime'] = $BuycarModelList[$k]['quotationtime'] ? date('Y', $BuycarModelList[$k]['quotationtime']) : null;
+            $BuycarModelList[$k]['money'] = $v['money'] ? ($BuycarModelList[$k]['money'] / 10000) : null;
+            $BuycarModelList[$k]['models_info']['kilometres'] = $BuycarModelList[$k]['models_info']['kilometres'] ? ($BuycarModelList[$k]['models_info']['kilometres'] / 10000) . '万' : null;
+            $BuycarModelList[$k]['models_info']['guide_price'] = $BuycarModelList[$k]['models_info']['guide_price'] ? ($BuycarModelList[$k]['models_info']['guide_price'] / 10000) : null;
+            
             unset($BuycarModelList[$k]['buycar_model']);
         }
-
-        $myQuotedList = array_merge($ModelsInfoList, $BuycarModelList);
-
-        foreach ($myQuotedList as $k => $v) {
-
-            $v['quotationtime'] = $v['quotationtime'] ? date('Y', $v['quotationtime']) : null;
-            $v['models_info']['kilometres'] = $v['models_info']['kilometres'] ? ($v['models_info']['kilometres'] / 10000) . '万' : null;
-            $v['models_info']['guide_price'] = $v['models_info']['guide_price'] ? ($v['models_info']['guide_price'] / 10000) : null;
-
-            if ($v['type'] == 'sell') {
-
-                $QuotedPriceList['sell'][] = $v;
-            }
-            if ($v['type'] == 'buy') {
-
-                $QuotedPriceList['buy'][] = $v;
-            }
-        }
-
+        //我的报价合并
+        $MyBuycarModelList = array_merge($SellcarModelList, $BuycarModelList);
+        
+        //收到报价
+        $QuotedPriceList['sell'] = $ModelsInfoList;
+        //我的报价
+        $QuotedPriceList['buy'] = $MyBuycarModelList;
 
         $this->success('请求成功', ['QuotedPriceList' => $QuotedPriceList]);
 
