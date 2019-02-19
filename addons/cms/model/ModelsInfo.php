@@ -37,15 +37,15 @@ class ModelsInfo extends Model
         $query->where('shelfismenu','1');
     }
 
-    public function setKilometresAttr($value)
-    {
-        return floatval(findNum($value))*10000;
-    }
-
-    public function setGuidePriceAttr($value)
-    {
-        return floatval(findNum($value))*10000;
-    }
+//    public function setKilometresAttr($value)
+//    {
+//        return floatval(findNum($value))*10000;
+//    }
+//
+//    public function setGuidePriceAttr($value)
+//    {
+//        return floatval(findNum($value))*10000;
+//    }
 
     public function setFactoryTimeAttr($value)
     {
@@ -73,6 +73,16 @@ class ModelsInfo extends Model
     public function brand()
     {
         return $this->belongsTo('BrandCate', 'brand_id', 'id')->setEagerlyType(0);
+    }
+
+
+    /**
+     * 关联品牌表
+     * @return \think\model\relation\BelongsTo
+     */
+    public function quotedprice()
+    {
+        return $this->belongsTo('QuotedPrice', 'models_info_id', 'id')->setEagerlyType(0);
     }
 
 }

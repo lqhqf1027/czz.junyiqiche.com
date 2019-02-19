@@ -47,7 +47,7 @@ class Block Extends Model
         $orderby = empty($params['orderby']) ? 'nums' : $params['orderby'];
         $orderway = empty($params['orderway']) ? 'desc' : strtolower($params['orderway']);
         $limit = empty($params['limit']) ? $row : $params['limit'];
-        $cache = !isset($params['cache']) ? true : (int)$params['cache'];
+//        $cache = !isset($params['cache']) ? true : (int)$params['cache'];
         $imgwidth = empty($params['imgwidth']) ? '' : $params['imgwidth'];
         $imgheight = empty($params['imgheight']) ? '' : $params['imgheight'];
         $orderway = in_array($orderway, ['asc', 'desc']) ? $orderway : 'desc';
@@ -63,7 +63,7 @@ class Block Extends Model
             ->field($field)
             ->order($order)
             ->limit($limit)
-            ->cache($cache)
+//            ->cache($cache)
             ->select();
         self::render($list, $imgwidth, $imgheight);
         return $list;
@@ -86,9 +86,9 @@ class Block Extends Model
     {
         $field = isset($params['id']) ? 'id' : 'name';
         $value = isset($params[$field]) ? $params[$field] : '';
-        $cache = !isset($params['cache']) ? true : (int)$params['cache'];
+//        $cache = !isset($params['cache']) ? true : (int)$params['cache'];
         $row = self::where($field, $value)
-            ->cache($cache)
+//            ->cache($cache)
             ->find();
         $result = '';
         if ($row) {
