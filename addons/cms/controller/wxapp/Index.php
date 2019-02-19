@@ -66,7 +66,7 @@ class Index extends Base
         $storeList = CompanyStore::field('id,store_name,cities_name,main_camp')
             ->withCount(['modelsinfo'])->where('recommend', 1)->select();
 
-
+        Cache::rm('CAR_LIST');
         if (!Cache::get('CAR_LIST')) {
 
             Cache::set('CAR_LIST', Carselect::getCarCache());
@@ -137,11 +137,10 @@ class Index extends Base
         $fields = $field ? $field : 'id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime,store_description' . $else;
 
         $modelsInfoList = collection($modelName->field($fields)
-
             ->with(['brand' => function ($q) {
                 $q->withField('id,name,bfirstletter');
             }])
-            ->order('createtime desc')->select())->toArray();
+            ->where($where)->order('createtime desc')->select())->toArray();
 
         $default_image = self::$default_image;
 
@@ -332,20 +331,6 @@ class Index extends Base
         $code = $this->request->post('code');
 
 
-        // //如果是手机号码授权  必须传递 iv 、encryptedData 、 sessionKey参数
-        // $iv = $this->request->post('iv');
-        // $encryptedData = $this->request->post('encryptedData');
-        // $sessionKey = $this->request->post('sessionKey');
-        // //解密手机号
-        // if ($sessionKey && $iv && $sessionKey) {
-        //     $pc = new WxBizDataCrypt('wxf789595e37da2838', $sessionKey);
-        //     $result = $pc->decryptData($encryptedData, $iv, $data);
-        //     if ($result == 0) {
-        //         $mobile = json_decode($data, true)['phoneNumber'];
-        //     } else {
-        //         $this->error('手机号解密失败', json_decode($data, true));
-        //     }
-        // }
         if (!$user_id) {
             $this->error('缺少参数,请求失败', 'error');
         }
@@ -357,14 +342,6 @@ class Index extends Base
             }
         }
 
-        // //如果是手机授权，手机号码更新到用户表
-        // if ($mobile) {
-        //     User::where('id', $user_id)->update([
-        //         'mobile' => $mobile
-        //     ]);
-        // } else {
-        //     $mobile = User::get($user_id)->mobile;
-        // }
 
         $this->success('发布成功', 'success');
     }
@@ -447,20 +424,7 @@ class Index extends Base
      */
     public function uploadModels()
     {
-       $arr = [
-            'modelsimages' => '/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png',
-            'models_name' => '标致408 2018款 1.8L 手动领先版',
-            'parkingposition' => '成都',
-            'license_plate' => '北京',
-            'guide_price' => '20万元',
-            'factorytime' => '2013-11-01',
-            'car_licensetime' => '2015-01-08',
-            'kilometres' => '35万公里',
-            'emission_standard' => '1.0T',
-            'phone' => '18683787363',
-            'store_description' => '很漂亮的车',
-            'brand_name' => '标致'
-        ];
+
         $carInfo = $this->request->post('carInfo/a');
         $user_id = $this->request->post('user_id');
         $modelsimages = $this->request->post('modelsimages');
@@ -571,28 +535,13 @@ class Index extends Base
      */
     public function wantBuyCar()
     {
-        $arr = [
-            'brand_name' => '标致',
-            'models_name' => '标致408 2018款 1.8L 手动领先版',
-            'parkingposition' => '成都',
-            'guide_price' => '20万元',
-            'phone' => '18683787363',
-            'kilometres' => '',
-            'emission_standard' => '2.5T',
-            'license_plate' => '',
-            'store_description' => '',
-            'factorytime' => '2018-06-05',
-            'car_licensetime' => '2014-01-07'
 
-        ];
         $carInfo = $this->request->post('carInfo/a');
         $user_id = $this->request->post('user_id');
 
         if (!$user_id || !$carInfo) {
             $this->error('缺少参数，请求失败', 'error');
         }
-//        $this->success(json_encode($arr));
-//        $carInfo = "{\"brand_name\":\"\\u6807\\u81f4\",\"models_name\":\"\\u6807\\u81f4408 2018\\u6b3e 1.8L \\u624b\\u52a8\\u9886\\u5148\\u7248\",\"parkingposition\":\"\\u6210\\u90fd\",\"guide_price\":\"20\\u4e07\\u5143\",\"phone\":\"18683787363\",\"kilometres\":\"\",\"emission_standard\":\"2.5T\",\"license_plate\":\"\",\"store_description\":\"\",\"factorytime\":\"2018-06-05\",\"car_licensetime\":\"2014-01-07\"}";
         $store_id = CompanyStore::get(['user_id' => $user_id])->id;
         if ($store_id) {
             $carInfo['store_id'] = $store_id;
@@ -608,26 +557,12 @@ class Index extends Base
      */
     public function clue()
     {
-        $arr = [
-            'brand_name' => '标致',
-            'phone' => '18683787363',
-            'parkingposition' => '成都',
-            'modelsimages' => '/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png',
-            'models_name' => '标致408 2018款 1.8L 手动领先版',
-            'license_plate' => '',
-            'factorytime' => '',
-            'car_licensetime' => '2015-01-08',
-            'kilometres' => '35万公里',
-            'emission_standard' => '1.0T',
-            'store_description' => ''
-        ];
-//        $this->success(json_decode($this->request->post('carInfo'),true)['parkingposition']);
+
         $carInfo = $this->request->post('carInfo');
         $user_id = $this->request->post('user_id');
         if (!$user_id || !$carInfo) {
             $this->error('缺少参数，请求失败', 'error');
         }
-//        $carInfo = "{\"brand_name\":\"\\u6807\\u81f4\",\"phone\":\"18683787363\",\"parkingposition\":\"\\u6210\\u90fd\",\"modelsimages\":\"\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png;\\/uploads\\/20181220\\/246477e60375d326878811de4e2544e0.png\",\"models_name\":\"\\u6807\\u81f4408 2018\\u6b3e 1.8L \\u624b\\u52a8\\u9886\\u5148\\u7248\",\"license_plate\":\"\",\"factorytime\":\"\",\"car_licensetime\":\"2015-01-08\",\"kilometres\":\"35\\u4e07\\u516c\\u91cc\",\"emission_standard\":\"1.0T\",\"store_description\":\"\"}";
 
         $store_id = CompanyStore::get(['user_id' => $user_id])->id;
         $carInfo = json_decode($carInfo, true);
@@ -635,18 +570,23 @@ class Index extends Base
             $carInfo['store_id'] = $store_id;
         }
         $carInfo['user_id'] = $user_id;
-//$this->success($carInfo);
         $clue = new Clue();
         $clue->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
     }
 
 
+    /**
+     * 首页搜索接口
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function search()
     {
+        //搜索条件
         $query = $this->request->post('query_criteria');
 
         $brand_id = BrandCate::where('name', 'like', '%' . $query . '%')->column('id');
-
 
         if ($brand_id) {
             $modelInfoList = self::typeCar(1, 1, ['brand_id' => ['in', $brand_id]], 'id,models_name');
@@ -655,22 +595,6 @@ class Index extends Base
             $modelInfoList = self::typeCar(1, 1, ['models_name' => ['like', '%' . $query . '%']], 'id,models_name');
             $buyCarList = self::typeCar(2, 1, ['models_name' => ['like', '%' . $query . '%']], 'id,models_name');
         }
-
-//        $all = array_merge($modelInfoList,$buyCarList);
-
-//        $check =$real = [];
-//        foreach ($all as $k=>$v){
-//            if(!in_array($v['brand']['id'],$check)){
-//                   $check[] = $v['brand']['id'];
-//                   $real[] = ['id'=>$v['brand']['id'],'name'=>$v['brand']['name'],'carList'=>[['id'=>$v['id'],'models_name'=>$v['models_name']]]];
-//            }else{
-//                foreach ($real as $key=>$value){
-//                       if($v['brand']['id']==$value['id']){
-//                           $real[$key]['carList'][] = ['id'=>$v['id'],'models_name'=>$v['models_name']];
-//                       }
-//                }
-//            }
-//        }
 
         if($modelInfoList){
             $modelInfoList = $this->getCarList($modelInfoList);
@@ -683,6 +607,11 @@ class Index extends Base
         $this->success('请求成功',['sell'=>$modelInfoList,'buy'=>$buyCarList]);
     }
 
+    /**
+     * 返回得到品牌对应的车辆数组
+     * @param $arr
+     * @return array
+     */
     public function getCarList($arr)
     {
         $check =$real = [];
@@ -693,15 +622,19 @@ class Index extends Base
             }else{
                 foreach ($real as $key=>$value){
                     if($v['brand']['id']==$value['id']){
+                        $flag = -1;
                         foreach ($real[$key]['carList'] as $kk=>$vv){
-                            
+                            if($v['models_name'] == $vv['models_name']){
+                                  $flag = -2;
+                            }
                         }
-                        $real[$key]['carList'][] = ['models_name'=>$v['models_name']];
+                        if($flag == -1){
+                            $real[$key]['carList'][] = ['models_name'=>$v['models_name']];
+                        }
                     }
                 }
             }
         }
-
 
         return $real;
     }

@@ -112,16 +112,16 @@ class Common extends Base
                 break;
         }
 
-        //判断该用户该车辆是否报价
-        $isOffer = QuotedPrice::get(['models_id'=>$car_id,'type'=>$type,'user_ids'=>$user_id]);
+        $car_id_key = $type=='buy'?'buy_car_id':'models_info_id';
 
-        $condition = ['id','models_name','car_licensetime','kilometres','guide_price','parkingposition','phone','store_id','modelsimages'];
+        //判断该用户该车辆是否报价
+        $isOffer = QuotedPrice::get([$car_id_key=>$car_id,'type'=>$type,'user_ids'=>$user_id]);
+
+        $condition = ['id','models_name','car_licensetime','kilometres','guide_price','parkingposition','phone','store_id','modelsimages','user_id'];
 
         $detail = $modelName->find($car_id)->visible($condition)->toArray();
+        $detail['modelsimages'] = empty($detail['modelsimages'])?[self::$default_image]:explode(',',$detail['modelsimages']);
 
-        $detail['modelsimages'] = empty($detail['modelsimages'])?[self::$default_image]:explode(';',$detail['modelsimages']);
-
-//        $this->success(gettype($detail));
         $detail['kilometres'] = $detail['kilometres'] ? ($detail['kilometres'] / 10000) . '万公里' : null;
         $detail['guide_price'] = $detail['guide_price'] ? ($detail['guide_price'] / 10000) . '万' : null;
         $detail['car_licensetime'] = $detail['car_licensetime'] ? date('Y', $detail['car_licensetime']) : null;

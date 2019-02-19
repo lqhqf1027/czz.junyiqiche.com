@@ -79,9 +79,33 @@ class My extends Base
             $userInfo['isRealName'] = 1;
         }
 
-        unset($userInfo['name'],$userInfo['id_card_images']);
+        $buyCarId = BuycarModel::where('user_id', $user_id)->column('id');
 
-        $this->success('请求成功',['userInfo'=>$userInfo]);
+        $modelInfoId = ModelsInfo::where('user_id', $user_id)->column('id');
+
+        if ($modelInfoId) {
+            $newModelInfo = QuotedPrice::where([
+                'models_info_id' => ['in', $modelInfoId],
+                'is_see' => 2,
+                'user_ids' => ['neq', $user_id]
+            ])->select();
+        }
+
+        if ($buyCarId) {
+            $newBuyCar = QuotedPrice::where([
+                'buy_car_id' => ['in', $buyCarId],
+                'is_see' => 2,
+                'user_ids' => ['neq', $user_id]
+            ])->select();
+        }
+        $userInfo['isNewOffer'] = 0;
+        if (!empty($newModelInfo) || !empty($newBuyCar)) {
+            $userInfo['isNewOffer'] = 1;
+        }
+
+        unset($userInfo['name'], $userInfo['id_card_images']);
+
+        $this->success('请求成功', ['userInfo' => $userInfo]);
     }
 
 
@@ -317,8 +341,8 @@ class My extends Base
     /**
      * 我的页面---我想买的
      */
-     public function buyCar()
-     {
+    public function buyCar()
+    {
         $user_id = $this->request->post('user_id');
 
         if (!$user_id) {
@@ -326,69 +350,74 @@ class My extends Base
         }
 
         $buyCarList = collection(BuycarModel::field('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime')
-            ->with(['brand'=>function ($q){
+            ->with(['brand' => function ($q) {
                 $q->withField('id,name,bfirstletter');
-        }])
-        ->order('createtime desc')->where('user_id', $user_id)->select())->toArray();
+            }])
+            ->order('createtime desc')->where('user_id', $user_id)->select())->toArray();
 
-        $default_image = ConfigModel::get(['name'=>'default_picture'])->value;
+        $default_image = ConfigModel::get(['name' => 'default_picture'])->value;
 
         foreach ($buyCarList as $k => $v) {
 
             $buyCarList[$k]['modelsimages'] = $default_image;
-            
+
             $buyCarList[$k]['kilometres'] = $v['kilometres'] ? ($v['kilometres'] / 10000) . '万公里' : null;
             $buyCarList[$k]['guide_price'] = $v['guide_price'] ? ($v['guide_price'] / 10000) . '万' : null;
-            
+
             $buyCarList[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y', $v['car_licensetime']) : null;
         }
 
         $this->success('请求成功', ['buyCarList' => $buyCarList]);
- 
-     }
 
-     /**
+    }
+
+    /**
      * 我的页面---我的报价
      */
-     public function myQuoted()
-     {
+    public function myQuoted()
+    {
         $user_id = $this->request->post('user_id');
 
         if (!$user_id) {
             $this->error('缺少参数');
         }
+        
+        $quotedPriceId = array_merge($this->getQuotedPriceId($user_id,'buy'),$this->getQuotedPriceId($user_id,'sell'));
+        if($quotedPriceId){
+            QuotedPrice::where('id','in',$quotedPriceId)->setField('is_see',1);
+        }
         //收到报价
         $ModelsInfoList = collection(QuotedPrice::field('id,user_ids,models_id,money,quotationtime,type')
-            ->with(['ModelsInfo'=>function ($q){
+            ->with(['ModelsInfo' => function ($q) {
                 $q->withField('id,models_name,guide_price,user_id,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,modelsimages');
             },
-            'user'=>function ($q){
-                $q->withField('id,nickname,avatar,mobile');
-            }])
-        ->where('type', 'sell')->select())->toArray();
+                'user' => function ($q) {
+                    $q->withField('id,nickname,avatar,mobile');
+                }])
+            ->where('type', 'sell')->select())->toArray();
 
-        foreach ($ModelsInfoList as $k=>$v){
+        foreach ($ModelsInfoList as $k => $v) {
 
             $ModelsInfoList[$k]['models_info']['modelsimages'] = explode(',', $ModelsInfoList[$k]['models_info']['modelsimages'])[0];
-            
+
         }
-        
+
         //我的报价
         $BuycarModelList = collection(QuotedPrice::field('id,user_ids,money,quotationtime,type')
-            ->with(['BuycarModel'=>function ($q){
+            ->with(['BuycarModel' => function ($q) {
                 $q->withField('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime');
             },
-            'user'=>function ($q){
-                $q->withField('mobile');
-        }])
-        ->where('type', 'buy')->where('user_ids', $user_id)->select())->toArray();
+                'user' => function ($q) {
+                    $q->withField('mobile');
+                }])
+            ->where('type', 'buy')->where('user_ids', $user_id)->select())->toArray();
 
-        $default_image = ConfigModel::get(['name'=>'default_picture'])->value;
+        $default_image = ConfigModel::get(['name' => 'default_picture'])->value;
 
-        foreach ($BuycarModelList as $k=>$v){
-            $BuycarModelList[$k]['models_info']  = $v['buycar_model'];
+        foreach ($BuycarModelList as $k => $v) {
+            $BuycarModelList[$k]['models_info'] = $v['buycar_model'];
             $BuycarModelList[$k]['models_info']['modelsimages'] = $default_image;
-            
+
             unset($BuycarModelList[$k]['buycar_model']);
         }
 
@@ -399,7 +428,7 @@ class My extends Base
             $v['quotationtime'] = $v['quotationtime'] ? date('Y', $v['quotationtime']) : null;
             $v['models_info']['kilometres'] = $v['models_info']['kilometres'] ? ($v['models_info']['kilometres'] / 10000) . '万' : null;
             $v['models_info']['guide_price'] = $v['models_info']['guide_price'] ? ($v['models_info']['guide_price'] / 10000) : null;
-           
+
             if ($v['type'] == 'sell') {
 
                 $QuotedPriceList['sell'][] = $v;
@@ -410,21 +439,36 @@ class My extends Base
             }
         }
 
-        $this->success('请求成功', ['QuotedPriceList' => $QuotedPriceList]);
- 
-     }
 
-     /**
+        $this->success('请求成功', ['QuotedPriceList' => $QuotedPriceList]);
+
+    }
+
+    public function getQuotedPriceId($user_id, $type)
+    {
+        $table = $type == 'sell' ? 'models_info' : 'buycar_model';
+        $join = $type == 'sell' ? 'models_info_id' : 'buy_car_id';
+        return Db::name($table)
+            ->alias('a')
+            ->join('quoted_price b', 'a.id = b.' . $join)
+            ->where([
+                'a.user_id' => $user_id,
+                'b.user_ids' => ['neq', $user_id],
+                'b.is_see' => 2
+            ])->column('b.id');
+    }
+
+    /**
      * 我的页面---我想买的---上下架
      */
-     public function Buyshelf()
-     {
+    public function Buyshelf()
+    {
         $id = $this->request->post('id');
 
         $shelfismenu = $this->request->post('shelfismenu');
 
         $shelfismenu = $shelfismenu == 0 ? 2 : 1;
-        
+
         if (!$id || !$shelfismenu) {
             $this->error('缺少参数');
         }
@@ -438,10 +482,10 @@ class My extends Base
         if ($shelfismenu == 2) {
 
             BuycarModel::update(['id' => $id, 'shelfismenu' => $shelfismenu]) ? $this->success('下架成功', 'success') : $this->error('下架失败', 'error');
-            
+
         }
- 
-     }
+
+    }
 
 
 }
