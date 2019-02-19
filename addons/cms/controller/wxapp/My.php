@@ -370,6 +370,11 @@ class My extends Base
         }])
         ->where('type', 'buy')->where('user_ids', $user_id)->select())->toArray();
 
+        foreach ($BuycarModelList as $k=>$v){
+                  $BuycarModelList[$k]['models_info']  = $v['buycar_model'];
+                  unset($BuycarModelList[$k]['buycar_model']);
+        }
+
         $myQuotedList = array_merge($ModelsInfoList, $BuycarModelList);
 
         foreach ($myQuotedList as $k => $v) {
