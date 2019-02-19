@@ -16,6 +16,7 @@ use addons\cms\model\ModelsInfo;
 use addons\cms\model\RideSharing;
 use addons\cms\model\BuycarModel;
 use addons\cms\model\BrandCate;
+use addons\cms\model\Brand;
 use addons\cms\model\User;
 use app\common\model\Addon;
 use think\Cache;
@@ -218,6 +219,56 @@ class Index extends Base
         }
 
         $this->success('请求成功', ['brand' => $brand, 'mobile' => $userData['mobile']]);
+    }
+
+    /**
+     * 获取车辆品牌和车系
+     */
+    public function getBrand()
+    {
+        $brandList = Brand::where('pid', 0)->field('id,name,brand_initials,brand_logoimage')->select();
+        $seriesList = Brand::where('pid', 'NEQ', 0)->field('id,name,pid')->select();
+        $check = [];
+
+        foreach ($brandList as $k => $v) {
+
+            if (in_array($v['brand_initials'], $check)) {
+
+                continue;
+            } else {
+                $check[] = $v['brand_initials'];
+            }
+
+        }
+
+        sort($check);
+
+        foreach ($check as $k => $v) {
+
+            foreach ($brandList as $key => $value) {
+
+                if ($v == $value['brand_initials']) {
+                    unset($check[$k]);
+                    $check[$v]['brand'] = [
+                        'id' => $value['id'],
+                        'name' => $value['name']
+                    ];
+                    foreach ($series as $kk => $vv) {
+                        if ($vv['pid'] == $value['id']) {
+                            $check[$v]['brand'][] = [
+                                'id' => $value['id'],
+                                'name' => $value['name']
+                            ];
+                        }
+                    }
+                }
+
+            }
+
+        }
+        
+        $this->success('请求成功', ['brand' => $check]);
+
     }
 
 

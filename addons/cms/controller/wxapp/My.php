@@ -335,12 +335,12 @@ class My extends Base
 
         foreach ($buyCarList as $k => $v) {
 
-            $modelsInfoList[$k]['modelsimages'] = $default_image;
+            $buyCarList[$k]['modelsimages'] = $default_image;
             
-            $modelsInfoList[$k]['kilometres'] = $v['kilometres'] ? ($v['kilometres'] / 10000) . '万公里' : null;
-            $modelsInfoList[$k]['guide_price'] = $v['guide_price'] ? ($v['guide_price'] / 10000) . '万' : null;
+            $buyCarList[$k]['kilometres'] = $v['kilometres'] ? ($v['kilometres'] / 10000) . '万公里' : null;
+            $buyCarList[$k]['guide_price'] = $v['guide_price'] ? ($v['guide_price'] / 10000) . '万' : null;
             
-            $modelsInfoList[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y', $v['car_licensetime']) : null;
+            $buyCarList[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y', $v['car_licensetime']) : null;
         }
 
         $this->success('请求成功', ['buyCarList' => $buyCarList]);
@@ -357,22 +357,38 @@ class My extends Base
         if (!$user_id) {
             $this->error('缺少参数');
         }
-
-        $ModelsInfoList = collection(QuotedPrice::field('id,user_ids,money,quotationtime,type')
+        //收到报价
+        $ModelsInfoList = collection(QuotedPrice::field('id,user_ids,models_id,money,quotationtime,type')
             ->with(['ModelsInfo'=>function ($q){
-                $q->withField('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime');
-        }])
-        ->where('type', 'sell')->where('user_ids', $user_id)->select())->toArray();
+                $q->withField('id,models_name,guide_price,user_id,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,modelsimages');
+            },
+            'user'=>function ($q){
+                $q->withField('id,nickname,avatar,mobile');
+            }])
+        ->where('type', 'sell')->select())->toArray();
 
+        foreach ($ModelsInfoList as $k=>$v){
+
+            $ModelsInfoList[$k]['models_info']['modelsimages'] = explode(',', $ModelsInfoList[$k]['models_info']['modelsimages'])[0];
+           
+        }
+        
+        //我的报价
         $BuycarModelList = collection(QuotedPrice::field('id,user_ids,money,quotationtime,type')
             ->with(['BuycarModel'=>function ($q){
                 $q->withField('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime');
+            },
+            'user'=>function ($q){
+                $q->withField('mobile');
         }])
         ->where('type', 'buy')->where('user_ids', $user_id)->select())->toArray();
 
+        $default_image = ConfigModel::get(['name'=>'default_picture'])->value;
+
         foreach ($BuycarModelList as $k=>$v){
-                  $BuycarModelList[$k]['models_info']  = $v['buycar_model'];
-                  unset($BuycarModelList[$k]['buycar_model']);
+            $BuycarModelList[$k]['models_info']  = $v['buycar_model'];
+            $BuycarModelList[$k]['models_info']['modelsimages'] = $default_image;
+            unset($BuycarModelList[$k]['buycar_model']);
         }
 
         $myQuotedList = array_merge($ModelsInfoList, $BuycarModelList);
@@ -404,6 +420,7 @@ class My extends Base
 
         $shelfismenu = $this->request->post('shelfismenu');
 
+        $shelfismenu = $shelfismenu == 0 ? 2 : 1;
         
         if (!$id || !$shelfismenu) {
             $this->error('缺少参数');
@@ -415,7 +432,7 @@ class My extends Base
 
         }
         //下架
-        if ($shelfismenu == 0) {
+        if ($shelfismenu == 2) {
 
             BuycarModel::update(['id' => $id, 'shelfismenu' => $shelfismenu]) ? $this->success('下架成功', 'success') : $this->error('下架失败', 'error');
             
