@@ -66,7 +66,7 @@ class Index extends Base
         $storeList = CompanyStore::field('id,store_name,cities_name,main_camp')
             ->withCount(['modelsinfo'])->where('recommend', 1)->select();
 
-        Cache::rm('CAR_LIST');
+
         if (!Cache::get('CAR_LIST')) {
 
             Cache::set('CAR_LIST', Carselect::getCarCache());
@@ -74,10 +74,10 @@ class Index extends Base
 
         $dataList = Cache::get('CAR_LIST')['carList'];
 
-        foreach ($dataList as $v) {
-            if ($v['type'] == 'sell') {
+        foreach ($dataList as $v){
+            if($v['type']=='sell'){
                 $modelsInfoList[] = $v;
-            } else {
+            }else{
                 $buycarModelList[] = $v;
             }
 
@@ -115,6 +115,8 @@ class Index extends Base
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
+
+
     public static function typeCar($modelType, $is_transformation = 0, $where = null, $field = null)
     {
         $modelName = null;
@@ -134,12 +136,12 @@ class Index extends Base
 
         $fields = $field ? $field : 'id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime,store_description' . $else;
 
-
         $modelsInfoList = collection($modelName->field($fields)
+
             ->with(['brand' => function ($q) {
                 $q->withField('id,name,bfirstletter');
             }])
-            ->where($where)->order('createtime desc')->select())->toArray();
+            ->order('createtime desc')->select())->toArray();
 
         $default_image = self::$default_image;
 
@@ -232,8 +234,8 @@ class Index extends Base
     public function getBrand()
     {
         $brandList = Brand::where('pid', 0)->field('id,name,brand_initials,brand_logoimage')->select();
-        $seriesList = Brand::where('pid', 'NEQ', 0)->field('id,name,pid')->select();
         $check = [];
+        $series = [];
 
         foreach ($brandList as $k => $v) {
 
@@ -252,29 +254,66 @@ class Index extends Base
 
             foreach ($brandList as $key => $value) {
 
-                if ($v == $value['brand_initials']) {
+                if ($value['brand_initials'] == $v) {
                     unset($check[$k]);
-                    $check[$v]['brand'] = [
-                        'id' => $value['id'],
-                        'name' => $value['name']
-                    ];
-                    foreach ($series as $kk => $vv) {
-                        if ($vv['pid'] == $value['id']) {
-                            $check[$v]['brand'][] = [
-                                'id' => $value['id'],
-                                'name' => $value['name']
-                            ];
-                        }
+
+                    $seriesList = Brand::where('pid', $value['id'])->field('id,name,pid')->select();
+
+                    foreach ($seriesList as $kk => $vv) {
+
+                            $series[] = [
+                                'id' => $vv['id'],
+                                'name' => $vv['name'],
+                                'pid' => $vv['pid']
+                            ];       
+
                     }
+                    
+                    $check[$v]['brand'][] = [
+                        'id' => $value['id'],
+                        'name' => $value['name'],
+                        'series' => $series
+                    ];
+
+                    $series = [];
+
                 }
 
             }
 
         }
 
-        $this->success('请求成功', ['brand' => $check]);
+        //缓冲品牌
+        Cache::set('brandCatesList', $check);
+
+        return Cache::get('brandCatesList');
 
     }
+
+    /**
+     * 发布车源接口中的车辆品牌
+     */
+    public function getBrandCates()
+    {
+        $user_id = $this->request->post('user_id');
+
+        if (!$user_id) {
+            $this->error('缺少参数,请求失败', 'error');
+        }
+        //用户信息
+        $userData = User::where('id', $user_id)->find();
+
+        //得到所有的品牌列表
+        if (Cache::get('brandCatesList')) {
+            $brand = Cache::get('brandCatesList');
+        } else {
+            Cache::set('brandCatesList', $this->getBrand());
+            $brand = Cache::get('brandCatesList');
+        }
+
+        $this->success('请求成功', ['brandList' => $brand, 'mobile' => $userData['mobile']]);
+    }
+
 
 
     /**
@@ -317,11 +356,6 @@ class Index extends Base
                 $this->error('验证码输入错误');
             }
         }
-
-        User::update([
-            'id' => $user_id,
-            'mobile' => $mobile
-        ]);
 
         // //如果是手机授权，手机号码更新到用户表
         // if ($mobile) {
@@ -413,7 +447,7 @@ class Index extends Base
      */
     public function uploadModels()
     {
-        $arr = [
+       $arr = [
             'modelsimages' => '/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png;/uploads/20181220/246477e60375d326878811de4e2544e0.png',
             'models_name' => '标致408 2018款 1.8L 手动领先版',
             'parkingposition' => '成都',
@@ -479,18 +513,18 @@ class Index extends Base
             $this->error(__('Uploaded file format is limited'));
         }
         $replaceArr = [
-            '{year}' => date("Y"),
-            '{mon}' => date("m"),
-            '{day}' => date("d"),
-            '{hour}' => date("H"),
-            '{min}' => date("i"),
-            '{sec}' => date("s"),
-            '{random}' => Random::alnum(16),
+            '{year}'     => date("Y"),
+            '{mon}'      => date("m"),
+            '{day}'      => date("d"),
+            '{hour}'     => date("H"),
+            '{min}'      => date("i"),
+            '{sec}'      => date("s"),
+            '{random}'   => Random::alnum(16),
             '{random32}' => Random::alnum(32),
             '{filename}' => $suffix ? substr($fileInfo['name'], 0, strripos($fileInfo['name'], '.')) : $fileInfo['name'],
-            '{suffix}' => $suffix,
-            '{.suffix}' => $suffix ? '.' . $suffix : '',
-            '{filemd5}' => md5_file($fileInfo['tmp_name']),
+            '{suffix}'   => $suffix,
+            '{.suffix}'  => $suffix ? '.' . $suffix : '',
+            '{filemd5}'  => md5_file($fileInfo['tmp_name']),
         ];
         $savekey = $upload['savekey'];
         $savekey = str_replace(array_keys($replaceArr), array_values($replaceArr), $savekey);
@@ -507,18 +541,18 @@ class Index extends Base
                 $imageheight = isset($imgInfo[1]) ? $imgInfo[1] : $imageheight;
             }
             $params = array(
-                'admin_id' => 0,
-                'user_id' => (int)$this->auth->id,
-                'filesize' => $fileInfo['size'],
-                'imagewidth' => $imagewidth,
+                'admin_id'    => 0,
+                'user_id'     => (int)$this->auth->id,
+                'filesize'    => $fileInfo['size'],
+                'imagewidth'  => $imagewidth,
                 'imageheight' => $imageheight,
-                'imagetype' => $suffix,
+                'imagetype'   => $suffix,
                 'imageframes' => 0,
-                'mimetype' => $fileInfo['type'],
-                'url' => $uploadDir . $splInfo->getSaveName(),
-                'uploadtime' => time(),
-                'storage' => 'local',
-                'sha1' => $sha1,
+                'mimetype'    => $fileInfo['type'],
+                'url'         => $uploadDir . $splInfo->getSaveName(),
+                'uploadtime'  => time(),
+                'storage'     => 'local',
+                'sha1'        => $sha1,
             );
 //            $attachment = model("attachment");
 //            $attachment->data(array_filter($params));
@@ -532,7 +566,6 @@ class Index extends Base
             $this->error($file->getError());
         }
     }
-
     /**
      * 我想买车接口
      */
@@ -607,6 +640,7 @@ class Index extends Base
         $clue->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
     }
 
+
     public function search()
     {
         $query = $this->request->post('query_criteria');
@@ -667,6 +701,7 @@ class Index extends Base
                 }
             }
         }
+
 
         return $real;
     }
