@@ -130,7 +130,11 @@ class Common extends Base
             }])
             ->find($car_id);
 
+        $modelName->where('id',$car_id)->setInc('browse_volume',rand(1,100));
+
+//        $detail['car_licensetime'] = date('Y-m-d',$detail['car_licensetime']);
 //        $detail = $modelName->find($car_id)->visible($condition)->toArray();
+//        pr($detail['car_licensetime']);die;
         $detail['modelsimages'] = empty($detail['modelsimages']) ? [self::$default_image] : explode(',', $detail['modelsimages']);
 
         $detail['kilometres'] = $detail['kilometres'] ? ($detail['kilometres'] / 10000) . '万公里' : null;
