@@ -150,6 +150,14 @@ class Carselect extends Base
         foreach ($cityList as $k => $v) {
             $cityList[$k] = ['name' => $v];
         }
+        
+        array_unshift($cityList, ['name' => '不限地区']);
+        array_unshift($brandList, [
+            'zimu' => 'ALL',
+            "brand_list" => [[
+                'name' => '不限品牌'        
+            ]]
+        ]);
 
         $arr = [
             'city' => $cityList,
