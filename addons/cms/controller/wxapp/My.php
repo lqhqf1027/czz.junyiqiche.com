@@ -407,6 +407,7 @@ class My extends Base
             $ModelsInfoList[$k]['models_info']['modelsimages'] = explode(',', $ModelsInfoList[$k]['models_info']['modelsimages'])[0];
 
             $ModelsInfoList[$k]['user']['mobile'] = $default_phone;
+            $ModelsInfoList[$k]['models_info']['car_licensetime'] = $ModelsInfoList[$k]['models_info']['car_licensetime'] ? date('Y-m', $ModelsInfoList[$k]['models_info']['car_licensetime']) : null;
 
             $ModelsInfoList[$k]['models_info']['brand_name'] = BrandCate::where('id', $ModelsInfoList[$k]['models_info']['brand_id'])->value('name');
             $ModelsInfoList[$k]['quotationtime'] = $ModelsInfoList[$k]['quotationtime'] ? format_date($ModelsInfoList[$k]['quotationtime']) : null;
@@ -426,6 +427,7 @@ class My extends Base
         ->where('user_ids', $user_id)->select())->toArray();
 
         foreach ($SellcarModelList as $k=>$v){
+            $SellcarModelList[$k]['models_info']['car_licensetime'] = $SellcarModelList[$k]['models_info']['car_licensetime'] ? date('Y-m', $SellcarModelList[$k]['models_info']['car_licensetime']) : null;
             $SellcarModelList[$k]['models_info']['modelsimages'] = explode(',', $SellcarModelList[$k]['models_info']['modelsimages'])[0];
             $SellcarModelList[$k]['models_info']['brand_name'] = BrandCate::where('id', $SellcarModelList[$k]['models_info']['brand_id'])->value('name');
             $SellcarModelList[$k]['quotationtime'] = $SellcarModelList[$k]['quotationtime'] ? format_date($SellcarModelList[$k]['quotationtime']) : null;
@@ -457,6 +459,7 @@ class My extends Base
             $BuycarModelList[$k]['models_info']['kilometres'] = $BuycarModelList[$k]['models_info']['kilometres'] ? round(($BuycarModelList[$k]['models_info']['kilometres'] / 10000), 2) . '万' : null;
             $BuycarModelList[$k]['models_info']['guide_price'] = $BuycarModelList[$k]['models_info']['guide_price'] ? round(($BuycarModelList[$k]['models_info']['guide_price'] / 10000), 2) : null;
             $BuycarModelList[$k]['user']['mobile'] = $default_phone;
+            $BuycarModelList[$k]['models_info']['car_licensetime'] = $BuycarModelList[$k]['models_info']['car_licensetime'] ? date('Y-m', $BuycarModelList[$k]['models_info']['car_licensetime']) : null;
 
             unset($BuycarModelList[$k]['buycar_model']);
         }
