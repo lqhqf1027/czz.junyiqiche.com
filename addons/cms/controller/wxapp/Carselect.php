@@ -42,6 +42,7 @@ class Carselect extends Base
 
         $carLists = $alls['carList'];
         $realCarList = [];
+        $city = $city == '不限地区' ? false : $city;
         if ($city || $brand_id || $models_name) {
             foreach ($carLists as $k => $v) {
 
