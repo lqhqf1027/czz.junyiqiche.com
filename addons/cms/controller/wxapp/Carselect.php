@@ -84,8 +84,24 @@ class Carselect extends Base
                     break;
             }
 
+            $orderBy = array_column($realCarList, $field);
+            if ($screen != 1) {
+
+                foreach ($orderBy as $k => $v) {
+
+                    $orderBy[$k] = floatval($v);
+
+                    //如果没有改字段，将数据放在最后
+                    if ($orderBy[$k] == 0) {
+                        $orderBy[$k] = 10000;
+                    }
+
+                }
+
+            }
+
             //二维数组根据某个字段升序或者降序排列
-            $realCarList = list_sort_by($realCarList, $field, $screen == 1 ? 'desc' : 'asc');
+            array_multisort($orderBy, $screen == 1 ? SORT_DESC : SORT_ASC, $realCarList);
         }
 
         $this->success('请求成功', [
@@ -106,8 +122,8 @@ class Carselect extends Base
 
     public static function getCarCache()
     {
-        $modelsInfoList = Index::typeCar(1);
-        $buyCarModelList = Index::typeCar(2);
+        $modelsInfoList = Index::typeCar(1, 0);
+        $buyCarModelList = Index::typeCar(2, 0);
 
         $all = array_merge($modelsInfoList, $buyCarModelList);
 
@@ -146,7 +162,6 @@ class Carselect extends Base
         //二维数组根据某个字段a-z顺序排列数组
         array_multisort(array_column($brandList, 'zimu'), SORT_ASC, $brandList);
 
-
         foreach ($cityList as $k => $v) {
             $cityList[$k] = ['name' => $v];
         }
@@ -160,9 +175,4 @@ class Carselect extends Base
         return $arr;
     }
 
-
-    public function test()
-    {
-        User::where('id', 5)->setInc('store_id');
-    }
 }

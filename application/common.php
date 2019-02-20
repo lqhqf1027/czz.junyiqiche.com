@@ -703,37 +703,6 @@ if (!function_exists('var_export_short')) {
     }
 
     /**
-     * 二维数组根据某个字段排序
-     */
-    if (!function_exists('list_sort_by')) {
-        function list_sort_by($list, $field, $sortby = 'asc')
-        {
-            if (is_array($list)) {
-                $refer = $resultSet = array();
-                foreach ($list as $i => $data) {
-                    $refer[$i] = &$data[$field];
-                }
-                switch ($sortby) {
-                    case 'asc': // 正向排序
-                        asort($refer);
-                        break;
-                    case 'desc': // 逆向排序
-                        arsort($refer);
-                        break;
-                    case 'nat': // 自然排序
-                        natcasesort($refer);
-                        break;
-                }
-                foreach ($refer as $key => $val) {
-                    $resultSet[] = &$list[$key];
-                }
-                return $resultSet;
-            }
-            return false;
-        }
-    }
-
-    /**
      * 检查是否为手机号
      */
     if (!function_exists('checkPhoneNumberValidate')) {

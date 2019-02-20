@@ -69,7 +69,7 @@ class Index extends Base
         Cache::rm('CAR_LIST');
         if (!Cache::get('CAR_LIST')) {
 
-            Cache::set('CAR_LIST', Carselect::getCarCache());
+            Cache::set('CAR_LIST', Carselect::getCarCache(0));
         }
 
         $dataList = Cache::get('CAR_LIST')['carList'];
@@ -152,8 +152,8 @@ class Index extends Base
 
         foreach ($modelsInfoList as $k => $v) {
             if (!$is_transformation) {
-                $modelsInfoList[$k]['kilometres'] = $v['kilometres'] ? round($v['kilometres'] / 10000, 2) . '万公里' : null;
-                $modelsInfoList[$k]['guide_price'] = $v['guide_price'] ? round($v['guide_price'] / 10000, 2) . '万' : null;
+                $modelsInfoList[$k]['kilometres'] = $v['kilometres'] ? floatval(round($v['kilometres'] / 10000, 2)) . '万公里' : null;
+                $modelsInfoList[$k]['guide_price'] = $v['guide_price'] ? floatval(round($v['guide_price'] / 10000, 2)) . '万' : null;
             }
             if ($field == null) {
                 $modelsInfoList[$k]['modelsimages'] = !empty($v['modelsimages']) ? explode(',', $v['modelsimages'])[0] : $default_image;

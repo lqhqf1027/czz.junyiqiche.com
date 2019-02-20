@@ -28,7 +28,7 @@ return array (
     'user' => 'User',
     'example' => 'Example',
     'rate' => '收益率配置',
-    'default_image' => '车辆默认图片',
+    'default_image' => '默认配置',
     'shares' => '小程序分享配置',
     'agreement' => '用户协议',
   ),
@@ -47,5 +47,6 @@ return array (
   'shares_bg_img' => '/uploads/20190213/8105e6eb128185d115158a74f9765b64.jpg',
   'shares_bk_qrocde' => '/uploads/20190213/d1f75cbaeea2f8e09bc4e8477c6bb48a.jpg',
   'agreement' => '',
-  'details_default_picture' => '/uploads/20190219/cf0983c686b9a61391a28baaea8064c5.jpg',
+  'details_default_picture' => '/uploads/20190220/45caa475f2aa199f9a3dd4d562feef6e.png',
+  'default_phone' => '13888888888',
 );
