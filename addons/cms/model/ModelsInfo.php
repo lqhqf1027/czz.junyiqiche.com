@@ -85,13 +85,25 @@ class ModelsInfo extends Model
         return $this->belongsTo('QuotedPrice', 'models_info_id', 'id')->setEagerlyType(0);
     }
 
-    protected function setFactorytimeAttr($value)
+    public function setFactoryTimeAttr($value)
     {
         return $value && !is_numeric($value) ? strtotime($value) : $value;
     }
 
-    protected function setCarLicensetimeAttr($value)
+    public function setCarLicenseTimeAttr($value)
     {
         return $value && !is_numeric($value) ? strtotime($value) : $value;
     }
+
+    public function getCarLicenseTimeAttr($value)
+    {
+        return $value && !is_numeric($value) ? date("Y-m-d", intval($value)) : $value;
+    }
+
+    protected function getFactorytimeAttr($value)
+    {
+        return $value && !is_numeric($value) ? date("Y-m-d", $value) : $value;
+    }
+
+
 }

@@ -73,15 +73,21 @@ class Index extends Base
         }
 
         $dataList = Cache::get('CAR_LIST')['carList'];
-
-        foreach ($dataList as $v){
-            if($v['type']=='sell'){
+        foreach ($dataList as $v) {
+            if ($v['type'] == 'sell') {
                 $modelsInfoList[] = $v;
-            }else{
+            } else {
                 $buycarModelList[] = $v;
             }
 
         }
+
+        array_multisort(array_column($modelsInfoList, 'browse_volume'), SORT_DESC, $modelsInfoList);
+        array_multisort(array_column($buycarModelList, 'browse_volume'), SORT_DESC, $buycarModelList);
+
+        $modelsInfoList = array_slice($modelsInfoList, 0, 15);
+        $buycarModelList = array_slice($buycarModelList, 0, 15);
+
         $share = collection(ConfigModel::all(function ($q) {
             $q->where('group', 'shares')->field('name,value');
         }))->toArray();
@@ -145,10 +151,9 @@ class Index extends Base
         $default_image = self::$default_image;
 
         foreach ($modelsInfoList as $k => $v) {
-
             if (!$is_transformation) {
-                $modelsInfoList[$k]['kilometres'] = $v['kilometres'] ? ($v['kilometres'] / 10000) . '万公里' : null;
-                $modelsInfoList[$k]['guide_price'] = $v['guide_price'] ? ($v['guide_price'] / 10000) . '万' : null;
+                $modelsInfoList[$k]['kilometres'] = $v['kilometres'] ? round($v['kilometres'] / 10000, 2) . '万公里' : null;
+                $modelsInfoList[$k]['guide_price'] = $v['guide_price'] ? round($v['guide_price'] / 10000, 2) . '万' : null;
             }
             if ($field == null) {
                 $modelsInfoList[$k]['modelsimages'] = !empty($v['modelsimages']) ? explode(',', $v['modelsimages'])[0] : $default_image;
@@ -260,14 +265,14 @@ class Index extends Base
 
                     foreach ($seriesList as $kk => $vv) {
 
-                            $series[] = [
-                                'id' => $vv['id'],
-                                'name' => $vv['name'],
-                                'pid' => $vv['pid']
-                            ];       
+                        $series[] = [
+                            'id' => $vv['id'],
+                            'name' => $vv['name'],
+                            'pid' => $vv['pid']
+                        ];
 
                     }
-                    
+
                     $check[$v]['brand'][] = [
                         'id' => $value['id'],
                         'name' => $value['name'],
@@ -312,7 +317,6 @@ class Index extends Base
 
         $this->success('请求成功', ['brandList' => $brand, 'mobile' => $userData['mobile']]);
     }
-
 
 
     /**
@@ -435,7 +439,7 @@ class Index extends Base
 
         $carInfo['store_id'] = $store_id;
         $carInfo['user_id'] = $user_id;
-        $carInfo['browse_volume'] = rand(500,2000);
+        $carInfo['browse_volume'] = rand(500, 2000);
         $modelsInfo = new ModelsInfo();
         $modelsInfo->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
     }
@@ -478,18 +482,18 @@ class Index extends Base
             $this->error(__('Uploaded file format is limited'));
         }
         $replaceArr = [
-            '{year}'     => date("Y"),
-            '{mon}'      => date("m"),
-            '{day}'      => date("d"),
-            '{hour}'     => date("H"),
-            '{min}'      => date("i"),
-            '{sec}'      => date("s"),
-            '{random}'   => Random::alnum(16),
+            '{year}' => date("Y"),
+            '{mon}' => date("m"),
+            '{day}' => date("d"),
+            '{hour}' => date("H"),
+            '{min}' => date("i"),
+            '{sec}' => date("s"),
+            '{random}' => Random::alnum(16),
             '{random32}' => Random::alnum(32),
             '{filename}' => $suffix ? substr($fileInfo['name'], 0, strripos($fileInfo['name'], '.')) : $fileInfo['name'],
-            '{suffix}'   => $suffix,
-            '{.suffix}'  => $suffix ? '.' . $suffix : '',
-            '{filemd5}'  => md5_file($fileInfo['tmp_name']),
+            '{suffix}' => $suffix,
+            '{.suffix}' => $suffix ? '.' . $suffix : '',
+            '{filemd5}' => md5_file($fileInfo['tmp_name']),
         ];
         $savekey = $upload['savekey'];
         $savekey = str_replace(array_keys($replaceArr), array_values($replaceArr), $savekey);
@@ -506,18 +510,18 @@ class Index extends Base
                 $imageheight = isset($imgInfo[1]) ? $imgInfo[1] : $imageheight;
             }
             $params = array(
-                'admin_id'    => 0,
-                'user_id'     => (int)$this->auth->id,
-                'filesize'    => $fileInfo['size'],
-                'imagewidth'  => $imagewidth,
+                'admin_id' => 0,
+                'user_id' => (int)$this->auth->id,
+                'filesize' => $fileInfo['size'],
+                'imagewidth' => $imagewidth,
                 'imageheight' => $imageheight,
-                'imagetype'   => $suffix,
+                'imagetype' => $suffix,
                 'imageframes' => 0,
-                'mimetype'    => $fileInfo['type'],
-                'url'         => $uploadDir . $splInfo->getSaveName(),
-                'uploadtime'  => time(),
-                'storage'     => 'local',
-                'sha1'        => $sha1,
+                'mimetype' => $fileInfo['type'],
+                'url' => $uploadDir . $splInfo->getSaveName(),
+                'uploadtime' => time(),
+                'storage' => 'local',
+                'sha1' => $sha1,
             );
 //            $attachment = model("attachment");
 //            $attachment->data(array_filter($params));
@@ -531,6 +535,7 @@ class Index extends Base
             $this->error($file->getError());
         }
     }
+
     /**
      * 我想买车接口
      */
@@ -548,7 +553,7 @@ class Index extends Base
             $carInfo['store_id'] = $store_id;
         }
         $carInfo['user_id'] = $user_id;
-        $carInfo['browse_volume'] = rand(500,2000);
+        $carInfo['browse_volume'] = rand(500, 2000);
         $buyModels = new BuycarModel();
         return $buyModels->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
     }
@@ -598,15 +603,15 @@ class Index extends Base
             $buyCarList = self::typeCar(2, 1, ['models_name' => ['like', '%' . $query . '%']], 'id,models_name');
         }
 
-        if($modelInfoList){
+        if ($modelInfoList) {
             $modelInfoList = $this->getCarList($modelInfoList);
         }
 
-        if($buyCarList){
+        if ($buyCarList) {
             $buyCarList = $this->getCarList($buyCarList);
         }
 
-        $this->success('请求成功',['sell'=>$modelInfoList,'buy'=>$buyCarList]);
+        $this->success('请求成功', ['sell' => $modelInfoList, 'buy' => $buyCarList]);
     }
 
     /**
@@ -616,22 +621,22 @@ class Index extends Base
      */
     public function getCarList($arr)
     {
-        $check =$real = [];
-        foreach ($arr as $k=>$v){
-            if(!in_array($v['brand']['id'],$check)){
+        $check = $real = [];
+        foreach ($arr as $k => $v) {
+            if (!in_array($v['brand']['id'], $check)) {
                 $check[] = $v['brand']['id'];
-                $real[] = ['id'=>$v['brand']['id'],'name'=>$v['brand']['name'],'carList'=>[['models_name'=>$v['models_name']]]];
-            }else{
-                foreach ($real as $key=>$value){
-                    if($v['brand']['id']==$value['id']){
+                $real[] = ['id' => $v['brand']['id'], 'name' => $v['brand']['name'], 'carList' => [['models_name' => $v['models_name']]]];
+            } else {
+                foreach ($real as $key => $value) {
+                    if ($v['brand']['id'] == $value['id']) {
                         $flag = -1;
-                        foreach ($real[$key]['carList'] as $kk=>$vv){
-                            if($v['models_name'] == $vv['models_name']){
-                                  $flag = -2;
+                        foreach ($real[$key]['carList'] as $kk => $vv) {
+                            if ($v['models_name'] == $vv['models_name']) {
+                                $flag = -2;
                             }
                         }
-                        if($flag == -1){
-                            $real[$key]['carList'][] = ['models_name'=>$v['models_name']];
+                        if ($flag == -1) {
+                            $real[$key]['carList'][] = ['models_name' => $v['models_name']];
                         }
                     }
                 }
