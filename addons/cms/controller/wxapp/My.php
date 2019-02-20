@@ -384,6 +384,8 @@ class My extends Base
         if (!$user_id) {
             $this->error('缺少参数');
         }
+        //默认手机号
+        $default_phone = ConfigModel::get(['name' => 'default_phone'])->value;
         
         $quotedPriceId = array_merge($this->getQuotedPriceId($user_id,'buy'),$this->getQuotedPriceId($user_id,'sell'));
         if($quotedPriceId){
@@ -404,9 +406,11 @@ class My extends Base
 
             $ModelsInfoList[$k]['models_info']['modelsimages'] = explode(',', $ModelsInfoList[$k]['models_info']['modelsimages'])[0];
 
+            $ModelsInfoList[$k]['user']['mobile'] = $default_phone;
+
             $ModelsInfoList[$k]['models_info']['brand_name'] = BrandCate::where('id', $ModelsInfoList[$k]['models_info']['brand_id'])->value('name');
-            $ModelsInfoList[$k]['quotationtime'] = $ModelsInfoList[$k]['quotationtime'] ? date('Y-m-d', $ModelsInfoList[$k]['quotationtime']) : null;
-            $ModelsInfoList[$k]['money'] = $ModelsInfoList[$k]['money'] ? ($ModelsInfoList[$k]['money'] / 10000) : null;
+            $ModelsInfoList[$k]['quotationtime'] = $ModelsInfoList[$k]['quotationtime'] ? format_date($ModelsInfoList[$k]['quotationtime']) : null;
+            $ModelsInfoList[$k]['money'] = $ModelsInfoList[$k]['money'] ? round(($ModelsInfoList[$k]['money'] / 10000), 2) : null;
             $ModelsInfoList[$k]['models_info']['kilometres'] = $ModelsInfoList[$k]['models_info']['kilometres'] ? round(($ModelsInfoList[$k]['models_info']['kilometres'] / 10000), 2) . '万' : null;
             $ModelsInfoList[$k]['models_info']['guide_price'] = $ModelsInfoList[$k]['models_info']['guide_price'] ? round(($ModelsInfoList[$k]['models_info']['guide_price'] / 10000), 2) : null;
             
@@ -424,10 +428,13 @@ class My extends Base
         foreach ($SellcarModelList as $k=>$v){
             $SellcarModelList[$k]['models_info']['modelsimages'] = explode(',', $SellcarModelList[$k]['models_info']['modelsimages'])[0];
             $SellcarModelList[$k]['models_info']['brand_name'] = BrandCate::where('id', $SellcarModelList[$k]['models_info']['brand_id'])->value('name');
-            $SellcarModelList[$k]['quotationtime'] = $SellcarModelList[$k]['quotationtime'] ? date('Y-m-d', $SellcarModelList[$k]['quotationtime']) : null;
-            $SellcarModelList[$k]['money'] = $SellcarModelList[$k]['money'] ? ($SellcarModelList[$k]['money'] / 10000) : null;
+            $SellcarModelList[$k]['quotationtime'] = $SellcarModelList[$k]['quotationtime'] ? format_date($SellcarModelList[$k]['quotationtime']) : null;
+            $SellcarModelList[$k]['money'] = $SellcarModelList[$k]['money'] ? round(($SellcarModelList[$k]['money'] / 10000), 2) : null;
             $SellcarModelList[$k]['models_info']['kilometres'] = $SellcarModelList[$k]['models_info']['kilometres'] ? round(($SellcarModelList[$k]['models_info']['kilometres'] / 10000), 2) . '万' : null;
             $SellcarModelList[$k]['models_info']['guide_price'] = $SellcarModelList[$k]['models_info']['guide_price'] ? round(($SellcarModelList[$k]['models_info']['guide_price'] / 10000), 2) : null;
+            
+            $SellcarModelList[$k]['user']['mobile'] = $default_phone;
+
         }
 
         //我的报价---买车
@@ -445,11 +452,12 @@ class My extends Base
             $BuycarModelList[$k]['models_info']  = $v['buycar_model'];
             $BuycarModelList[$k]['models_info']['modelsimages'] = $default_image;
             $BuycarModelList[$k]['models_info']['brand_name'] = BrandCate::where('id', $BuycarModelList[$k]['models_info']['brand_id'])->value('name');
-            $BuycarModelList[$k]['quotationtime'] = $BuycarModelList[$k]['quotationtime'] ? date('Y-m-d', $BuycarModelList[$k]['quotationtime']) : null;
-            $BuycarModelList[$k]['money'] = $v['money'] ? ($BuycarModelList[$k]['money'] / 10000) : null;
+            $BuycarModelList[$k]['quotationtime'] = $BuycarModelList[$k]['quotationtime'] ? format_date($BuycarModelList[$k]['quotationtime']) : null;
+            $BuycarModelList[$k]['money'] = $v['money'] ? round(($BuycarModelList[$k]['money'] / 10000), 2) : null;
             $BuycarModelList[$k]['models_info']['kilometres'] = $BuycarModelList[$k]['models_info']['kilometres'] ? round(($BuycarModelList[$k]['models_info']['kilometres'] / 10000), 2) . '万' : null;
             $BuycarModelList[$k]['models_info']['guide_price'] = $BuycarModelList[$k]['models_info']['guide_price'] ? round(($BuycarModelList[$k]['models_info']['guide_price'] / 10000), 2) : null;
-            
+            $BuycarModelList[$k]['user']['mobile'] = $default_phone;
+
             unset($BuycarModelList[$k]['buycar_model']);
         }
         //我的报价合并
