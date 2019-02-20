@@ -362,10 +362,12 @@ class My extends Base
 
             $buyCarList[$k]['modelsimages'] = $default_image;
 
-            $buyCarList[$k]['kilometres'] = $v['kilometres'] ? ($v['kilometres'] / 10000) . '万公里' : null;
-            $buyCarList[$k]['guide_price'] = $v['guide_price'] ? ($v['guide_price'] / 10000) . '万' : null;
+            $buyCarList[$k]['shelfismenu'] =  $v['shelfismenu'] = 2 ? 0 : 1;
 
-            $buyCarList[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y', $v['car_licensetime']) : null;
+            $buyCarList[$k]['kilometres'] = $v['kilometres'] ? round(($v['kilometres'] / 10000), 2). '万公里' : null;
+            $buyCarList[$k]['guide_price'] = $v['guide_price'] ? round(($v['guide_price'] / 10000), 2) . '万' : null;
+
+            $buyCarList[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y-m-d', $v['car_licensetime']) : null;
         }
 
         $this->success('请求成功', ['buyCarList' => $buyCarList]);
@@ -403,10 +405,10 @@ class My extends Base
             $ModelsInfoList[$k]['models_info']['modelsimages'] = explode(',', $ModelsInfoList[$k]['models_info']['modelsimages'])[0];
 
             $ModelsInfoList[$k]['models_info']['brand_name'] = BrandCate::where('id', $ModelsInfoList[$k]['models_info']['brand_id'])->value('name');
-            $ModelsInfoList[$k]['quotationtime'] = $ModelsInfoList[$k]['quotationtime'] ? date('Y', $ModelsInfoList[$k]['quotationtime']) : null;
+            $ModelsInfoList[$k]['quotationtime'] = $ModelsInfoList[$k]['quotationtime'] ? date('Y-m-d', $ModelsInfoList[$k]['quotationtime']) : null;
             $ModelsInfoList[$k]['money'] = $ModelsInfoList[$k]['money'] ? ($ModelsInfoList[$k]['money'] / 10000) : null;
-            $ModelsInfoList[$k]['models_info']['kilometres'] = $ModelsInfoList[$k]['models_info']['kilometres'] ? ($ModelsInfoList[$k]['models_info']['kilometres'] / 10000) . '万' : null;
-            $ModelsInfoList[$k]['models_info']['guide_price'] = $ModelsInfoList[$k]['models_info']['guide_price'] ? ($ModelsInfoList[$k]['models_info']['guide_price'] / 10000) : null;
+            $ModelsInfoList[$k]['models_info']['kilometres'] = $ModelsInfoList[$k]['models_info']['kilometres'] ? round(($ModelsInfoList[$k]['models_info']['kilometres'] / 10000), 2) . '万' : null;
+            $ModelsInfoList[$k]['models_info']['guide_price'] = $ModelsInfoList[$k]['models_info']['guide_price'] ? round(($ModelsInfoList[$k]['models_info']['guide_price'] / 10000), 2) : null;
             
         }
         //我的报价----卖车
@@ -422,10 +424,10 @@ class My extends Base
         foreach ($SellcarModelList as $k=>$v){
             $SellcarModelList[$k]['models_info']['modelsimages'] = explode(',', $SellcarModelList[$k]['models_info']['modelsimages'])[0];
             $SellcarModelList[$k]['models_info']['brand_name'] = BrandCate::where('id', $SellcarModelList[$k]['models_info']['brand_id'])->value('name');
-            $SellcarModelList[$k]['quotationtime'] = $SellcarModelList[$k]['quotationtime'] ? date('Y', $SellcarModelList[$k]['quotationtime']) : null;
+            $SellcarModelList[$k]['quotationtime'] = $SellcarModelList[$k]['quotationtime'] ? date('Y-m-d', $SellcarModelList[$k]['quotationtime']) : null;
             $SellcarModelList[$k]['money'] = $SellcarModelList[$k]['money'] ? ($SellcarModelList[$k]['money'] / 10000) : null;
-            $SellcarModelList[$k]['models_info']['kilometres'] = $SellcarModelList[$k]['models_info']['kilometres'] ? ($SellcarModelList[$k]['models_info']['kilometres'] / 10000) . '万' : null;
-            $SellcarModelList[$k]['models_info']['guide_price'] = $SellcarModelList[$k]['models_info']['guide_price'] ? ($SellcarModelList[$k]['models_info']['guide_price'] / 10000) : null;
+            $SellcarModelList[$k]['models_info']['kilometres'] = $SellcarModelList[$k]['models_info']['kilometres'] ? round(($SellcarModelList[$k]['models_info']['kilometres'] / 10000), 2) . '万' : null;
+            $SellcarModelList[$k]['models_info']['guide_price'] = $SellcarModelList[$k]['models_info']['guide_price'] ? round(($SellcarModelList[$k]['models_info']['guide_price'] / 10000), 2) : null;
         }
 
         //我的报价---买车
@@ -443,10 +445,10 @@ class My extends Base
             $BuycarModelList[$k]['models_info']  = $v['buycar_model'];
             $BuycarModelList[$k]['models_info']['modelsimages'] = $default_image;
             $BuycarModelList[$k]['models_info']['brand_name'] = BrandCate::where('id', $BuycarModelList[$k]['models_info']['brand_id'])->value('name');
-            $BuycarModelList[$k]['quotationtime'] = $BuycarModelList[$k]['quotationtime'] ? date('Y', $BuycarModelList[$k]['quotationtime']) : null;
+            $BuycarModelList[$k]['quotationtime'] = $BuycarModelList[$k]['quotationtime'] ? date('Y-m-d', $BuycarModelList[$k]['quotationtime']) : null;
             $BuycarModelList[$k]['money'] = $v['money'] ? ($BuycarModelList[$k]['money'] / 10000) : null;
-            $BuycarModelList[$k]['models_info']['kilometres'] = $BuycarModelList[$k]['models_info']['kilometres'] ? ($BuycarModelList[$k]['models_info']['kilometres'] / 10000) . '万' : null;
-            $BuycarModelList[$k]['models_info']['guide_price'] = $BuycarModelList[$k]['models_info']['guide_price'] ? ($BuycarModelList[$k]['models_info']['guide_price'] / 10000) : null;
+            $BuycarModelList[$k]['models_info']['kilometres'] = $BuycarModelList[$k]['models_info']['kilometres'] ? round(($BuycarModelList[$k]['models_info']['kilometres'] / 10000), 2) . '万' : null;
+            $BuycarModelList[$k]['models_info']['guide_price'] = $BuycarModelList[$k]['models_info']['guide_price'] ? round(($BuycarModelList[$k]['models_info']['guide_price'] / 10000), 2) : null;
             
             unset($BuycarModelList[$k]['buycar_model']);
         }

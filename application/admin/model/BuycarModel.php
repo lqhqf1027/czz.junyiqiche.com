@@ -21,6 +21,12 @@ class BuycarModel extends Model
 
     ];
 
+    //关联user
+    public function user()
+    {
+        return $this->belongsTo('User', 'user_id', 'id', [], 'LEFT')->setEagerlyType(0);
+    }
+
     //关联店铺
     public function store()
     {

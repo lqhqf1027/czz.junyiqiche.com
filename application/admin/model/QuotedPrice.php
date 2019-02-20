@@ -54,15 +54,15 @@ class QuotedPrice extends Model
     {
         return $this->belongsTo('User', 'user_ids', 'id', [], 'LEFT')->setEagerlyType(0);
     }
-    //我的报价
+    
     public function BuycarModel()
     {
-        return $this->belongsTo('BuycarModel', 'models_id', 'id', [], 'LEFT')->setEagerlyType(0);
+        return $this->belongsTo('BuycarModel', 'buy_car_id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
-    //收到报价
+    
     public function ModelsInfo()
     {
-        return $this->belongsTo('ModelsInfo', 'models_id', 'id', [], 'LEFT')->setEagerlyType(0);
+        return $this->belongsTo('ModelsInfo', 'models_info_id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
 
 
