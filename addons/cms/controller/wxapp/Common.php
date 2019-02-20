@@ -116,9 +116,10 @@ class Common extends Base
         //判断该用户该车辆是否报价
         $isOffer = QuotedPrice::get([$car_id_key => $car_id, 'type' => $type, 'user_ids' => $user_id]);
 
-        $condition = 'id,models_name,car_licensetime,kilometres,guide_price,parkingposition,phone,store_id,user_id,store_description,createtime';
+        $condition = 'emission_standard,id,models_name,car_licensetime,kilometres,guide_price,parkingposition,phone,store_id,user_id,store_description,createtime';
 
         if ($type == 'sell') {
+            $condition = $condition . ',modelsimages';
             $condition = $condition . ',modelsimages';
         }
 
