@@ -90,9 +90,7 @@ class Common extends Base
         $car_id = $this->request->post('car_id');
 
         $type = $this->request->post('type');
-
         $user_id = $this->request->post('user_id');
-
         if (!$car_id || !$type || !$user_id) {
             $this->error('缺少参数', 'error');
         }
@@ -118,32 +116,30 @@ class Common extends Base
         //判断该用户该车辆是否报价
         $isOffer = QuotedPrice::get([$car_id_key => $car_id, 'type' => $type, 'user_ids' => $user_id]);
 
-        $condition = 'id,models_name,car_licensetime,kilometres,guide_price,parkingposition,phone,store_id,user_id,store_description';
+        $condition = 'id,models_name,car_licensetime,kilometres,guide_price,parkingposition,phone,store_id,user_id,store_description,createtime';
 
-        if($type=='sell'){
-            $condition= $condition.',modelsimages';
+        if ($type == 'sell') {
+            $condition = $condition . ',modelsimages';
         }
 
         $detail = $modelName->field($condition)
-            ->with(['brand'=>function ($q){
+            ->with(['brand' => function ($q) {
                 $q->withField('id,name');
             }])
-            ->find($car_id);
+            ->find($car_id)->toArray();
 
-        $modelName->where('id',$car_id)->setInc('browse_volume',rand(1,100));
+        //访问详情随机1-100增加浏览量
+        $modelName->where('id', $car_id)->setInc('browse_volume', rand(1, 100));
 
-//        $detail['car_licensetime'] = date('Y-m-d',$detail['car_licensetime']);
-//        $detail = $modelName->find($car_id)->visible($condition)->toArray();
-//        pr($detail['car_licensetime']);die;
         $detail['modelsimages'] = empty($detail['modelsimages']) ? [self::$default_image] : explode(',', $detail['modelsimages']);
 
-        $detail['kilometres'] = $detail['kilometres'] ? ($detail['kilometres'] / 10000) . '万公里' : null;
-        $detail['guide_price'] = $detail['guide_price'] ? ($detail['guide_price'] / 10000) . '万' : null;
-        $detail['car_licensetime'] = $detail['car_licensetime'] ? date('Y', $detail['car_licensetime']) : null;
+        $detail['kilometres'] = $detail['kilometres'] ? round($detail['kilometres'] / 10000, 2) . '万公里' : null;
+        $detail['guide_price'] = $detail['guide_price'] ? round($detail['guide_price'] / 10000, 2) . '万' : null;
+        $detail['car_licensetime'] = $detail['car_licensetime'] ? date('Y-m-d', intval($detail['car_licensetime'])) : null;
         $detail['isOffer'] = $isOffer ? 1 : 0;
-        $detail['user'] = User::get($user_id) ? User::get($user_id)->visible(['id', 'mobile'])->toArray() : ['id' => '', 'mobile' => ''];
+        $detail['createtime'] = format_date($detail['createtime']);
+        $detail['user'] = User::get($user_id) ? User::get($user_id)->visible(['id', 'mobile', 'avatar', 'nickname'])->toArray() : ['id' => '', 'mobile' => '', 'avatar' => '', 'nickname' => ''];
+        $detail['default_image'] = ConfigModel::get(['name' => 'details_default_picture'])->value;
         $this->success('请求成功', ['detail' => $detail]);
     }
-
-
 }

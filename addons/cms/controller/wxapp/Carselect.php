@@ -11,6 +11,7 @@ namespace addons\cms\controller\wxapp;
 use think\Cache;
 use think\Db;
 use addons\cms\model\User;
+
 class Carselect extends Base
 {
     protected $noNeedLogin = '*';
@@ -24,7 +25,9 @@ class Carselect extends Base
     public function index()
     {
         $screen = $this->request->post('screen');
-
+        $city = $this->request->post('city');
+        $brand_id = $this->request->post('brand_id');
+        $models_name = $this->request->post('models_name');
         if (!$screen) {
             $this->error('缺少参数');
         }
@@ -38,14 +41,17 @@ class Carselect extends Base
         $alls = Cache::get('CAR_LIST');
 
         $carLists = $alls['carList'];
-
-
-        $city = $this->request->post('city');
-        $brand_id = $this->request->post('brand_id');
-
         $realCarList = [];
-        if ($city || $brand_id) {
+        if ($city || $brand_id || $models_name) {
             foreach ($carLists as $k => $v) {
+
+                if ($models_name) {
+                    if ($v['models_name'] == $models_name) {
+                        $realCarList[] = $v;
+                    }
+                    continue;
+                }
+
                 if ($city && !$brand_id) {
                     if ($v['parkingposition'] == $city) {
                         $realCarList[] = $v;
@@ -81,7 +87,6 @@ class Carselect extends Base
             //二维数组根据某个字段升序或者降序排列
             $realCarList = list_sort_by($realCarList, $field, $screen == 1 ? 'desc' : 'asc');
         }
-
 
         $this->success('请求成功', [
             'city' => $alls['city'],
@@ -137,8 +142,6 @@ class Carselect extends Base
 
             }
 
-//            $all[$k][]
-
         }
         //二维数组根据某个字段a-z顺序排列数组
         array_multisort(array_column($brandList, 'zimu'), SORT_ASC, $brandList);
@@ -160,6 +163,6 @@ class Carselect extends Base
 
     public function test()
     {
-        User::where('id',5)->setInc('store_id');
+        User::where('id', 5)->setInc('store_id');
     }
 }
