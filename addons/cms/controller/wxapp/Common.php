@@ -133,13 +133,21 @@ class Common extends Base
 
         $detail['modelsimages'] = empty($detail['modelsimages']) ? [self::$default_image] : explode(',', $detail['modelsimages']);
 
+        $default_image = collection(ConfigModel::all(function ($q) {
+            $q->where('group', 'default_image')->field('name,value');
+        }))->toArray();
+
         $detail['kilometres'] = $detail['kilometres'] ? round($detail['kilometres'] / 10000, 2) . '万公里' : null;
         $detail['guide_price'] = $detail['guide_price'] ? round($detail['guide_price'] / 10000, 2) . '万' : null;
         $detail['car_licensetime'] = $detail['car_licensetime'] ? date('Y-m-d', intval($detail['car_licensetime'])) : null;
         $detail['isOffer'] = $isOffer ? 1 : 0;
         $detail['createtime'] = format_date($detail['createtime']);
         $detail['user'] = User::get($user_id) ? User::get($user_id)->visible(['id', 'mobile', 'avatar', 'nickname'])->toArray() : ['id' => '', 'mobile' => '', 'avatar' => '', 'nickname' => ''];
-        $detail['default_image'] = ConfigModel::get(['name' => 'details_default_picture'])->value;
+        $detail['default'] =[
+            $default_image[0]['name']=>$default_image[0]['value'],
+            $default_image[1]['name']=>$default_image[1]['value'],
+            $default_image[2]['name']=>$default_image[2]['value'],
+        ];
         $this->success('请求成功', ['detail' => $detail]);
     }
 }
