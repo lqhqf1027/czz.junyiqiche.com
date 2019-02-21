@@ -2,28 +2,22 @@
 
 namespace addons\cms\controller\wxapp;
 
-use addons\cms\model\Archives;
+use addons\cms\model\AutomotiveInformation;
 use addons\cms\model\Block;
-use addons\cms\model\Channel;
+use addons\cms\model\Brand;
+use addons\cms\model\BrandCate;
+use addons\cms\model\BuycarModel;
 use addons\cms\model\Clue;
-use addons\cms\model\Collection;
-use addons\cms\model\Distribution;
-use addons\cms\model\StoreUser;
 use addons\cms\model\CompanyStore;
-use addons\cms\model\StoreLevel;
 use addons\cms\model\Config as ConfigModel;
 use addons\cms\model\ModelsInfo;
-use addons\cms\model\RideSharing;
-use addons\cms\model\BuycarModel;
-use addons\cms\model\BrandCate;
-use addons\cms\model\Brand;
 use addons\cms\model\User;
 use app\common\model\Addon;
-use think\Cache;
-use think\Db;
-use GuzzleHttp\Client;
-use think\Config;
 use fast\Random;
+use GuzzleHttp\Client;
+use think\Cache;
+use think\Config;
+use think\Db;
 
 /**
  * 首页
@@ -358,70 +352,73 @@ class Index extends Base
     {
         $mobile = $this->request->post('mobile');
         $user_id = $this->request->post('user_id');
-        if (!$mobile || !$user_id) $this->error('参数缺失或格式错误');
-        if (!checkPhoneNumberValidate($mobile)) $this->error('手机号格式错误', $mobile);
-        $authnum = '';
-        //随机生成四位数验证码
-        $list = explode(",", "0,1,2,3,4,5,6,7,8,9");
-        for ($i = 0; $i < 4; $i++) {
-            $randnum = rand(0, 9);
-            $authnum .= $list[$randnum];
-        }
 
-        $url = 'http://open.ucpaas.com/ol/sms/sendsms';
-        $client = new Client();
-        $response = $client->request('POST', $url, [
-            'json' => [
-                'sid' => self::$Ucpass['accountsid'],
-                'token' => self::$Ucpass['token'],
-                'appid' => self::$Ucpass['appid'],
-                'templateid' => self::$Ucpass['templateid'],
-                'param' => $authnum,
-                'mobile' => $mobile,
-                'uid' => $user_id
-            ]
-        ]);
-        if ($response) {
-            $result = json_decode($response->getBody(), true);
-            $num = '';
-            if ($result['code'] == '000000') {
-                //查询当前手机号，如果存在更新他的的请求次数与 请求时间
-                $getPhone = Db::name('cms_login_info')->where(['login_phone' => $mobile])->find();
-                if ($getPhone) {
-                    $num = $getPhone['login_num'];
-                    ++$num;
-                    Db::name('cms_login_info')->update([
-                        'login_time' => strtotime($result['create_date']),
-                        'login_code' => $authnum,
-                        'login_num' => $num,
-                        'login_phone' => $mobile,
-                        'id' => $getPhone['id'],
-                        'login_state' => 0,
-                        'user_id' => $user_id
-                    ]) ? $this->success('发送成功') : $this->error('发送失败');
+        $result = message_send($mobile,'430761',$user_id);
 
-                } else {
-                    //否则新增当前用户到登陆表
-                    Db::name('cms_login_info')->insert([
-                        'login_time' => strtotime($result['create_date']),
-                        'login_code' => $authnum,
-                        'login_num' => 1,
-                        'login_phone' => $mobile,
-                        'login_state' => 0,
-                        'user_id' => $user_id
-                    ]) ? $this->success('发送成功') : $this->error('发送失败');
-                }
-            } else {
-                $this->error($result['msg'], $result);
-            }
-        } else {
-            $err = json_decode($response->getBody(), true);
-            $this->error($err['msg'], $err);
-        }
+        $result[0]=='success'?$this->success($result['msg']):$this->error($result['msg']);
+//        if (!$mobile || !$user_id) $this->error('参数缺失或格式错误');
+//        if (!checkPhoneNumberValidate($mobile)) $this->error('手机号格式错误', $mobile);
+//        $authnum = '';
+//        //随机生成四位数验证码
+//        $list = explode(",", "0,1,2,3,4,5,6,7,8,9");
+//        for ($i = 0; $i < 4; $i++) {
+//            $randnum = rand(0, 9);
+//            $authnum .= $list[$randnum];
+//        }
+//
+//        $url = 'http://open.ucpaas.com/ol/sms/sendsms';
+//        $client = new Client();
+//        $response = $client->request('POST', $url, [
+//            'json' => [
+//                'sid' => self::$Ucpass['accountsid'],
+//                'token' => self::$Ucpass['token'],
+//                'appid' => self::$Ucpass['appid'],
+//                'templateid' => self::$Ucpass['templateid'],
+//                'param' => $authnum,
+//                'mobile' => $mobile,
+//                'uid' => $user_id
+//            ]
+//        ]);
+//        if ($response) {
+//            $result = json_decode($response->getBody(), true);
+//            $num = '';
+//            if ($result['code'] == '000000') {
+//                //查询当前手机号，如果存在更新他的的请求次数与 请求时间
+//                $getPhone = Db::name('cms_login_info')->where(['login_phone' => $mobile])->find();
+//                if ($getPhone) {
+//                    $num = $getPhone['login_num'];
+//                    ++$num;
+//                    Db::name('cms_login_info')->update([
+//                        'login_time' => strtotime($result['create_date']),
+//                        'login_code' => $authnum,
+//                        'login_num' => $num,
+//                        'login_phone' => $mobile,
+//                        'id' => $getPhone['id'],
+//                        'login_state' => 0,
+//                        'user_id' => $user_id
+//                    ]) ? $this->success('发送成功') : $this->error('发送失败');
+//
+//                } else {
+//                    //否则新增当前用户到登陆表
+//                    Db::name('cms_login_info')->insert([
+//                        'login_time' => strtotime($result['create_date']),
+//                        'login_code' => $authnum,
+//                        'login_num' => 1,
+//                        'login_phone' => $mobile,
+//                        'login_state' => 0,
+//                        'user_id' => $user_id
+//                    ]) ? $this->success('发送成功') : $this->error('发送失败');
+//                }
+//            } else {
+//                $this->error($result['msg'], $result);
+//            }
+//        } else {
+//            $err = json_decode($response->getBody(), true);
+//            $this->error($err['msg'], $err);
+//        }
 
 
     }
-
 
     /**
      * 发布车源接口  ->卖车
@@ -593,6 +590,10 @@ class Index extends Base
         //搜索条件
         $query = $this->request->post('query_criteria');
 
+        if (!$query) {
+            $this->success('请求成功', ['sell' => [], 'buy' => []]);
+        }
+
         $brand_id = BrandCate::where('name', 'like', '%' . $query . '%')->column('id');
 
         if ($brand_id) {
@@ -644,6 +645,32 @@ class Index extends Base
         }
 
         return $real;
+    }
+
+    /**
+     * 资讯列表接口
+     * @throws \think\exception\DbException
+     */
+    public function information_list()
+    {
+        $info = AutomotiveInformation::all(function ($q) {
+            $q->field('id,title,author,browse_volume');
+        });
+
+        $this->success('请求成功', ['info_list' => $info]);
+    }
+
+    /**
+     * 资讯详情接口
+     * @throws \think\exception\DbException
+     */
+    public function information_details()
+    {
+        $information_id = $this->request->post('information_id');
+
+        $info = AutomotiveInformation::get($information_id)->hidden(['status']);
+
+        $this->success('请求成功', ['detail' => $info]);
     }
 
 }

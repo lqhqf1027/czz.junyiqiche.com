@@ -5,6 +5,7 @@ error_reporting(E_PARSE | E_ERROR | E_WARNING);
 use think\Request;
 use think\Config;
 use think\Cache;
+use think\Env;
 
 // 应用公共文件
 ///////////////////////////////////////////
@@ -77,19 +78,21 @@ if (!function_exists('arraySort')) {
 }
 
 
-function strexists($string, $find) {
+function strexists($string, $find)
+{
     return !(strpos($string, $find) === FALSE);
 }
 
-function ihttp_request($url, $post = '', $extra = array(), $timeout = 60) {
+function ihttp_request($url, $post = '', $extra = array(), $timeout = 60)
+{
     $urlset = parse_url($url);
-    if(empty($urlset['path'])) {
+    if (empty($urlset['path'])) {
         $urlset['path'] = '/';
     }
-    if(!empty($urlset['query'])) {
+    if (!empty($urlset['query'])) {
         $urlset['query'] = "?{$urlset['query']}";
     }
-    if(empty($urlset['port'])) {
+    if (empty($urlset['port'])) {
         $urlset['port'] = $urlset['scheme'] == 'https' ? '443' : '80';
     }
     if (strexists($url, 'https://') && !extension_loaded('openssl')) {
@@ -97,12 +100,12 @@ function ihttp_request($url, $post = '', $extra = array(), $timeout = 60) {
             //die('请开启您PHP环境的openssl');
         }
     }
-    if(function_exists('curl_init') && function_exists('curl_exec')) {
+    if (function_exists('curl_init') && function_exists('curl_exec')) {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $urlset['scheme']. '://' .$urlset['host'].($urlset['port'] == '80' ? '' : ':'.$urlset['port']).$urlset['path'].$urlset['query']);
+        curl_setopt($ch, CURLOPT_URL, $urlset['scheme'] . '://' . $urlset['host'] . ($urlset['port'] == '80' ? '' : ':' . $urlset['port']) . $urlset['path'] . $urlset['query']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_HEADER, 1);
-        if($post) {
+        if ($post) {
             curl_setopt($ch, CURLOPT_POST, 1);
             if (is_array($post)) {
                 $post = http_build_query($post);
@@ -129,7 +132,7 @@ function ihttp_request($url, $post = '', $extra = array(), $timeout = 60) {
                     $headers[] = "{$opt}: {$value}";
                 }
             }
-            if(!empty($headers)) {
+            if (!empty($headers)) {
                 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             }
         }
@@ -138,7 +141,7 @@ function ihttp_request($url, $post = '', $extra = array(), $timeout = 60) {
         $errno = curl_errno($ch);
         $error = curl_error($ch);
         curl_close($ch);
-        if($errno || empty($data)) {
+        if ($errno || empty($data)) {
             //return error(1, $error);
         } else {
             return ihttp_response_parse($data);
@@ -147,7 +150,7 @@ function ihttp_request($url, $post = '', $extra = array(), $timeout = 60) {
     $method = empty($post) ? 'GET' : 'POST';
     $fdata = "{$method} {$urlset['path']}{$urlset['query']} HTTP/1.1\r\n";
     $fdata .= "Host: {$urlset['host']}\r\n";
-    if(function_exists('gzdecode')) {
+    if (function_exists('gzdecode')) {
         $fdata .= "Accept-Encoding: gzip, deflate\r\n";
     }
     $fdata .= "Connection: close\r\n";
@@ -169,7 +172,7 @@ function ihttp_request($url, $post = '', $extra = array(), $timeout = 60) {
     } else {
         $fdata .= "\r\n";
     }
-    if($urlset['scheme'] == 'https') {
+    if ($urlset['scheme'] == 'https') {
         $fp = fsockopen('ssl://' . $urlset['host'], $urlset['port'], $errno, $error);
     } else {
         $fp = fsockopen($urlset['host'], $urlset['port'], $errno, $error);
@@ -188,7 +191,8 @@ function ihttp_request($url, $post = '', $extra = array(), $timeout = 60) {
     }
 }
 
-function ihttp_response_parse($data, $chunked = false) {
+function ihttp_response_parse($data, $chunked = false)
+{
     $rlt = array();
     $pos = strpos($data, "\r\n\r\n");
     $split1[0] = substr($data, 0, $pos);
@@ -216,31 +220,32 @@ function ihttp_response_parse($data, $chunked = false) {
         } else {
             $rlt['headers'][$key] = $value;
         }
-        if(!$isgzip && strtolower($key) == 'content-encoding' && strtolower($value) == 'gzip') {
+        if (!$isgzip && strtolower($key) == 'content-encoding' && strtolower($value) == 'gzip') {
             $isgzip = true;
         }
-        if(!$ischunk && strtolower($key) == 'transfer-encoding' && strtolower($value) == 'chunked') {
+        if (!$ischunk && strtolower($key) == 'transfer-encoding' && strtolower($value) == 'chunked') {
             $ischunk = true;
         }
     }
-    if($chunked && $ischunk) {
+    if ($chunked && $ischunk) {
         $rlt['content'] = ihttp_response_parse_unchunk($split1[1]);
     } else {
         $rlt['content'] = $split1[1];
     }
-    if($isgzip && function_exists('gzdecode')) {
+    if ($isgzip && function_exists('gzdecode')) {
         $rlt['content'] = gzdecode($rlt['content']);
     }
 
     //$rlt['meta'] = $data;
-    if($rlt['code'] == '100') {
+    if ($rlt['code'] == '100') {
         return ihttp_response_parse($rlt['content']);
     }
     return $rlt;
 }
 
-function ihttp_response_parse_unchunk($str = null) {
-    if(!is_string($str) or strlen($str) < 1) {
+function ihttp_response_parse_unchunk($str = null)
+{
+    if (!is_string($str) or strlen($str) < 1) {
         return false;
     }
     $eol = "\r\n";
@@ -250,68 +255,72 @@ function ihttp_response_parse_unchunk($str = null) {
     do {
         $tmp = ltrim($tmp);
         $pos = strpos($tmp, $eol);
-        if($pos === false) {
+        if ($pos === false) {
             return false;
         }
         $len = hexdec(substr($tmp, 0, $pos));
-        if(!is_numeric($len) or $len < 0) {
+        if (!is_numeric($len) or $len < 0) {
             return false;
         }
         $str .= substr($tmp, ($pos + $add), $len);
-        $tmp  = substr($tmp, ($len + $pos + $add));
+        $tmp = substr($tmp, ($len + $pos + $add));
         $check = trim($tmp);
-    } while(!empty($check));
+    } while (!empty($check));
     unset($tmp);
     return $str;
 }
 
 
-function ihttp_get($url) {
+function ihttp_get($url)
+{
     return ihttp_request($url);
 }
 
-function ihttp_post($url, $data) {
+function ihttp_post($url, $data)
+{
     $headers = array('Content-Type' => 'application/x-www-form-urlencoded');
     return ihttp_request($url, $data, $headers);
 }
 
-function gets($url=NULL){
-    if($url){
-        $rslt  = ihttp_get($url);
-        if(strtolower(trim($rslt['status'])) == 'ok'){
+function gets($url = NULL)
+{
+    if ($url) {
+        $rslt = ihttp_get($url);
+        if (strtolower(trim($rslt['status'])) == 'ok') {
             //pr($rslt) ;exit;
-            if(is_json($rslt['content'])){ //返回格式是json 直接返回数组
-                $return =  json_decode($rslt['content'],true);
-                if($return['errcode']) //有错误
-                    exit('Error:<br>Api:'.$url.'  <br>errcode:'.$return['errcode'].'<br>errmsg:'.$return['errmsg']);
-                return $return ;
-            }else{  //先暂时直接返回，以后其它格式再增加
-                return $rslt['content'] ;
+            if (is_json($rslt['content'])) { //返回格式是json 直接返回数组
+                $return = json_decode($rslt['content'], true);
+                if ($return['errcode']) //有错误
+                    exit('Error:<br>Api:' . $url . '  <br>errcode:' . $return['errcode'] . '<br>errmsg:' . $return['errmsg']);
+                return $return;
+            } else {  //先暂时直接返回，以后其它格式再增加
+                return $rslt['content'];
             }
         }
-        exit('远程请求失败：'.$url);
+        exit('远程请求失败：' . $url);
     }
     exit('未发现远程请求地址');
 }
 
 /**
-远程post请求
+ * 远程post请求
  */
-function posts($url=NULL, $data=NULL){
-    if($url && $data){
-        $rslt  = ihttp_post($url,$data);
-        if(strtolower(trim($rslt['status'])) == 'ok'){
+function posts($url = NULL, $data = NULL)
+{
+    if ($url && $data) {
+        $rslt = ihttp_post($url, $data);
+        if (strtolower(trim($rslt['status'])) == 'ok') {
             //pr($rslt) ;
-            if(is_json($rslt['content'])){ //返回格式是json 直接返回数组
-                $return =  json_decode($rslt['content'],true);
-                if($return['errcode']) //有错误
-                    exit('Error:<br>Api:'.$url.'  <br>errcode:'.$return['errcode'].'<br>errmsg:'.$return['errmsg']);
-                return $return ;
-            }else{  //先暂时直接返回，以后其它格式再增加
-                return $rslt['content'] ;
+            if (is_json($rslt['content'])) { //返回格式是json 直接返回数组
+                $return = json_decode($rslt['content'], true);
+                if ($return['errcode']) //有错误
+                    exit('Error:<br>Api:' . $url . '  <br>errcode:' . $return['errcode'] . '<br>errmsg:' . $return['errmsg']);
+                return $return;
+            } else {  //先暂时直接返回，以后其它格式再增加
+                return $rslt['content'];
             }
         }
-        exit('远程请求失败：'.$url);
+        exit('远程请求失败：' . $url);
     }
     exit('post远程请求，参数错误');
 }
@@ -706,7 +715,8 @@ if (!function_exists('var_export_short')) {
      * 检查是否为手机号
      */
     if (!function_exists('checkPhoneNumberValidate')) {
-        function checkPhoneNumberValidate($phone_number){
+        function checkPhoneNumberValidate($phone_number)
+        {
             //@2017-11-25 14:25:45 https://zhidao.baidu.com/question/1822455991691849548.html
             //中国联通号码：130、131、132、145（无线上网卡）、155、156、185（iPhone5上市后开放）、186、176（4G号段）、175（2015年9月10日正式启用，暂只对北京、上海和广东投放办理）,166,146
             //中国移动号码：134、135、136、137、138、139、147（无线上网卡）、148、150、151、152、157、158、159、178、182、183、184、187、188、198
@@ -714,11 +724,11 @@ if (!function_exists('var_export_short')) {
             $g = "/^1[34578]\d{9}$/";
             $g2 = "/^19[89]\d{8}$/";
             $g3 = "/^166\d{8}$/";
-            if(preg_match($g, $phone_number)){
+            if (preg_match($g, $phone_number)) {
                 return true;
-            }else  if(preg_match($g2, $phone_number)){
+            } else if (preg_match($g2, $phone_number)) {
                 return true;
-            }else if(preg_match($g3, $phone_number)){
+            } else if (preg_match($g3, $phone_number)) {
                 return true;
             }
 
@@ -731,7 +741,8 @@ if (!function_exists('var_export_short')) {
      * 某个时间戳在当前时间的多久前
      */
     if (!function_exists('format_date')) {
-        function format_date($time) {
+        function format_date($time)
+        {
             $nowtime = time();
             $difference = $nowtime - $time;
             switch ($difference) {
@@ -747,7 +758,7 @@ if (!function_exists('var_export_short')) {
                 case $difference > '86400' && $difference <= '2592000' :
                     $msg = floor($difference / 86400) . '天前';
                     break;
-                case $difference > '2592000' &&  $difference <= '31536000':
+                case $difference > '2592000' && $difference <= '31536000':
                     $msg = floor($difference / 2592000) . '个月前';
                     break;
                 case $difference > '31536000':
@@ -755,6 +766,94 @@ if (!function_exists('var_export_short')) {
                     break;
             }
             return $msg;
+        }
+    }
+
+    /**
+     * 发送验证码
+     * @param $mobile
+     * @param $template_id
+     * @param null $user_id
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     * @throws \think\exception\PDOException
+     */
+    if (!function_exists('message_send')) {
+        function message_send($mobile, $template_id, $user_id = null)
+        {
+            if (!$mobile || !$user_id) return ['error', 'msg' => '参数缺失或格式错误'];
+            if (!checkPhoneNumberValidate($mobile)) return ['error', 'msg' => '手机号格式错误'];
+            $authnum = '';
+            //随机生成四位数验证码
+            $list = explode(",", "0,1,2,3,4,5,6,7,8,9");
+            for ($i = 0; $i < 4; $i++) {
+                $randnum = rand(0, 9);
+                $authnum .= $list[$randnum];
+            }
+
+            $Ucpass = [
+                'accountsid' => Env::get('sms.accountsid'),
+                'token' => Env::get('sms.token'),
+                'appid' => Env::get('sms.appid'),
+                'templateid' => $template_id,
+            ];
+
+            $url = 'http://open.ucpaas.com/ol/sms/sendsms';
+            $client = new \GuzzleHttp\Client();
+            $response = $client->request('POST', $url, [
+                'json' => [
+                    'sid' => $Ucpass['accountsid'],
+                    'token' => $Ucpass['token'],
+                    'appid' => $Ucpass['appid'],
+                    'templateid' => $Ucpass['templateid'],
+                    'param' => $authnum,
+                    'mobile' => $mobile,
+                    'uid' => $user_id
+                ]
+            ]);
+            if ($response) {
+                $result = json_decode($response->getBody(), true);
+                $num = '';
+                if ($result['code'] == '000000') {
+                    //查询当前手机号，如果存在更新他的的请求次数与 请求时间
+                    $getPhone = think\Db::name('cms_login_info')->where(['login_phone' => $mobile])->find();
+                    if ($getPhone) {
+                        $num = $getPhone['login_num'];
+                        ++$num;
+                        return think\Db::name('cms_login_info')->update([
+                            'login_time' => strtotime($result['create_date']),
+                            'login_code' => $authnum,
+                            'login_num' => $num,
+                            'login_phone' => $mobile,
+                            'id' => $getPhone['id'],
+                            'login_state' => 0,
+                            'user_id' => $user_id
+                        ]) ? ['success', 'msg' => '发送成功'] : ['error', 'msg' => '发送失败'];
+
+                    } else {
+                        //否则新增当前用户到登陆表
+                        think\Db::name('cms_login_info')->insert([
+                            'login_time' => strtotime($result['create_date']),
+                            'login_code' => $authnum,
+                            'login_num' => 1,
+                            'login_phone' => $mobile,
+                            'login_state' => 0,
+                            'user_id' => $user_id
+                        ]) ? ['success', 'msg' => '发送成功'] : ['error', 'msg' => '发送失败'];
+                    }
+                } else {
+                    return ['error', 'msg' => $result['msg']];
+//                $this->error($result['msg'], $result);
+                }
+            } else {
+                $err = json_decode($response->getBody(), true);
+                return ['error', 'msg' => $err['msg']];
+//            $this->error($err['msg'], $err);
+            }
         }
     }
 }

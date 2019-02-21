@@ -110,92 +110,6 @@ class My extends Base
     }
 
 
-    public function myStore()
-    {
-        //等级列表
-//        $levelList = collection(StoreLevel::all(function ($q) {
-//            $q->field('id,partner_rank,money,explain');
-//        }))->toArray();
-//
-//        foreach ($levelList as $k => $v) {
-//            $v['money'] = floatval($v['money']) / 10000;
-//
-//            $v['money'] = round($v['money'], 1);
-//
-//            if ($v['money'] >= 1) {
-//                $v['money'] = $v['money'] . '万';
-//            } else {
-//                $v['money'] = ($v['money'] * 10) . '千';
-//            }
-//
-//            $levelList[$k]['money'] = $v['money'];
-//
-//        }
-//
-//        //所有可用的邀请码
-//        $codeList = CompanyStore::column('invitation_code');
-    }
-
-    /**
-     * 提交审核店铺接口
-     * @throws \think\exception\DbException
-     */
-    public function submit_audit()
-    {
-
-        $arr = [
-            'store_name' => '友车友家店铺',
-            'cities_name' => '北京',
-            'store_address' => '中关村',
-            'name' => '情感',
-            'phone' => '13548126668',
-            'store_description' => '今年开的店铺',
-            'business_life' => '3年-5年',
-            'main_camp' => '主营：宝马，法拉利，宾利，捷达',
-            'bank_card' => '6217003810028413121',
-            'code' => '8B9D8C4F'
-
-        ];
-
-//$this->success(json_encode($arr));
-        $user_id = $this->request->post('user_id');
-        $infos = $this->request->post('auditInfo');
-        $infos = "{\"store_name\":\"\\u53cb\\u8f66\\u53cb\\u5bb6\\u5e97\\u94fa\",\"cities_name\":\"\\u5317\\u4eac\",\"store_address\":\"\\u4e2d\\u5173\\u6751\",\"name\":\"\\u60c5\\u611f\",\"phone\":\"13548126668\",\"store_description\":\"\\u4eca\\u5e74\\u5f00\\u7684\\u5e97\\u94fa\",\"business_life\":\"3\\u5e74-5\\u5e74\",\"main_camp\":\"\\u4e3b\\u8425\\uff1a\\u5b9d\\u9a6c\\uff0c\\u6cd5\\u62c9\\u5229\\uff0c\\u5bbe\\u5229\\uff0c\\u6377\\u8fbe\",\"bank_card\":\"6217003810028413121\",\"code\":\"C3308128\"}";
-        $infos = json_decode($infos, true);
-//        $usersInfo = StoreUser::create([
-//            'name' => $infos['name']
-//        ]);
-        User::update([
-            'id' => $user_id,
-            'name' => $infos['name']
-        ]);
-
-        $company = CompanyStore::create([
-            'store_name' => $infos['store_name'],
-            'cities_name' => $infos['cities_name'],
-            'store_address' => $infos['store_address'],
-            'phone' => $infos['phone'],
-            'store_description' => $infos['store_description'],
-            'business_life' => $infos['business_life'],
-            'main_camp' => $infos['main_camp'],
-            'invitation_code' => $this->make_coupon_card(),
-            'user_id' => $user_id,
-        ]);
-
-
-        if (!empty($infos['code'])) {
-            Distribution::create([
-                'store_id' => CompanyStore::get(['invitation_code' => $infos['code']])->id,
-                'level_store_id' => $company->id,
-                'earnings' => 0,
-                'second_earnings' => 0
-            ]);
-        }
-
-        $this->success('请求成功', 'success');
-
-    }
-
 
     /**
      * 支付成功后接口
@@ -362,9 +276,9 @@ class My extends Base
 
             $buyCarList[$k]['modelsimages'] = $default_image;
 
-            $buyCarList[$k]['shelfismenu'] =  $v['shelfismenu'] = 2 ? 0 : 1;
+            $buyCarList[$k]['shelfismenu'] = $v['shelfismenu'] = 2 ? 0 : 1;
 
-            $buyCarList[$k]['kilometres'] = $v['kilometres'] ? round(($v['kilometres'] / 10000), 2). '万公里' : null;
+            $buyCarList[$k]['kilometres'] = $v['kilometres'] ? round(($v['kilometres'] / 10000), 2) . '万公里' : null;
             $buyCarList[$k]['guide_price'] = $v['guide_price'] ? round(($v['guide_price'] / 10000), 2) . '万' : null;
 
             $buyCarList[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y-m-d', $v['car_licensetime']) : null;
@@ -386,20 +300,20 @@ class My extends Base
         }
         //默认手机号
         $default_phone = ConfigModel::get(['name' => 'default_phone'])->value;
-        
-        $quotedPriceId = array_merge($this->getQuotedPriceId($user_id,'buy'),$this->getQuotedPriceId($user_id,'sell'));
-        if($quotedPriceId){
-            QuotedPrice::where('id','in',$quotedPriceId)->setField('is_see',1);
+
+        $quotedPriceId = array_merge($this->getQuotedPriceId($user_id, 'buy'), $this->getQuotedPriceId($user_id, 'sell'));
+        if ($quotedPriceId) {
+            QuotedPrice::where('id', 'in', $quotedPriceId)->setField('is_see', 1);
         }
         //收到报价
         $ModelsInfoList = collection(QuotedPrice::field('id,user_ids,models_info_id,money,quotationtime,type')
-            ->with(['ModelsInfo'=>function ($q) use ($user_id){
-                $q->where(['user_id'=>$user_id])->withField('id,models_name,guide_price,user_id,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,modelsimages,brand_id');
+            ->with(['ModelsInfo' => function ($q) use ($user_id) {
+                $q->where(['user_id' => $user_id])->withField('id,models_name,guide_price,user_id,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,modelsimages,brand_id');
             },
-            'user'=>function ($q){
-                $q->withField('id,nickname,avatar,mobile');
-            }])
-        ->where(['type'=>'sell'])->select())->toArray();
+                'user' => function ($q) {
+                    $q->withField('id,nickname,avatar,mobile');
+                }])
+            ->where(['type' => 'sell'])->select())->toArray();
 
 
         foreach ($ModelsInfoList as $k => $v) {
@@ -414,19 +328,19 @@ class My extends Base
             $ModelsInfoList[$k]['money'] = $ModelsInfoList[$k]['money'] ? round(($ModelsInfoList[$k]['money'] / 10000), 2) : null;
             $ModelsInfoList[$k]['models_info']['kilometres'] = $ModelsInfoList[$k]['models_info']['kilometres'] ? round(($ModelsInfoList[$k]['models_info']['kilometres'] / 10000), 2) . '万' : null;
             $ModelsInfoList[$k]['models_info']['guide_price'] = $ModelsInfoList[$k]['models_info']['guide_price'] ? round(($ModelsInfoList[$k]['models_info']['guide_price'] / 10000), 2) : null;
-            
+
         }
         //我的报价----卖车
         $SellcarModelList = collection(QuotedPrice::field('id,user_ids,money,quotationtime,type,models_info_id')
-            ->with(['ModelsInfo'=>function ($q){
+            ->with(['ModelsInfo' => function ($q) {
                 $q->withField('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,modelsimages,brand_id');
             },
-            'user'=>function ($q){
-                $q->withField('mobile');
-        }])
-        ->where('user_ids', $user_id)->select())->toArray();
+                'user' => function ($q) {
+                    $q->withField('mobile');
+                }])
+            ->where('user_ids', $user_id)->select())->toArray();
 
-        foreach ($SellcarModelList as $k=>$v){
+        foreach ($SellcarModelList as $k => $v) {
             $SellcarModelList[$k]['models_info']['car_licensetime'] = $SellcarModelList[$k]['models_info']['car_licensetime'] ? date('Y-m', $SellcarModelList[$k]['models_info']['car_licensetime']) : null;
             $SellcarModelList[$k]['models_info']['modelsimages'] = explode(',', $SellcarModelList[$k]['models_info']['modelsimages'])[0];
             $SellcarModelList[$k]['models_info']['brand_name'] = BrandCate::where('id', $SellcarModelList[$k]['models_info']['brand_id'])->value('name');
@@ -434,24 +348,24 @@ class My extends Base
             $SellcarModelList[$k]['money'] = $SellcarModelList[$k]['money'] ? round(($SellcarModelList[$k]['money'] / 10000), 2) : null;
             $SellcarModelList[$k]['models_info']['kilometres'] = $SellcarModelList[$k]['models_info']['kilometres'] ? round(($SellcarModelList[$k]['models_info']['kilometres'] / 10000), 2) . '万' : null;
             $SellcarModelList[$k]['models_info']['guide_price'] = $SellcarModelList[$k]['models_info']['guide_price'] ? round(($SellcarModelList[$k]['models_info']['guide_price'] / 10000), 2) : null;
-            
+
             $SellcarModelList[$k]['user']['mobile'] = $default_phone;
 
         }
 
         //我的报价---买车
         $BuycarModelList = collection(QuotedPrice::field('id,user_ids,money,quotationtime,type,buy_car_id')
-            ->with(['BuycarModel'=>function ($q){
+            ->with(['BuycarModel' => function ($q) {
                 $q->withField('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,brand_id');
             },
-            'user'=>function ($q){
-                $q->withField('mobile');
-        }])
-        ->where('user_ids', $user_id)->select())->toArray();
+                'user' => function ($q) {
+                    $q->withField('mobile');
+                }])
+            ->where('user_ids', $user_id)->select())->toArray();
         //卖车默认---图片
-        $default_image = ConfigModel::get(['name'=>'default_picture'])->value;
-        foreach ($BuycarModelList as $k=>$v){
-            $BuycarModelList[$k]['models_info']  = $v['buycar_model'];
+        $default_image = ConfigModel::get(['name' => 'default_picture'])->value;
+        foreach ($BuycarModelList as $k => $v) {
+            $BuycarModelList[$k]['models_info'] = $v['buycar_model'];
             $BuycarModelList[$k]['models_info']['modelsimages'] = $default_image;
             $BuycarModelList[$k]['models_info']['brand_name'] = BrandCate::where('id', $BuycarModelList[$k]['models_info']['brand_id'])->value('name');
             $BuycarModelList[$k]['quotationtime'] = $BuycarModelList[$k]['quotationtime'] ? format_date($BuycarModelList[$k]['quotationtime']) : null;
@@ -465,7 +379,7 @@ class My extends Base
         }
         //我的报价合并
         $MyBuycarModelList = array_merge($SellcarModelList, $BuycarModelList);
-        
+
         //收到报价
         $QuotedPriceList['sell'] = $ModelsInfoList;
         //我的报价
