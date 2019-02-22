@@ -6,6 +6,7 @@ use app\common\controller\Backend;
 use app\admin\model\ModelsInfo;
 use app\admin\model\BuycarModel;
 use app\admin\model\User;
+use app\admin\model\QuotedPrice;
 
 
 /**
@@ -53,8 +54,6 @@ class Quoted extends Backend
             }
         }
 
-
-     
         if ($this->request->isAjax())
         {
             //如果发送的来源是Selectpage，则转发到Selectpage
@@ -80,8 +79,6 @@ class Quoted extends Backend
                 //上架销售车辆台数
                 $list[$key]['salecount'] = ModelsInfo::where(['user_id' => $row['id'], 'shelfismenu' => 1])->count();
 
-                //共收到报价次数
-                // $list[$key]['quotecount'] = ModelsInfo::where(['user_id' => $row['id'], 'shelfismenu' => 1])->count();
             }
 
             $list = collection($list)->toArray();
@@ -136,9 +133,6 @@ class Quoted extends Backend
                 
                 //上架销售车辆台数
                 $list[$key]['salecount'] = BuycarModel::where(['user_id' => $row['id'], 'shelfismenu' => 1])->count();
-
-                //共收到报价次数
-                // $list[$key]['quotecount'] = ModelsInfo::where(['user_id' => $row['id'], 'shelfismenu' => 1])->count();
                 
             }
 
@@ -150,10 +144,11 @@ class Quoted extends Backend
         return $this->view->fetch();
     }
 
+    
     /**
      * 商家在售----上架车型
      */
-    public function salequoted($ids = null)
+    public function salemodel($ids = null)
     {
         $this->model = model('ModelsInfo');
         //当前是否为关联查询
@@ -166,20 +161,106 @@ class Quoted extends Backend
         {
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
             $total = $this->model
+                    ->with(['brand'])
+                    ->where($where)
+                    ->where(['shelfismenu' => 1])
+                    ->order($sort, $order)
+                    ->count();
+
+            $list = $this->model
+                    ->with(['brand'])
+                    ->where($where)
+                    ->where(['shelfismenu' => 1])
+                    ->order($sort, $order)
+                    ->limit($offset, $limit)
+                    ->select();
+
+            foreach ($list as $key => $row) {
+                
+                //收到报价次数
+                $list[$key]['quotecount'] = QuotedPrice::where(['models_info_id' => $row['id']])->count();
+
+            }
+            $list = collection($list)->toArray();
+           
+            $result = array("total" => $total, "rows" => $list);
+
+            return json($result);
+        }
+        $this->assignconfig('user_id', $ids);
+
+        return $this->view->fetch();
+    }
+
+    /**
+     * 有人想买----上架车型
+     */
+    public function buymodel($ids = null)
+    {
+        $this->model = model('BuycarModel');
+        //当前是否为关联查询
+        $this->relationSearch = true;
+        //设置过滤方法
+        $this->request->filter(['strip_tags']);
+        if ($this->request->isAjax())
+        {
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            $total = $this->model
+                    ->with(['brand'])
+                    ->where($where)
+                    ->where(['shelfismenu' => 1])
+                    ->order($sort, $order)
+                    ->count();
+
+            $list = $this->model
+                    ->with(['brand'])
+                    ->where($where)
+                    ->where(['shelfismenu' => 1])
+                    ->order($sort, $order)
+                    ->limit($offset, $limit)
+                    ->select();
+
+            foreach ($list as $key => $row) {
+                
+                //收到报价次数
+                $list[$key]['quotecount'] = QuotedPrice::where(['buy_car_id' => $row['id']])->count();
+
+            }
+
+            $result = array("total" => $total, "rows" => $list);
+
+            return json($result);
+        }
+        $this->assignconfig('user_id', $ids);
+        return $this->view->fetch();
+    }
+
+    /**
+     * 商家在售----上架车型报价
+     */
+    public function salequoted($ids = null)
+    {
+        $this->model = model('QuotedPrice');
+        //当前是否为关联查询
+        $this->relationSearch = true;
+        //设置过滤方法
+        $this->request->filter(['strip_tags']);
+        if ($this->request->isAjax())
+        {
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            $total = $this->model
                     ->with(['user' => function ($query) {
-                        $query->withField('nickname,avatar,mobile');
+                        $query->withField('id,nickname,avatar,mobile');
                     }])
                     ->where($where)
-                    ->where('models_info_id', $ids)
                     ->order($sort, $order)
                     ->count();
 
             $list = $this->model
                     ->with(['user' => function ($query) {
-                        $query->withField('nickname,avatar,mobile');
+                        $query->withField('id,nickname,avatar,mobile');
                     }])
                     ->where($where)
-                    ->where('models_info_id', $ids)
                     ->order($sort, $order)
                     ->limit($offset, $limit)
                     ->select();
@@ -193,18 +274,18 @@ class Quoted extends Backend
 
             return json($result);
         }
-        // pr($ids);
-            // die;
-
+        $this->assignconfig('models_info_id', $ids);
         return $this->view->fetch();
     }
 
     /**
-     * 有人想买----上架车型
+     * 有人想买----上架车型报价
      */
     public function buyquoted($ids = null)
     {
-        $this->model = model('BuycarModel');
+        $this->model = model('QuotedPrice');
+        //当前是否为关联查询
+        $this->relationSearch = true;
         //设置过滤方法
         $this->request->filter(['strip_tags']);
         if ($this->request->isAjax())
@@ -215,7 +296,6 @@ class Quoted extends Backend
                         $query->withField('id,nickname,avatar,mobile');
                     }])
                     ->where($where)
-                    ->where('buy_car_id', $ids)
                     ->order($sort, $order)
                     ->count();
 
@@ -224,7 +304,6 @@ class Quoted extends Backend
                         $query->withField('id,nickname,avatar,mobile');
                     }])
                     ->where($where)
-                    ->where('buy_car_id', $ids)
                     ->order($sort, $order)
                     ->limit($offset, $limit)
                     ->select();
@@ -238,46 +317,8 @@ class Quoted extends Backend
 
             return json($result);
         }
+        $this->assignconfig('buy_car_id', $ids);
         return $this->view->fetch();
     }
-
-    /**
-     * 商家在售----报价页面
-     */
-    public function salequoted_price($ids = null)
-    {
-        $salequoted = collection($this->model
-                ->with(['user'])
-                ->where('models_info_id', $ids)
-                ->select())->toArray();
-
-        foreach ($salequoted as $k => $v) {
-            $salequoted[$k]['user']['avatar'] =  '<a href="' . $v['user']['avatar'] . '" target="_blank"><img class="img-sm img-center" src="' . $v['user']['avatar'] . '" /></a>';
-            $salequoted[$k]['quotationtime'] = date('Y-m-d H:i:s', $v['quotationtime']);
-        }
-       
-        $this->view->assign('salequoted', $salequoted);
-        return $this->view->fetch();
-    }
-
-    /**
-     * 有人想买----报价页面
-     */
-    public function buyquoted_price($ids = null)
-    {
-        $buyquoted = collection($this->model
-                ->with(['user'])
-                ->where('buy_car_id', $ids)
-                ->select())->toArray();
-                
-        foreach ($buyquoted as $k => $v) {
-            $buyquoted[$k]['user']['avatar'] =  '<a href="' . $v['user']['avatar'] . '" target="_blank"><img class="img-sm img-center" src="' . $v['user']['avatar'] . '" /></a>';
-            $salequoted[$k]['quotationtime'] = date('Y-m-d H:i:s', $v['quotationtime']);
-        }
-        
-        $this->view->assign('buyquoted', $buyquoted);
-        return $this->view->fetch();
-    }
-
 
 }

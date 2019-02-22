@@ -28,7 +28,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'cities_name', title: __('Cities_name')},
                         {field: 'store_name', title: __('Store_name')},
                         {field: 'storelevel.partner_rank', title: __('店铺等级')},
-                        {field: 'storeuser.name', title: __('店铺所有人姓名')},
+                        {field: 'user.name', title: __('店铺所有人姓名')},
                         {field: 'store_address', title: __('Store_address')},
                         {field: 'phone', title: __('Phone')},
                         {field: 'statuss', title: __('Statuss'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.normal},
