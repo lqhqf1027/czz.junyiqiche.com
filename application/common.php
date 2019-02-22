@@ -856,4 +856,67 @@ if (!function_exists('var_export_short')) {
             }
         }
     }
+
+    /**
+     * 报价
+     * @param int $user_id
+     * @param $phone
+     * @param $money
+     * @param $models_id
+     * @param $type
+     * @param $templateid
+     * @param $param
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    if (!function_exists('sendOffers')) {
+
+        function sendOffers($user_id, $phone, $money, $models_id, $type, $templateid, $param)
+        {
+
+            $typeModels = $type == 'buy' ? new \addons\cms\model\BuycarModel : new \addons\cms\model\ModelsInfo; //转换表名
+            if (!(int)$user_id || !(float)$money || !(string)$type || !(int)$models_id || !(string)$param || !checkPhoneNumberValidate($phone)) {
+//            $this->error('缺少参数或参数格式错误');
+                return ['error', 'msg' => '缺少参数或参数格式错误'];
+            }
+            try {
+                $merchantsPhone = trim($typeModels->get(['id' => $models_id])->phone);//商户的手机号
+//            $modelsInfo = collection($typeModels->with(['brand'])->select(['id' => $models_id]))->toArray();
+//            $modelsInfo = $modelsInfo[0]['brand']['name'] . ' ' . $modelsInfo[0]['models_name'];  //拼接品牌、车型
+                if ($phone) {
+                    think\Db::name('user')->where(['id' => $user_id])->setField('mobile', $phone);  //每次执行一次更新手机号操作
+                }
+//            $newPone = substr($user_id, 7);//手机尾号4位数
+                $url = 'http://open.ucpaas.com/ol/sms/sendsms';
+
+                $client = new \GuzzleHttp\Client();
+                $response = $client->request('POST', $url, [
+                    'json' => [
+                        'sid' => Env::get('sms.accountsid'),
+                        'token' => Env::get('sms.token'),
+                        'appid' => Env::get('sms.appid'),
+                        'templateid' => $templateid,
+                        'param' => $param,  //参数
+                        'mobile' => $merchantsPhone,
+                        'uid' => $user_id
+                    ]
+                ]);
+
+                if ($response) {
+                    $result = json_decode($response->getBody(), true);
+                    if ($result['code'] == '000000') { //发送成功
+                        $field = $type == 'buy' ? 'buy_car_id' : 'models_info_id';
+                        return \addons\cms\model\QuotedPrice::create(
+                            ['user_ids' => $user_id, 'money' => $money, $field => $models_id, 'type' => $type, 'quotationtime' => time(), 'is_see' => 2]
+                        ) ? ['success', 'msg' => '报价成功'] : ['error', 'msg' => '报价失败'];
+                    }
+                    return ['error', 'msg' => $result['msg']];
+                }
+                return ['error', 'msg' => '短信通知失败'];
+            } catch (\think\Exception $e) {
+                return ['error', 'msg' => $e->getMessage()];
+            }
+        }
+
+    }
 }
