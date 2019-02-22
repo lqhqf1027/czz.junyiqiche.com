@@ -104,9 +104,24 @@ class My extends Base
             $userInfo['isNewOffer'] = 1;
         }
 
+        $agreement = ConfigModel::get(['group'=>'agreement'])->visible(['name','value']);
+
         unset($userInfo['name'], $userInfo['id_card_images']);
 
-        $this->success('请求成功', ['userInfo' => $userInfo]);
+        $this->success('请求成功', [
+            'userInfo' => $userInfo
+        ]);
+    }
+
+    /**
+     * 服务协议
+     * @throws \think\exception\DbException
+     */
+    public function service_agreement()
+    {
+        $agreement = ConfigModel::get(['group'=>'agreement'])->visible(['name','value']);
+
+        $this->success('请求成功',[$agreement['name']=>$agreement['value']]);
     }
 
 
