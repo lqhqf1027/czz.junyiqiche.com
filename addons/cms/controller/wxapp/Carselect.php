@@ -108,6 +108,7 @@ class Carselect extends Base
         $this->success('请求成功', [
             'city' => $alls['city'],
             'brand' => $alls['brand'],
+            'share'=>Index::get_share(),
             'carList' => $realCarList
         ]);
     }

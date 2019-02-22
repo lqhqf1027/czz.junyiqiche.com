@@ -82,9 +82,6 @@ class Index extends Base
         $modelsInfoList = array_slice($modelsInfoList, 0, 15);
         $buycarModelList = array_slice($buycarModelList, 0, 15);
 
-        $share = collection(ConfigModel::all(function ($q) {
-            $q->where('group', 'shares')->field('name,value');
-        }))->toArray();
 
         $this->success('请求成功', [
             'bannerList' => $bannerList,
@@ -95,18 +92,29 @@ class Index extends Base
 //                'clueList' => $clueList
             ],
             'default_image' => ConfigModel::get(['name' => 'default_picture'])->value,
-            'share' => [
-                $share[0]['name'] => $share[0]['value'],
-                $share[1]['name'] => $share[1]['value'],
-                $share[2]['name'] => $share[2]['value'],
-                $share[3]['name'] => $share[3]['value']
-            ]
-
-
+            'share' => self::get_share()
         ]);
 
     }
 
+    /**
+     * 获取分享配置
+     * @return array
+     * @throws \think\exception\DbException
+     */
+    public static function get_share()
+    {
+        $share = collection(ConfigModel::all(function ($q) {
+            $q->where('group', 'shares')->field('name,value');
+        }))->toArray();
+
+        return [
+            $share[0]['name'] => $share[0]['value'],
+            $share[1]['name'] => $share[1]['value'],
+            $share[2]['name'] => $share[2]['value'],
+            $share[3]['name'] => $share[3]['value']
+        ];
+    }
     /**
      * 不同总类车辆数据
      * @param $modelType
@@ -162,7 +170,7 @@ class Index extends Base
     /**
      * 获取车辆品牌
      */
-    public function brand()
+    public static function brand()
     {
         $brandList = BrandCate::field('id,name,bfirstletter,thumb')->select();
         $check = [];
@@ -209,6 +217,8 @@ class Index extends Base
     {
         $user_id = $this->request->post('user_id');
 
+//        $inviter_user_id = $this->request->post('inviter_user_id');
+
         if (!$user_id) {
             $this->error('缺少参数,请求失败', 'error');
         }
@@ -219,11 +229,21 @@ class Index extends Base
         if (Cache::get('brandCate')) {
             $brand = Cache::get('brandCate');
         } else {
-            Cache::set('brandCate', $this->brand());
+            Cache::set('brandCate', self::brand());
             $brand = Cache::get('brandCate');
         }
 
-        $this->success('请求成功', ['brand' => $brand, 'mobile' => $userData['mobile']]);
+        $data = [
+            'brand' => $brand,
+            'mobile' => $userData['mobile'],
+        ];
+
+//        if($inviter_user_id){
+//            $inviter_code = User::get($inviter_user_id)->invite_code;
+//            $data['inviter_code'] = $inviter_code;
+//        }
+
+        $this->success('请求成功', $data);
     }
 
     /**
@@ -303,7 +323,7 @@ class Index extends Base
 
         //得到所有的品牌列表
         if (Cache::get('brandCatesList')) {
-            $brand = Cache::get('brandCatesList');
+            $brand = Cache::get('brandCatesList') ;
         } else {
             Cache::set('brandCatesList', $this->getBrand());
             $brand = Cache::get('brandCatesList');
