@@ -54,13 +54,13 @@ class Store extends Backend
             }
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
             $total = $this->model
-                    ->with(['storelevel','storeuser'])
+                    ->with(['storelevel','user'])
                     ->where($where)
                     ->order($sort, $order)
                     ->count();
 
             $list = $this->model
-                    ->with(['storelevel','storeuser'])
+                    ->with(['storelevel','user'])
                     ->where($where)
                     ->order($sort, $order)
                     ->limit($offset, $limit)
@@ -69,7 +69,7 @@ class Store extends Backend
             foreach ($list as $row) {
                 
                 $row->getRelation('storelevel')->visible(['partner_rank']);
-				$row->getRelation('storeuser')->visible(['name']);
+				$row->getRelation('user')->visible(['name']);
             }
             $list = collection($list)->toArray();
             $result = array("total" => $total, "rows" => $list);
