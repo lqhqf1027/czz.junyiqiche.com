@@ -17,6 +17,7 @@ use addons\cms\model\QuotedPrice;
 use addons\cms\model\BrandCate;
 use think\Db;
 use Endroid\QrCode\QrCode;
+
 /**
  * 我的
  */
@@ -74,7 +75,7 @@ class My extends Base
             //auditstatus审核是否通过，审核状态:pass_the_audit=审核通过;audit_failed=审核不通过;wait_for_review=待审核;in_the_review = 审核中；paid_the_money=已认证
             $userInfo = User::field('id,nickname,avatar,invite_code,invitation_code_img')
                 ->with(['companystoreone' => function ($q) {
-                    $q->withField('id,auditstatus,store_name');
+                    $q->withField('id,auditstatus,store_name,level_id');
                 }])->find($user_id);
             if (!$userInfo) $this->error('未查询到用户信息');
             //如果已认证通过，更改nickname 为门店名称  paid_the_money
@@ -85,8 +86,11 @@ class My extends Base
             if (!empty($BuycarModel) || !empty($ModelsInfo)) {
                 $userInfo['isNewOffer'] = 1;
             }
+//            $userInfo['storeLevel'] = CompanyStore::with(['storelevel' => function ($q) {
+//                $q->withField(['partner_rank,id']);
+//            }])->select();
             //如果当前用户的二维码为空
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->error($e->getMessage());
         }
         $this->success('请求成功', ['userInfo' => $userInfo]);
