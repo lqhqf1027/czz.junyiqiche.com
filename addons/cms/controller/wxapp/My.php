@@ -16,7 +16,7 @@ use addons\cms\model\Config as ConfigModel;
 use addons\cms\model\QuotedPrice;
 use addons\cms\model\BrandCate;
 use think\Db;
-
+use Endroid\QrCode\QrCode;
 /**
  * 我的
  */
