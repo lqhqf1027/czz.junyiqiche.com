@@ -87,9 +87,9 @@ class Store extends Backend
         $row = Db::name('company_store')->alias('a')
             ->join('store_level b', 'b.id=a.level_id', 'LEFT')
             ->join('user c', 'c.id = a.user_id', 'LEFT')
-            ->field('a.id,a.cities_name,a.store_name,a.store_address,a.phone,a.store_img,a.store_description,a.main_camp,a.business_life,
+            ->field('a.id,a.cities_name,a.store_name,a.store_address,a.phone,a.store_img,a.store_description,a.main_camp,a.business_life,a.bank_card,a.id_card_images,a.business_licenseimages,
                 b.partner_rank,
-                c.name as user_name,c.avatar,c.bank_card,c.id_card_images')
+                c.name as user_name,c.avatar')
             ->where('a.id',$ids)
             ->find();
 
@@ -99,11 +99,13 @@ class Store extends Backend
         $id_card_images = $row['id_card_images'] == '' ? [] : explode(',', $row['id_card_images']);
         //店铺展示图
         $store_img = $row['store_img'] == '' ? [] : explode(',', $row['store_img']);
+        //营业执照（多图）
+        $business_licenseimages = $row['business_licenseimages'] == '' ? [] : explode(',', $row['business_licenseimages']);
 
         $this->view->assign(
             [
                 'row' => $row,
-                'cdnurl' => Config::get('upload')['cdnurl'],
+                'cdnurl' => 'https://czz.junyiqiche.com',
                 'avatar' => $avatar,
                 'id_card_images' => $id_card_images,
                 'store_img' => $store_img,
