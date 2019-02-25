@@ -38,6 +38,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
             // 为表格绑定事件
             Table.api.bindevent(table);
+
+            table.on('load-success.bs.table', function (e, data) {
+                $(".btn-add").data("area", ["70%", "90%"]);
+                $(".btn-edit").data("area", ["70%", "90%"]);
+            })
         },
         add: function () {
             Controller.api.bindevent();

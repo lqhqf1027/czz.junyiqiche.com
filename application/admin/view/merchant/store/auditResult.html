@@ -1,3 +1,13 @@
+<style>
+    .change {
+        border: 2px solid red;
+    }
+    .imgBorder{
+        width:80px;height:80px;border-radius: 5px;
+    }
+</style>
+
+
 <form id="auditResult-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
     <h2>
         <center>审核店铺资料
@@ -26,13 +36,13 @@
         <div class="row">
             <div class="col-xs-12 col-sm-8 col-md-6">
                 {empty name="$avatar|default=''"}
-                <p style="margin-top: 8%"><strong>{:__('头像')}：</strong><span class="text-info">暂无</span></p>
+                <p style="margin-top: 8%"><strong>{:__('微信头像')}：</strong><span class="text-info">暂无</span></p>
         
                 {else /}
-                <strong class="imgClickTitle">{:__('头像')}：</strong>
+                <strong class="imgClickTitle">{:__('微信头像')}：</strong>
                 {foreach $avatar as $k => $v}
         
-                <img src="{$cdnurl}{$v}" alt="头像" class="imgBorder">
+                <img src="{$v}" alt="微信头像" class="imgBorder">
                 {/foreach}
                 {/empty}
             </div>
@@ -105,6 +115,18 @@
                 {/foreach}
                 {/empty}
             </div>
+            <div class="col-xs-12 col-sm-8 col-md-4">
+                    {empty name="$business_licenseimages|default=''"}
+                    <p style="margin-top: 8%"><strong>{:__('营业执照（多图）')}：</strong><span class="text-info">暂无</span></p>
+        
+                    {else /}
+                    <strong class="imgClickTitle">{:__('营业执照（多图）')}：</strong>
+                    {foreach $business_licenseimages as $k => $v}
+        
+                    <img src="{$cdnurl}{$v}" alt="营业执照（多图）" class="imgBorder">
+                    {/foreach}
+                    {/empty}
+                </div>
             
         </div>
         <hr>

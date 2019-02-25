@@ -31,11 +31,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'user.name', title: __('店铺所有人姓名')},
                         {field: 'store_address', title: __('Store_address')},
                         {field: 'phone', title: __('Phone')},
-                        {field: 'statuss', title: __('Statuss'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.normal},
-                        {field: 'store_img', title: __('Store_img')},
+                        {field: 'store_img', title: __('Store_img'), formatter: Controller.api.formatter.images},
                         {field: 'store_qrcode', title: __('Store_qrcode')},
                         {field: 'invitation_code', title: __('Invitation_code')},
-                        {field: 'store_description', title: __('Store_description')},
                         {field: 'main_camp', title: __('Main_camp')},
                         {
                             field: 'recommend',
@@ -43,6 +41,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             events: Controller.api.events.operate,
                             formatter: Controller.api.formatter.toggle, searchList: {"1": "是", "0": "否"},
                         },
+                        {field: 'statuss', title: __('Statuss'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.normal},
                         // {field: 'auditstatus', title: __('审核状态'), searchList: {"audit_failed":__('Audit_failed'),"pass_the_audit":__('Pass_the_audit'),"wait_the_review":__('Wait_the_review')}, formatter: Table.api.formatter.status},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
@@ -66,6 +65,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.auditstatus == 'audit_failed') {
                                             return true;
                                         }
+                                        else if (row.auditstatus == 'paid_the_money') {
+                                            return true;
+                                        }
                                     },
 
                                 },
@@ -86,14 +88,17 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.auditstatus == 'audit_failed') {
                                             return true;
                                         }
+                                        else if (row.auditstatus == 'paid_the_money') {
+                                            return true;
+                                        }
                                     },
                                 },
                                 /**
                                  * 审核店铺-----通过
                                  */
                                 {
-                                    name: 'pass_the_audit', text: '审核店铺通过',
-                                    title: __('审核店铺通过'), classname: 'btn btn-xs btn-success',
+                                    name: 'pass_the_audit', text: '审核店铺通过，待支付',
+                                    title: __('审核店铺通过，待支付'), classname: 'btn btn-xs btn-success',
                                         
                                     hidden: function (row, value, index) {
                                         if (row.auditstatus == 'pass_the_audit') {
@@ -103,6 +108,31 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.auditstatus == 'audit_failed') {
+                                            return true;
+                                        }
+                                        else if (row.auditstatus == 'paid_the_money') {
+                                            return true;
+                                        }
+                                    },
+                                },
+                                /**
+                                 * 审核店铺-----通过
+                                 */
+                                {
+                                    name: 'paid_the_money', text: '已支付',
+                                    title: __('已支付'), classname: 'btn btn-xs btn-success',
+                                        
+                                    hidden: function (row, value, index) {
+                                        if (row.auditstatus == 'paid_the_money') {
+                                            return false;
+                                        }
+                                        else if (row.auditstatus == 'wait_the_review') {
+                                            return true;
+                                        }
+                                        else if (row.auditstatus == 'audit_failed') {
+                                            return true;
+                                        }
+                                        else if (row.auditstatus == 'pass_the_audit') {
                                             return true;
                                         }
                                     },
@@ -122,6 +152,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.auditstatus == 'wait_the_review') {
+                                            return true;
+                                        }
+                                        else if (row.auditstatus == 'paid_the_money') {
                                             return true;
                                         }
                                     },
@@ -250,6 +283,17 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                    
                 }, 
+                images: function (value, row, index) {
+                    value = value === null ? '' : value.toString();
+                    var classname = typeof this.classname !== 'undefined' ? this.classname : 'img-sm img-center';
+                    var arr = value.split(',');
+                    var html = [];
+                    $.each(arr, function (i, value) {
+                        value = value ? value : '/assets/img/blank.gif';
+                        html.push('<a href="https://czz.junyiqiche.com' + value + '" target="_blank"><img class="' + classname + '" src="https://czz.junyiqiche.com' + value + '" /></a>');
+                    });
+                    return html.join(' ');
+                },
             },
         }
     };
