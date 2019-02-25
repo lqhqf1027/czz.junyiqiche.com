@@ -70,47 +70,85 @@ class My extends Base
     public function index()
     {
         $user_id = $this->request->post('user_id');
+        try {
+            //auditstatus审核是否通过，审核状态:pass_the_audit=审核通过;audit_failed=审核不通过;wait_for_review=待审核;in_the_review = 审核中；paid_the_money=已认证
+            $userInfo = User::field('id,nickname,avatar,invite_code,invitation_code_img')
+                ->with(['companystoreone' => function ($q) {
+                    $q->withField('id,auditstatus,store_name');
+                }])->find($user_id);
+            if (!$userInfo) $this->error('未查询到用户信息');
+            //如果已认证通过，更改nickname 为门店名称  paid_the_money
+            if ($userInfo['companystoreone']['auditstatus'] == 'paid_the_money') $userInfo['nickname'] = $userInfo['companystoreone']['store_name'];
+            $BuycarModel = $this->isOffer(new \addons\cms\model\BuycarModel, $user_id);
+            $ModelsInfo = $this->isOffer(new \addons\cms\model\ModelsInfo, $user_id);
+            $userInfo['isNewOffer'] = 0;
+            if (!empty($BuycarModel) || !empty($ModelsInfo)) {
+                $userInfo['isNewOffer'] = 1;
+            }
+            //如果当前用户的二维码为空
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
+        }
+        $this->success('请求成功', ['userInfo' => $userInfo]);
+    }
 
-        $userInfo = User::field('id,nickname,avatar,name,id_card_images')
-            ->with(['companystoreone' => function ($q) {
-                $q->withField('id,store_qrcode');
-            }])->find($user_id);
-        $userInfo['isRealName'] = 0;
-        if ($userInfo['name'] && $userInfo['id_card_images']) {
-            $userInfo['isRealName'] = 1;
+
+    /**
+     * 是否报价
+     * @param $modelName
+     * @param $user_id
+     * @return false|\PDOStatement|string|\think\Collection
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function isOffer($modelName, $user_id)
+    {
+        try {
+            $dataId = $modelName::where('user_id', $user_id)->column('id');
+            if ($dataId) {
+                $newData = QuotedPrice::where([
+                    'models_info_id' => ['in', $dataId],
+                    'is_see' => 2,
+                    'user_ids' => ['neq', $user_id]
+                ])->select();
+                return $newData;
+            }
+
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
         }
 
-        $buyCarId = BuycarModel::where('user_id', $user_id)->column('id');
+    }
 
-        $modelInfoId = ModelsInfo::where('user_id', $user_id)->column('id');
+    /**
+     * 生成二维码
+     * @throws \Endroid\QrCode\Exceptions\ImageTypeInvalidException
+     */
+    public function setQrcode()
+    {
 
-        if ($modelInfoId) {
-            $newModelInfo = QuotedPrice::where([
-                'models_info_id' => ['in', $modelInfoId],
-                'is_see' => 2,
-                'user_ids' => ['neq', $user_id]
-            ])->select();
+//        $logo = \Think\Config::get('upload')['cdnurl'] . \addons\cms\model\Config::get(['name' => 'site_logo'])->value;
+        $user_id = $this->request->post('user_id');
+        if (!(int)$user_id) $this->error('参数错误');
+        $time = date('Ymd');
+        $qrCode = new QrCode();
+        $qrCode->setText($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/?user_id=4444')
+            ->setSize(150)
+            ->setPadding(10)
+            ->setErrorCorrection('high')
+            ->setForegroundColor(array('r' => 0, 'g' => 0, 'b' => 0, 'a' => 0))
+            ->setBackgroundColor(array('r' => 255, 'g' => 255, 'b' => 255, 'a' => 0))
+            ->setLabel(' ')
+            ->setLabelFontSize(10)
+            ->setImageType(\Endroid\QrCode\QrCode::IMAGE_TYPE_PNG);
+//        $qrCode ->render();die;
+        $fileName = DS . 'uploads' . DS . 'qrcode' . DS . $time . '_' . $user_id . '.png';
+        $qrCode->save(ROOT_PATH . 'public' . $fileName);
+        if ($qrCode) {
+            User::update(['id' => 20, 'invitation_code_img' => $fileName]) ? $this->success('创建成功', $fileName) : $this->error('创建失败');
         }
-
-        if ($buyCarId) {
-            $newBuyCar = QuotedPrice::where([
-                'buy_car_id' => ['in', $buyCarId],
-                'is_see' => 2,
-                'user_ids' => ['neq', $user_id]
-            ])->select();
-        }
-        $userInfo['isNewOffer'] = 0;
-        if (!empty($newModelInfo) || !empty($newBuyCar)) {
-            $userInfo['isNewOffer'] = 1;
-        }
-
-        $agreement = ConfigModel::get(['group'=>'agreement'])->visible(['name','value']);
-
-        unset($userInfo['name'], $userInfo['id_card_images']);
-
-        $this->success('请求成功', [
-            'userInfo' => $userInfo
-        ]);
+        $this->error('未知错误');
     }
 
     /**
@@ -119,11 +157,10 @@ class My extends Base
      */
     public function service_agreement()
     {
-        $agreement = ConfigModel::get(['group'=>'agreement'])->visible(['name','value']);
+        $agreement = ConfigModel::get(['group' => 'agreement'])->visible(['name', 'value']);
 
-        $this->success('请求成功',[$agreement['name']=>$agreement['value']]);
+        $this->success('请求成功', [$agreement['name'] => $agreement['value']]);
     }
-
 
 
     /**
