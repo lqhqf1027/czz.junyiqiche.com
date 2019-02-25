@@ -124,7 +124,15 @@ class My extends Base
         $this->success('请求成功',[$agreement['name']=>$agreement['value']]);
     }
 
-
+    /**
+     * 关于车友
+     * @throws \think\exception\DbException
+     */
+    public function about_riders()
+    {
+        $riders =  ConfigModel::get(['name'=>'about_riders'])->visible(['name','value']);
+        $this->success('请求成功',[$riders['name']=>$riders['value']]);
+    }
 
     /**
      * 支付成功后接口

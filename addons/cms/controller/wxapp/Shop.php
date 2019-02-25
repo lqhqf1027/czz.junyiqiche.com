@@ -40,9 +40,19 @@ class Shop extends Base
             $inviter_code = User::get($inviter_user_id)->invite_code;
         }
 
+        //店铺等级
+        if (!Cache::get('LEVEL')) {
+            $store_level = Db::name('store_level')
+                ->where('status', 'normal')
+                ->field('id,partner_rank,money,explain')
+                ->select();
+            Cache::set('LEVEL', $store_level);
+        }
+
         $data = [
             'submit_type'=>'insert',
             'inviter_code'=>$inviter_code,
+            'store_level_list' => Cache::get('LEVEL'),
             'brand_list'=>$brand
         ];
 
@@ -117,6 +127,49 @@ class Shop extends Base
 //        }
 
         $this->success('请求成功', 'success');
+
+    }
+
+
+    /**
+     * 我的订单接口
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function my_order()
+    {
+        $user_id = $this->request->post('user_id');
+
+        $info = User::field('id,nickname,avatar')
+            ->with(['companystoreone' => function ($q) {
+                $q->withField('id,level_id,auditstatus');
+            }])->find($user_id);
+
+        if($info){
+            $info['certification_fee'] = Db::name('store_level')->where('id',$info['companystoreone']['level_id'])->value('money');
+        }
+
+        $to_be_paid = $paid = [];
+
+        if ($info['companystoreone']['auditstatus'] == 'paid_the_money') {
+            $paid[] = $info;
+        } else if($info['companystoreone']['auditstatus']){
+            $to_be_paid[] = $info;
+        }
+
+        if($to_be_paid){
+            $can_pay = $to_be_paid[0]['companystoreone']['auditstatus']=='pass_the_audit'?1:0;
+
+            $to_be_paid[0]['can_pay'] = $can_pay;
+        }
+
+        if($paid){
+            $can_upgrade =  $paid[0]['companystoreone']['level_id']==1?0:1;
+            $paid[0]['can_upgrade'] = $can_upgrade;
+        }
+
+        $this->success('请求成功',['to_be_paid'=>$to_be_paid,'paid_the_money'=>$paid]);
 
     }
 }
