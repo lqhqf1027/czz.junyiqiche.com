@@ -94,7 +94,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     },
                                 },
                                 /**
-                                 * 审核店铺-----通过
+                                 * 审核店铺-----通过待支付
                                  */
                                 {
                                     name: 'pass_the_audit', text: '审核店铺通过，待支付',
@@ -116,7 +116,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     },
                                 },
                                 /**
-                                 * 审核店铺-----通过
+                                 * 审核店铺-----已支付
                                  */
                                 {
                                     name: 'paid_the_money', text: '已支付',
@@ -241,7 +241,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                      * @param index
                      */
                     'click .btn-auditResult': function (e, value, row, index) {
-                        $(".btn-auditResult").data("area", ["95%", "95%"]);
+                        $(".btn-auditResult").data("area", ["40%", "95%"]);
                         e.stopPropagation();
                         e.preventDefault();
                         var table = $(this).closest('table');
