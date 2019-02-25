@@ -7,7 +7,7 @@
 #/application/config.php
 
 .idea
-composer.lock
+#composer.lock
 *.log
 *.css.map
 !.gitkeep
