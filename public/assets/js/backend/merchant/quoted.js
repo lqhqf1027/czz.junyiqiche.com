@@ -210,6 +210,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 pk: 'id',
                 sortName: 'id',
                 toolbar: '#toolbar',
+                searchFormVisible: true,
                 queryParams:function (params) {
                     params.filter = JSON.stringify({'user_id': Config.user_id});
                     params.op = JSON.stringify({'user_id': '='});
@@ -229,17 +230,17 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'id', title: __('Id')},
                         {field: 'brand.name', title: __('品牌名称')},
                         {field: 'models_name', title: __('车型名称')},
-                        {field: 'kilometres', title: __('公里数（公里）'), operate:'BETWEEN'},
-                        {field: 'parkingposition', title: __('车辆所在地')},
+                        {field: 'kilometres', title: __('公里数（公里）'), operate:false},
+                        {field: 'parkingposition', title: __('车辆所在地'), operate:false},
                         {field: 'phone', title: __('联系电话')},
-                        {field: 'modelsimages', title: __('车型亮点'), formatter: Controller.api.formatter.images},
-                        {field: 'guide_price', title: __('批发一口价（元）'), operate:'BETWEEN'},
-                        {field: 'emission_standard', title: __('过户次数')},
-                        {field: 'browse_volume', title: __('浏览量')},
-                        {field: 'quotecount', title: __('共收到报价次数'), formatter: Controller.api.formatter.count},
-                        {field: 'shelfismenu', title: __('是否上下架'), formatter: Controller.api.formatter.toggle},
-                        {field: 'car_licensetime', title: __('上牌时间'), operate:'RANGE', addclass:'datetimerange', formatter: Controller.api.formatter.datetime},
-                        {field: 'factorytime', title: __('出厂时间'), operate:'RANGE', addclass:'datetimerange', formatter: Controller.api.formatter.datetime},
+                        {field: 'modelsimages', title: __('车型亮点'), formatter: Controller.api.formatter.images, operate:false},
+                        {field: 'guide_price', title: __('批发一口价（元）'), operate:false},
+                        {field: 'emission_standard', title: __('过户次数'), operate:false},
+                        {field: 'browse_volume', title: __('浏览量'), operate:false},
+                        {field: 'quotecount', title: __('共收到报价次数'), formatter: Controller.api.formatter.count, operate:false},
+                        {field: 'shelfismenu', title: __('是否上下架'), formatter: Controller.api.formatter.toggle, operate:false},
+                        {field: 'car_licensetime', title: __('上牌时间'), addclass:'datetimerange', formatter: Controller.api.formatter.datetime, operate:false},
+                        {field: 'factorytime', title: __('出厂时间'), addclass:'datetimerange', formatter: Controller.api.formatter.datetime, operate:false},
                         {field: 'operate', title: __('Operate'), table: table, 
                             buttons: [
 
@@ -309,6 +310,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 pk: 'id',
                 sortName: 'id',
                 toolbar: '#toolbar',
+                searchFormVisible: true,
                 queryParams:function (params) {
                     params.filter = JSON.stringify({'user_id': Config.user_id});
                     params.op = JSON.stringify({'user_id': '='});
@@ -328,12 +330,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'id', title: __('Id')},
                         {field: 'brand.name', title: __('品牌名称')},
                         {field: 'models_name', title: __('车型名称')},
-                        {field: 'parkingposition', title: __('期望车辆所在地')},
+                        {field: 'parkingposition', title: __('期望车辆所在地'), operate:false},
                         {field: 'phone', title: __('联系电话')},
-                        {field: 'guide_price', title: __('心理价（元）'), operate:'BETWEEN'},
-                        {field: 'browse_volume', title: __('浏览量')},
-                        {field: 'quotecount', title: __('共收到报价次数'), formatter: Controller.api.formatter.count},
-                        {field: 'shelfismenu', title: __('是否上下架'), formatter: Controller.api.formatter.toggle},
+                        {field: 'guide_price', title: __('心理价（元）'), operate:false},
+                        {field: 'browse_volume', title: __('浏览量'), operate:false},
+                        {field: 'quotecount', title: __('共收到报价次数'), formatter: Controller.api.formatter.count, operate:false},
+                        {field: 'shelfismenu', title: __('是否上下架'), formatter: Controller.api.formatter.toggle, operate:false},
                         {field: 'operate', title: __('Operate'), table: table, 
                             buttons: [
 
@@ -409,6 +411,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 pk: 'id',
                 sortName: 'id',
                 toolbar: '#toolbar',
+                searchFormVisible: true,
                 queryParams:function (params) {
                     params.filter = JSON.stringify({'models_info_id': Config.models_info_id});
                     params.op = JSON.stringify({'models_info_id': '='});
@@ -427,11 +430,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'id', title: __('Id'),operate:false},
 
                         {field: 'user.nickname', title: __('报价用户昵称')},
-                        {field: 'user.avatar', title: __('报价用户头像'), formatter: Table.api.formatter.images},
+                        {field: 'user.avatar', title: __('报价用户头像'), formatter: Table.api.formatter.images, operate:false},
                         {field: 'user.mobile', title: __('报价用户手机')},
 
                         {field: 'money', title: __('报价价格（元）')},
-                        {field: 'quotationtime', title: __('报价时间'), operate:'RANGE', addclass:'datetimerange', formatter: Controller.api.formatter.datetime},
+                        {field: 'quotationtime', title: __('报价时间'), operate:false, addclass:'datetimerange', formatter: Controller.api.formatter.datetime},
                     
                     ]
                 ] 
@@ -460,6 +463,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 pk: 'id',
                 sortName: 'id',
                 toolbar: '#toolbar',
+                searchFormVisible: true,
                 queryParams:function (params) {
                     params.filter = JSON.stringify({'buy_car_id': Config.buy_car_id});
                     params.op = JSON.stringify({'buy_car_id': '='});
@@ -475,14 +479,14 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 },
                 columns: [
                     [
-                        {field: 'id', title: __('Id'),operate:false},
+                        {field: 'id', title: __('Id'), operate:false},
 
                         {field: 'user.nickname', title: __('报价用户昵称')},
-                        {field: 'user.avatar', title: __('报价用户头像'), formatter: Table.api.formatter.images},
+                        {field: 'user.avatar', title: __('报价用户头像'), formatter: Table.api.formatter.images, operate:false},
                         {field: 'user.mobile', title: __('报价用户手机')},
 
                         {field: 'money', title: __('报价价格（元）')},
-                        {field: 'quotationtime', title: __('报价时间'), operate:'RANGE', addclass:'datetimerange', formatter: Controller.api.formatter.datetime},
+                        {field: 'quotationtime', title: __('报价时间'), operate:false, addclass:'datetimerange', formatter: Controller.api.formatter.datetime},
                     
                     ]
                 ] 
