@@ -20,5 +20,9 @@ class StoreLevel extends Model
     {
         $query->where('status', 'normal');
     }
+    public function storeLevel()
+    {
+        return $this->belongsTo('StoreLevel', 'store_id', 'id')->setEagerlyType(0);
+    }
 
 }
