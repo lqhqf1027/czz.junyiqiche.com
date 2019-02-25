@@ -159,6 +159,18 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         }
                                     },
                                 },
+                                /**
+                                 * 查看店铺的推广
+                                 */
+                                {
+                                    name: 'store_promotion',
+                                    text: '查看店铺推广',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('查看店铺推广'), 
+                                    classname: 'btn btn-xs btn-success btn-store_promotion',
+
+                                },
                                 
                             ],
                             events: Controller.api.events.operate,
@@ -170,6 +182,59 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
             // 为表格绑定事件
             Table.api.bindevent(table);
+        },
+
+        //店铺推广
+        storepromotion: function () {
+
+            // 初始化表格参数配置
+            Table.api.init({
+                extend: {
+                    'dragsort_url': ''
+                }
+            });
+    
+            var table = $("#table");
+            $.fn.bootstrapTable.locales[Table.defaults.locale]['formatSearch'] = function(){};
+            // 初始化表格
+            table.bootstrapTable({
+                url: 'merchant/store/storepromotion',
+                pk: 'id',
+                sortName: 'id',
+                toolbar: '#toolbar',
+                searchFormVisible: true,
+                queryParams:function (params) {
+                    params.filter = JSON.stringify({'store_id': Config.store_id});
+                    params.op = JSON.stringify({'store_id': '='});
+                    return {
+                        search: params.search,
+                        sort: params.sort,
+                        order: params.order,
+                        filter: params.filter,
+                        op: params.op,
+                        offset: params.offset,
+                        limit: params.limit
+                    }
+                },
+                columns: [
+                    [
+                        {field: 'id', title: __('Id'),operate:false},
+
+                        {field: 'store.store_name', title: __('一级店铺名称')},
+                        {field: 'earnings', title: __('一级店铺收益（元）')},
+                        {field: 'store.store_name', title: __('二级店铺名称')},
+
+                        {field: 'earnings', title: __('二级店铺收益（元）')},
+                        // {field: 'quotationtime', title: __('一共收益（元）')},
+                    
+                    ]
+                ] 
+                });
+    
+                // 为表格绑定事件
+                Table.api.bindevent(table);
+
+    
         },
         add: function () {
             Controller.api.bindevent();
@@ -252,7 +317,25 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         Fast.api.open(Table.api.replaceurl(url, row, table), __('店铺审核'), $(this).data() || {})
 
                     },
+                    /**
+                     * 查看店铺推广
+                     * @param e
+                     * @param value
+                     * @param row
+                     * @param index
+                     */
+                    'click .btn-store_promotion': function (e, value, row, index) {
+                        $(".btn-store_promotion").data("area", ["95%", "95%"]);
+                        e.stopPropagation();
+                        e.preventDefault();
+                        var table = $(this).closest('table');
+                        var options = table.bootstrapTable('getOptions');
+                        var ids = row[options.pk];
+                        row = $.extend({}, row ? row : {}, {ids: ids});
+                        var url = 'merchant/store/storepromotion';
+                        Fast.api.open(Table.api.replaceurl(url, row, table), __('查看店铺推广'), $(this).data() || {})
 
+                    },
 
                 },
             },

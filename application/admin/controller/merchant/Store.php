@@ -3,6 +3,7 @@
 namespace app\admin\controller\merchant;
 
 use app\common\controller\Backend;
+use app\admin\model\CompanyStore;
 use think\Config;
 use think\Db;
 
@@ -169,6 +170,52 @@ class Store extends Backend
             }
 
         }
+    }
+
+    /** 
+     * 查看店铺推广
+     */
+    public function storepromotion($ids = null)
+    {
+        $this->model = model('Distribution');
+        //当前是否为关联查询
+        $this->relationSearch = true;
+        //设置过滤方法
+        $this->request->filter(['strip_tags']);
+        if ($this->request->isAjax())
+        {
+            //如果发送的来源是Selectpage，则转发到Selectpage
+            if ($this->request->request('keyField'))
+            {
+                return $this->selectpage();
+            }
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            $total = $this->model
+                    ->with(['store'])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->count();
+
+            $list = $this->model
+                    ->with(['store'])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->limit($offset, $limit)
+                    ->select();
+
+            foreach ($list as $k => $row) {
+
+                
+            }
+            $list = collection($list)->toArray();
+            // pr($list);
+            // die;
+            $result = array("total" => $total, "rows" => $list);
+
+            return json($result);
+        }
+        $this->assignconfig('store_id', $ids);
+        return $this->view->fetch();
     }
 
 

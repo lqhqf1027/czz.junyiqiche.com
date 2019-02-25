@@ -20,18 +20,10 @@ class Distribution extends Model
     protected $append = [
 
     ];
-    
 
-    
-
-
-
-
-
-
-
+    //关联店铺
     public function store()
     {
-        return $this->belongsTo('CompanyStore', 'store_id', 'id', [], 'LEFT')->setEagerlyType(0);
+        return $this->belongsTo('CompanyStore', 'level_store_id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
 }
