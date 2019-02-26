@@ -5,12 +5,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             // 初始化表格参数配置
             Table.api.init({
                 extend: {
-                    index_url: 'merchant/earnings/index',
-                    add_url: 'merchant/earnings/add',
-                    edit_url: 'merchant/earnings/edit',
-                    del_url: 'merchant/earnings/del',
-                    multi_url: 'merchant/earnings/multi',
-                    table: 'distribution',
+                    index_url: 'merchant/brandcate/index',
+                    add_url: 'merchant/brandcate/add',
+                    edit_url: 'merchant/brandcate/edit',
+                    // del_url: 'merchant/brandcate/del',
+                    multi_url: 'merchant/brandcate/multi',
+                    table: 'brand',
                 }
             });
 
@@ -25,11 +25,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {checkbox: true},
                         {field: 'id', title: __('Id')},
-                        {field: 'store.store_name', title: __('Store.store_name')},
-                        {field: 'level_store_id', title: __('Level_store_id')},
-                        // {field: 'percent', title: __('Percent'), operate:'BETWEEN'},
-                        {field: 'earnings', title: __('Earnings'), operate:'BETWEEN'},
-                        {field: 'second_earnings', title: __('Second_earnings'), operate:'BETWEEN'},
+                        {field: 'name', title: __('Name')},
+                        {field: 'brand_initials', title: __('Brand_initials')},
+                        {field: 'brand_default_images', title: __('Brand_default_images'), formatter: Table.api.formatter.images},
+                        {field: 'status', title: __('Status'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.status},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}

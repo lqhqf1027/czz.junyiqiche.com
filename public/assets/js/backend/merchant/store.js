@@ -33,6 +33,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'phone', title: __('Phone')},
                         {field: 'store_img', title: __('Store_img'), formatter: Controller.api.formatter.images},
                         {field: 'store_qrcode', title: __('Store_qrcode')},
+                        {field: 'count', title: __('邀请店铺数量'), formatter: Controller.api.formatter.count},
                         {field: 'invitation_code', title: __('Invitation_code')},
                         {field: 'main_camp', title: __('Main_camp')},
                         {
@@ -169,13 +170,41 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     extend: 'data-toggle="tooltip"', 
                                     title: __('查看店铺推广'), 
                                     classname: 'btn btn-xs btn-success btn-store_promotion',
+                                    hidden: function (row, value, index) {
+                                        if (row.count != 0) {
+                                            return false;
+                                        }
+                                        else if (row.count == 0) {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 暂无店铺推广可查看
+                                 */
+                                {
+                                    name: 'store_promotion',
+                                    text: '暂无店铺推广可查看',
+                                    icon: 'fa fa-eye-slash', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('暂无店铺推广可查看'), 
+                                    classname: 'btn btn-xs btn-danger',
+                                    hidden: function (row, value, index) {
+                                        if (row.count == 0) {
+                                            return false;
+                                        }
+                                        else if (row.count != 0) {
+                                            return true;
+                                        }
+                                    },
 
                                 },
                                 
                             ],
                             events: Controller.api.events.operate,
                             formatter: Controller.api.formatter.operate
-                    }
+                        }
                     ]
                 ]
             });
@@ -204,8 +233,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 toolbar: '#toolbar',
                 searchFormVisible: true,
                 queryParams:function (params) {
-                    params.filter = JSON.stringify({'store_id': Config.store_id});
-                    params.op = JSON.stringify({'store_id': '='});
+                    params.filter = JSON.stringify({'level_store_id': Config.level_store_id});
+                    params.op = JSON.stringify({'level_store_id': 'in'});
                     return {
                         search: params.search,
                         sort: params.sort,
@@ -218,14 +247,107 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 },
                 columns: [
                     [
-                        {field: 'id', title: __('Id'),operate:false},
+                        {field: 'store.id', title: __('Id')},
 
                         {field: 'store.store_name', title: __('一级店铺名称')},
                         {field: 'earnings', title: __('一级店铺收益（元）')},
-                        {field: 'store.store_name', title: __('二级店铺名称')},
+                        {field: 'count', title: __('邀请店铺数量'), formatter: Controller.api.formatter.count},
+                        {
+                            field: 'operate', title: __('Operate'), table: table, 
+                            buttons: [
+                                /**
+                                 * 查看店铺的推广
+                                 */
+                                {
+                                    name: 'store_promotion',
+                                    text: '查看店铺推广',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('查看店铺推广'), 
+                                    classname: 'btn btn-xs btn-success btn-levelstore_promotion',
+                                    hidden: function (row, value, index) {
+                                        if (row.count != 0) {
+                                            return false;
+                                        }
+                                        else if (row.count == 0) {
+                                            return true;
+                                        }
+                                    },
 
-                        {field: 'earnings', title: __('二级店铺收益（元）')},
-                        // {field: 'quotationtime', title: __('一共收益（元）')},
+                                },
+                                /**
+                                 * 暂无店铺推广可查看
+                                 */
+                                {
+                                    name: 'store_promotion',
+                                    text: '暂无店铺推广可查看',
+                                    icon: 'fa fa-eye-slash', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('暂无店铺推广可查看'), 
+                                    classname: 'btn btn-xs btn-danger',
+                                    hidden: function (row, value, index) {
+                                        if (row.count == 0) {
+                                            return false;
+                                        }
+                                        else if (row.count != 0) {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                
+                            ],
+                            events: Controller.api.events.operate,
+                            formatter: Controller.api.formatter.operate
+                        }
+                    
+                    ]
+                ] 
+                });
+    
+                // 为表格绑定事件
+                Table.api.bindevent(table);
+
+    
+        },
+        //下级店铺推广
+        levelstorepromotion: function () {
+
+            // 初始化表格参数配置
+            Table.api.init({
+                extend: {
+                    'dragsort_url': ''
+                }
+            });
+    
+            var table = $("#table");
+            $.fn.bootstrapTable.locales[Table.defaults.locale]['formatSearch'] = function(){};
+            // 初始化表格
+            table.bootstrapTable({
+                url: 'merchant/store/levelstorepromotion',
+                pk: 'id',
+                sortName: 'id',
+                toolbar: '#toolbar',
+                searchFormVisible: true,
+                queryParams:function (params) {
+                    params.filter = JSON.stringify({'level_store_id': Config.level_store_ids});
+                    params.op = JSON.stringify({'level_store_id': 'in'});
+                    return {
+                        search: params.search,
+                        sort: params.sort,
+                        order: params.order,
+                        filter: params.filter,
+                        op: params.op,
+                        offset: params.offset,
+                        limit: params.limit
+                    }
+                },
+                columns: [
+                    [
+                        {field: 'store.id', title: __('Id'),operate:false},
+
+                        {field: 'store.store_name', title: __('二级店铺名称')},
+                        {field: 'second_earnings', title: __('二级店铺收益（元）')},
                     
                     ]
                 ] 
@@ -336,6 +458,25 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         Fast.api.open(Table.api.replaceurl(url, row, table), __('查看店铺推广'), $(this).data() || {})
 
                     },
+                    /**
+                     * 查看下级店铺推广
+                     * @param e
+                     * @param value
+                     * @param row
+                     * @param index
+                     */
+                    'click .btn-levelstore_promotion': function (e, value, row, index) {
+                        $(".btn-levelstore_promotion").data("area", ["95%", "95%"]);
+                        e.stopPropagation();
+                        e.preventDefault();
+                        var table = $(this).closest('table');
+                        var options = table.bootstrapTable('getOptions');
+                        var ids = row[options.pk];
+                        row = $.extend({}, row ? row : {}, {ids: ids});
+                        var url = 'merchant/store/levelstorepromotion';
+                        Fast.api.open(Table.api.replaceurl(url, row, table), __('查看店铺推广'), $(this).data() || {})
+
+                    },
 
                 },
             },
@@ -365,6 +506,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         + row.id + "' data-params='" + this.field + "=" + (value ? no : yes) + "'><i class='fa fa-toggle-on " + (value == yes ? 'text-' + color : 'fa-flip-horizontal text-gray') + " fa-2x'></i></a>";
 
                    
+                }, 
+                count: function (value, row, index) {
+
+                    return '<strong class="text-success">'+ value +'</strong>';
+
                 }, 
                 images: function (value, row, index) {
                     value = value === null ? '' : value.toString();

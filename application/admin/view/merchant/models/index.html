@@ -1,0 +1,45 @@
+<div class="panel panel-default panel-intro">
+    <div class="panel-heading">
+        <div class="panel-lead"><em>车型管理</em></div>
+        <ul class="nav nav-tabs" >
+            <li class="active text-center"><a href="#sale_car" data-toggle="tab" style="font-weight: bold">商家在售&nbsp;</a></li>
+            <li><a href="#buy_car" data-toggle="tab" style="font-weight: bold" class="text-center" >有人买车&nbsp;</a></li>
+           
+        </ul>
+    </div>
+    <div class="panel-body">
+        <div id="myTabContent" class="tab-content">
+            <!--商家在售-->
+
+            <div class="tab-pane fade active in" id="sale_car">
+                <div id="toolbar1" class="toolbar">
+
+                    <a href="javascript:;" class="btn btn-primary btn-refresh" title="{:__('Refresh')}" ><i class="fa fa-refresh"></i> </a>
+                    
+                </div>
+
+                <table id="saleCar" class="table table-striped table-bordered table-hover table-nowrap"
+                      
+                       width="100%">
+                </table>
+            </div>
+
+
+            <!--有人想买-->
+
+            <div class="tab-pane fade" id="buy_car">
+                <div id="toolbar2" class="toolbar">
+
+                    <a href="javascript:;" class="btn btn-primary btn-refresh" title="{:__('Refresh')}" ><i class="fa fa-refresh"></i> </a>
+                    
+                </div>
+
+                <table id="buyCar" class="table table-striped table-bordered table-hover table-nowrap"
+                      
+                       width="100%">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

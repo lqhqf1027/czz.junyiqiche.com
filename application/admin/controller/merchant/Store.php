@@ -4,6 +4,7 @@ namespace app\admin\controller\merchant;
 
 use app\common\controller\Backend;
 use app\admin\model\CompanyStore;
+use app\admin\model\Distribution;
 use think\Config;
 use think\Db;
 
@@ -67,10 +68,11 @@ class Store extends Backend
                     ->limit($offset, $limit)
                     ->select();
 
-            foreach ($list as $row) {
+            foreach ($list as $k => $row) {
                 
                 $row->getRelation('storelevel')->visible(['partner_rank']);
-				$row->getRelation('user')->visible(['name']);
+                $row->getRelation('user')->visible(['name']);
+                $list[$k]['count'] = Distribution::where('store_id', $row['id'])->count();
             }
             $list = collection($list)->toArray();
             $result = array("total" => $total, "rows" => $list);
@@ -182,6 +184,14 @@ class Store extends Backend
         $this->relationSearch = true;
         //设置过滤方法
         $this->request->filter(['strip_tags']);
+
+        $result = Collection($this->model->where('store_id', $ids)->select())->toArray();
+        foreach ($result as $k => $v) {
+            $level_store_id[] = $v['level_store_id'];
+        }
+        // pr($level_store_id);
+        // die;
+
         if ($this->request->isAjax())
         {
             //如果发送的来源是Selectpage，则转发到Selectpage
@@ -205,7 +215,8 @@ class Store extends Backend
 
             foreach ($list as $k => $row) {
 
-                
+                $list[$k]['count'] = Distribution::where('store_id', $row['store']['id'])->count();
+
             }
             $list = collection($list)->toArray();
             // pr($list);
@@ -214,7 +225,62 @@ class Store extends Backend
 
             return json($result);
         }
-        $this->assignconfig('store_id', $ids);
+        $this->assignconfig('level_store_id', $level_store_id);
+        return $this->view->fetch();
+    }
+
+    /** 
+     * 查看下级店铺推广
+     */
+    public function levelstorepromotion($ids = null)
+    {
+        $this->model = model('Distribution');
+        //当前是否为关联查询
+        $this->relationSearch = true;
+        //设置过滤方法
+        $this->request->filter(['strip_tags']);
+        
+        $level_store_id = $this->model->where('id', $ids)->value('level_store_id');
+        // pr($level_store_id);
+        // die;
+        $result = Collection($this->model->where('store_id', $level_store_id)->select())->toArray();
+        foreach ($result as $k => $v) {
+            $level_store_ids[] = $v['level_store_id'];
+        }
+        // pr($level_store_ids);
+        // die;
+        if ($this->request->isAjax())
+        {
+            //如果发送的来源是Selectpage，则转发到Selectpage
+            if ($this->request->request('keyField'))
+            {
+                return $this->selectpage();
+            }
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            $total = $this->model
+                    ->with(['store'])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->count();
+
+            $list = $this->model
+                    ->with(['store'])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->limit($offset, $limit)
+                    ->select();
+
+            foreach ($list as $k => $row) {
+
+            }
+            $list = collection($list)->toArray();
+            // pr($list);
+            // die;
+            $result = array("total" => $total, "rows" => $list);
+
+            return json($result);
+        }
+        $this->assignconfig('level_store_ids', $level_store_ids);
         return $this->view->fetch();
     }
 
