@@ -3,27 +3,26 @@
 namespace app\admin\controller\merchant;
 
 use app\common\controller\Backend;
-use think\Db;
 
 /**
- * 分销收益管理
+ * 品牌列管理
  *
  * @icon fa fa-circle-o
  */
-class Earnings extends Backend
+class Brandcate extends Backend
 {
     
     /**
-     * Distribution模型对象
-     * @var \app\admin\model\Distribution
+     * Brand模型对象
+     * @var \app\admin\model\Brand
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\Distribution;
-
+        $this->model = new \app\admin\model\Brand;
+        $this->view->assign("statusList", $this->model->getStatusList());
     }
     
     /**
@@ -39,7 +38,7 @@ class Earnings extends Backend
     public function index()
     {
         //当前是否为关联查询
-        $this->relationSearch = true;
+        $this->relationSearch = false;
         //设置过滤方法
         $this->request->filter(['strip_tags']);
         if ($this->request->isAjax())
@@ -51,23 +50,21 @@ class Earnings extends Backend
             }
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
             $total = $this->model
-                    ->with(['store'])
                     ->where($where)
+                    ->where('pid', 0)
                     ->order($sort, $order)
                     ->count();
 
             $list = $this->model
-                    ->with(['store'])
                     ->where($where)
+                    ->where('pid', 0)
                     ->order($sort, $order)
                     ->limit($offset, $limit)
                     ->select();
 
-            foreach ($list as $key => $row) {
+            foreach ($list as $row) {
+                $row->visible(['id','name','status','createtime','updatetime','brand_initials','brand_default_images']);
                 
-                $row->getRelation('store')->visible(['store_name']);
-                $list[$key]['level_store_id'] = Db::name('company_store')->where('id', $list[$key]['level_store_id'])->value('store_name');
-
             }
             $list = collection($list)->toArray();
             $result = array("total" => $total, "rows" => $list);

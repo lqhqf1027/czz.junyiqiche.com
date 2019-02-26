@@ -5,16 +5,16 @@ namespace app\admin\controller\merchant;
 use app\common\controller\Backend;
 
 /**
- * 店铺发放二手车型
+ * 车型管理
  *
  * @icon fa fa-circle-o
  */
-class Sellcar extends Backend
+class Models extends Backend
 {
     
     /**
-     * Info模型对象
-     * @var \app\admin\model\ModelsInfo
+     * Model模型对象
+     * @var \app\admin\model\BuycarModel
      */
     protected $model = null;
     protected $multiFields = 'shelfismenu';
@@ -22,7 +22,6 @@ class Sellcar extends Backend
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\ModelsInfo;
 
     }
     
@@ -31,13 +30,15 @@ class Sellcar extends Backend
      * 因此在当前控制器中可不用编写增删改查的代码,除非需要自己控制这部分逻辑
      * 需要将application/admin/library/traits/Backend.php中对应的方法复制到当前控制器,然后进行修改
      */
-    
+
+
 
     /**
-     * 查看
+     * 商家在售
      */
-    public function index()
+    public function saleCar()
     {
+        $this->model = new \app\admin\model\ModelsInfo;
         //当前是否为关联查询
         $this->relationSearch = true;
         //设置过滤方法
@@ -75,4 +76,50 @@ class Sellcar extends Backend
         }
         return $this->view->fetch();
     }
+    
+    /**
+     * 有人想买
+     */
+    public function buyCar()
+    {
+        $this->model = new \app\admin\model\BuycarModel;
+        //当前是否为关联查询
+        $this->relationSearch = true;
+        //设置过滤方法
+        $this->request->filter(['strip_tags']);
+        if ($this->request->isAjax())
+        {
+            //如果发送的来源是Selectpage，则转发到Selectpage
+            if ($this->request->request('keyField'))
+            {
+                return $this->selectpage();
+            }
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            $total = $this->model
+                    ->with(['store','brand'])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->count();
+
+            $list = $this->model
+                    ->with(['store', 'brand'])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->limit($offset, $limit)
+                    ->select();
+
+            foreach ($list as $row) {
+                
+                $row->getRelation('store')->visible(['store_name']);
+                $row->getRelation('brand')->visible(['name']);
+            }
+            $list = collection($list)->toArray();
+            $result = array("total" => $total, "rows" => $list);
+
+            return json($result);
+        }
+        return $this->view->fetch();
+    }
+
+
 }
