@@ -89,7 +89,6 @@ class Index extends Base
             'carModelList' => [
                 'modelsInfoList' => $modelsInfoList,
                 'buycarModelList' => $buycarModelList,
-//                'clueList' => $clueList
             ],
             'default_image' => ConfigModel::get(['name' => 'default_picture'])->value,
             'share' => self::get_share()
