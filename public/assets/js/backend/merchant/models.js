@@ -107,7 +107,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             {field: 'browse_volume', title: __('浏览量'), operate:'BETWEEN'},
                             {field: 'parkingposition', title: __('期望车辆所在地')},
                             {field: 'guide_price', title: __('心理价（元）'), operate:'BETWEEN'},
-        
+                            {field: 'shelfismenu', title: __('是否上下架'), formatter: Controller.api.formatter.toggle},
                             {field: 'createtime', title: __('创建时间'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                             {field: 'updatetime', title: __('更新时间'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                             // {field: 'operate', title: __('Operate'), table: buyCar, events: Table.api.events.operate, formatter: Table.api.formatter.operate}

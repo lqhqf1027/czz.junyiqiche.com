@@ -69,6 +69,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.auditstatus == 'paid_the_money') {
                                             return true;
                                         }
+                                        else if (row.auditstatus == 'in_the_review') {
+                                            return true;
+                                        }
                                     },
 
                                 },
@@ -87,6 +90,34 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.auditstatus == 'audit_failed') {
+                                            return true;
+                                        }
+                                        else if (row.auditstatus == 'paid_the_money') {
+                                            return true;
+                                        }
+                                        else if (row.auditstatus == 'in_the_review') {
+                                            return true;
+                                        }
+                                    },
+                                },
+                                /**
+                                 * 店铺审核中
+                                 */
+                                {
+                                    name: 'in_the_review', text: '店铺审核中',
+                                    title: __('店铺审核中'), classname: 'btn btn-xs btn-success',
+                                        
+                                    hidden: function (row, value, index) {
+                                        if (row.auditstatus == 'in_the_review') {
+                                            return false;
+                                        }
+                                        else if (row.auditstatus == 'wait_the_review') {
+                                            return true;
+                                        }
+                                        else if (row.auditstatus == 'audit_failed') {
+                                            return true;
+                                        }
+                                        else if (row.auditstatus == 'pass_the_audit') {
                                             return true;
                                         }
                                         else if (row.auditstatus == 'paid_the_money') {
@@ -114,6 +145,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.auditstatus == 'paid_the_money') {
                                             return true;
                                         }
+                                        else if (row.auditstatus == 'in_the_review') {
+                                            return true;
+                                        }
                                     },
                                 },
                                 /**
@@ -136,6 +170,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.auditstatus == 'pass_the_audit') {
                                             return true;
                                         }
+                                        else if (row.auditstatus == 'in_the_review') {
+                                            return true;
+                                        }
                                     },
                                 },
                                 /**
@@ -156,6 +193,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.auditstatus == 'paid_the_money') {
+                                            return true;
+                                        }
+                                        else if (row.auditstatus == 'in_the_review') {
                                             return true;
                                         }
                                     },

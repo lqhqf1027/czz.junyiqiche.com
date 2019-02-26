@@ -6,10 +6,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             Table.api.init({
                 extend: {
                     index_url: 'merchant/brand/index',
-                    add_url: 'merchant/brand/add',
-                    edit_url: 'merchant/brand/edit',
-                    del_url: 'merchant/brand/del',
-                    multi_url: 'merchant/brand/multi',
+                    // add_url: 'merchant/brand/add',
+                    // edit_url: 'merchant/brand/edit',
+                    // del_url: 'merchant/brand/del',
+                    // multi_url: 'merchant/brand/multi',
                     table: 'brand_cate',
                 }
             });
@@ -27,9 +27,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'id', title: __('Id')},
                         {field: 'name', title: __('Name')},
                         {field: 'bfirstletter', title: __('Bfirstletter')},
-                        {field: 'thumb', title: __('Thumb')},
+                        // {field: 'thumb', title: __('Thumb')},
                         // {field: 'delflag', title: __('Delflag'), formatter: Table.api.formatter.flag},
-                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        // {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
                 ]
             });
