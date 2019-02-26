@@ -17,8 +17,7 @@ class User extends Model
 
     public function companystore()
     {
-        return $this->hasMany('CompanyStore', 'user_id', 'id')->field('id,store_address,phone,
-        store_qrcode,level_id,user_id');
+        return $this->hasMany('CompanyStore', 'user_id', 'id')->field('id,store_name,phone,user_id');
     }
 
     public function companystoreone()
