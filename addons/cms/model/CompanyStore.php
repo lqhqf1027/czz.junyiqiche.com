@@ -33,7 +33,7 @@ class CompanyStore extends Model
         return $this->hasMany('Distribution', 'store_id', 'id')->field('id,store_id,level_store_id,earnings');
     }
 
-    public function sondistribution()
+    public function secondistribution()
     {
         return $this->hasMany('Distribution', 'level_store_id', 'id')->field('id,store_id,level_store_id,earnings');
     }

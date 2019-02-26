@@ -15,6 +15,7 @@ use addons\cms\model\BuycarModel;
 use addons\cms\model\Config as ConfigModel;
 use addons\cms\model\QuotedPrice;
 use addons\cms\model\BrandCate;
+use addons\cms\model\EarningDetailed;
 use think\Db;
 use Endroid\QrCode\QrCode;
 
@@ -499,5 +500,49 @@ class My extends Base
 
     }
 
+
+    /**
+     * 我的页面---我的钱包
+     */
+    public function my_wallet()
+    {
+        $user_id = $this->request->post('user_id');
+
+        if (!$user_id) {
+            $this->error('缺少参数');
+        }
+        try {
+            $user = User::where('id', $user_id)->field('id,nickname,avatar')->find();
+
+            $store_id = CompanyStore::where('user_id', $user_id)->value('id');
+            
+            $mymoney = EarningDetailed::field('first_earnings,second_earnings,total_earnings')->where('store_id', $store_id)->find()->toArray();
+
+            $first_store = Collection(Distribution::field('level_store_id')->with(['store' => function ($q) {
+
+                    $q->withField('id,store_name,user_id');
+
+                }])->where('store_id', $store_id)->select())->toArray();
+
+            foreach ($first_store as $k => $v) {
+
+                $first_store[$k]['second_count'] = Distribution::where('store_id',$v['level_store_id'])->count();
+                $first_store[$k]['second_moneycount'] = Distribution::where('store_id',$v['level_store_id'])->sum('second_earnings');
+                $first_store[$k]['user'] = User::field('id,nickname,avatar')->where('id', $v['store']['user_id'])->find();
+
+            }
+
+            $data = [
+                'user' => $user,
+                'mymoney' => $mymoney,
+                'earning_details' => $first_store
+            ];
+        } catch (\Exception $e) {
+            $this->error($e->getMessage());
+        }
+
+        $this->success('请求成功',['data' => $data]);
+       
+    }
 
 }
