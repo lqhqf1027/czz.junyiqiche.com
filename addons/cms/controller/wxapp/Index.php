@@ -128,12 +128,15 @@ class Index extends Base
     public static function typeCar($modelType, $is_transformation = 0, $where = null, $field = null)
     {
         $modelName = null;
+        $tables = '';
         switch ($modelType) {
             case '1':
                 $modelName = new ModelsInfo();
+                $tables = 'models_info';
                 break;
             case '2':
                 $modelName = new BuycarModel();
+                $tables = 'buycar_model';
                 break;
             case '3':
                 $modelName = new Clue();
@@ -146,9 +149,9 @@ class Index extends Base
 
         $modelsInfoList = collection($modelName->field($fields)
             ->with(['brand' => function ($q) {
-                $q->withField('id,name,bfirstletter');
+                $q->withField('id,name,brand_initials,brand_default_images');
             }])
-            ->where($where)->order('createtime desc')->select())->toArray();
+            ->where($where)->order($tables.'.createtime desc')->select())->toArray();
 
         $default_image = self::$default_image;
 
@@ -614,7 +617,9 @@ class Index extends Base
             $this->success('请求成功', ['sell' => [], 'buy' => []]);
         }
 
-        $brand_id = BrandCate::where('name', 'like', '%' . $query . '%')->column('id');
+        $brand_id = Brand::where('name', 'like', '%' . $query . '%')
+            ->where('pid',0)
+            ->column('id');
 
         if ($brand_id) {
             $modelInfoList = self::typeCar(1, 1, ['brand_id' => ['in', $brand_id]], 'id,models_name');

@@ -72,7 +72,7 @@ class ModelsInfo extends Model
      */
     public function brand()
     {
-        return $this->belongsTo('BrandCate', 'brand_id', 'id')->setEagerlyType(0);
+        return $this->belongsTo('Brand', 'brand_id', 'id')->setEagerlyType(0);
     }
 
 

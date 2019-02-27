@@ -13,6 +13,7 @@ use addons\cms\model\Config as ConfigModel;
 use app\common\model\Addon;
 use think\Config;
 use addons\third\model\Third;
+use think\Exception;
 
 /**
  * 公共
@@ -111,44 +112,49 @@ class Common extends Base
                 break;
         }
 
-        $car_id_key = $type == 'buy' ? 'buy_car_id' : 'models_info_id';
+        try {
+            $car_id_key = $type == 'buy' ? 'buy_car_id' : 'models_info_id';
 
-        //判断该用户该车辆是否报价
-        $isOffer = QuotedPrice::get([$car_id_key => $car_id, 'type' => $type, 'user_ids' => $user_id]);
+            //判断该用户该车辆是否报价
+            $isOffer = QuotedPrice::get([$car_id_key => $car_id, 'type' => $type, 'user_ids' => $user_id]);
 
-        $condition = 'emission_standard,id,models_name,car_licensetime,kilometres,guide_price,parkingposition,phone,store_id,user_id,store_description,createtime';
+            $condition = 'emission_standard,id,models_name,car_licensetime,kilometres,guide_price,parkingposition,phone,store_id,user_id,store_description,createtime';
 
-        if ($type == 'sell') {
-            $condition = $condition . ',modelsimages';
-            $condition = $condition . ',modelsimages';
+            if ($type == 'sell') {
+                $condition = $condition . ',modelsimages';
+                $condition = $condition . ',modelsimages';
+            }
+
+            $detail = $modelName->field($condition)
+                ->with(['brand' => function ($q) {
+                    $q->withField('id,name');
+                }])
+                ->find($car_id)->toArray();
+
+            //访问详情随机1-100增加浏览量
+            $modelName->where('id', $car_id)->setInc('browse_volume', rand(1, 100));
+
+            $detail['modelsimages'] = empty($detail['modelsimages']) ? [self::$default_image] : explode(',', $detail['modelsimages']);
+
+            $default_image = collection(ConfigModel::all(function ($q) {
+                $q->where('group', 'default_image')->field('name,value');
+            }))->toArray();
+
+            $detail['kilometres'] = $detail['kilometres'] ? round($detail['kilometres'] / 10000, 2) . '万公里' : null;
+            $detail['guide_price'] = $detail['guide_price'] ? round($detail['guide_price'] / 10000, 2) . '万' : null;
+            $detail['car_licensetime'] = $detail['car_licensetime'] ? date('Y-m-d', intval($detail['car_licensetime'])) : null;
+            $detail['isOffer'] = $isOffer ? 1 : 0;
+            $detail['createtime'] = format_date($detail['createtime']);
+            $detail['user'] = User::get($user_id) ? User::get($user_id)->visible(['id', 'mobile', 'avatar', 'nickname'])->toArray() : ['id' => '', 'mobile' => '', 'avatar' => '', 'nickname' => ''];
+            $detail['default'] = [
+                $default_image[0]['name'] => $default_image[0]['value'],
+                $default_image[1]['name'] => $default_image[1]['value'],
+                $default_image[2]['name'] => $default_image[2]['value'],
+            ];
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
         }
 
-        $detail = $modelName->field($condition)
-            ->with(['brand' => function ($q) {
-                $q->withField('id,name');
-            }])
-            ->find($car_id)->toArray();
-
-        //访问详情随机1-100增加浏览量
-        $modelName->where('id', $car_id)->setInc('browse_volume', rand(1, 100));
-
-        $detail['modelsimages'] = empty($detail['modelsimages']) ? [self::$default_image] : explode(',', $detail['modelsimages']);
-
-        $default_image = collection(ConfigModel::all(function ($q) {
-            $q->where('group', 'default_image')->field('name,value');
-        }))->toArray();
-
-        $detail['kilometres'] = $detail['kilometres'] ? round($detail['kilometres'] / 10000, 2) . '万公里' : null;
-        $detail['guide_price'] = $detail['guide_price'] ? round($detail['guide_price'] / 10000, 2) . '万' : null;
-        $detail['car_licensetime'] = $detail['car_licensetime'] ? date('Y-m-d', intval($detail['car_licensetime'])) : null;
-        $detail['isOffer'] = $isOffer ? 1 : 0;
-        $detail['createtime'] = format_date($detail['createtime']);
-        $detail['user'] = User::get($user_id) ? User::get($user_id)->visible(['id', 'mobile', 'avatar', 'nickname'])->toArray() : ['id' => '', 'mobile' => '', 'avatar' => '', 'nickname' => ''];
-        $detail['default'] =[
-            $default_image[0]['name']=>$default_image[0]['value'],
-            $default_image[1]['name']=>$default_image[1]['value'],
-            $default_image[2]['name']=>$default_image[2]['value'],
-        ];
         $this->success('请求成功', ['detail' => $detail]);
     }
 }

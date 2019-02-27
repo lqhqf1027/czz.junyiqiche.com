@@ -48,5 +48,9 @@ class CompanyStore extends Model
         return $this->belongsTo('StoreLevel', 'level_id', 'id');
     }
 
+    public function belongsStoreLevel()
+    {
+        return $this->belongsTo('StoreLevel', 'level_id', 'id')->setEagerlyType(0);
+    }
 
 }

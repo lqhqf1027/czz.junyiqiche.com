@@ -142,18 +142,18 @@ class Carselect extends Base
                 $brandNameList[] = $v['brand']['id'];
 
                 if (!$brandList) {
-                    $brandList[] = ['zimu' => $v['brand']['bfirstletter'], 'brand_list' => [['id' => $v['brand']['id'], 'name' => $v['brand']['name']]]];
+                    $brandList[] = ['zimu' => $v['brand']['brand_initials'], 'brand_list' => [['id' => $v['brand']['id'], 'name' => $v['brand']['name'],'brand_default_images'=>$v['brand']['brand_default_images']]]];
                 } else {
                     $flag = -1;
                     foreach ($brandList as $key => $value) {
-                        if ($v['brand']['bfirstletter'] == $value['zimu']) {
-                            $brandList[$key]['brand_list'][] = ['id' => $v['brand']['id'], 'name' => $v['brand']['name']];
+                        if ($v['brand']['brand_initials'] == $value['zimu']) {
+                            $brandList[$key]['brand_list'][] = ['id' => $v['brand']['id'], 'name' => $v['brand']['name'],'brand_default_images'=>$v['brand']['brand_default_images']];
                             $flag = -2;
                         }
                     }
 
                     if ($flag == -1) {
-                        $brandList[] = ['zimu' => $v['brand']['bfirstletter'], 'brand_list' => [['id' => $v['brand']['id'], 'name' => $v['brand']['name']]]];
+                        $brandList[] = ['zimu' => $v['brand']['brand_initials'], 'brand_list' => [['id' => $v['brand']['id'], 'name' => $v['brand']['name'],'brand_default_images'=>$v['brand']['brand_default_images']]]];
                     }
 
                 }

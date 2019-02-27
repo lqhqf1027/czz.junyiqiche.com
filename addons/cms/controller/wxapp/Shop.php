@@ -8,10 +8,13 @@
 
 namespace addons\cms\controller\wxapp;
 
+use addons\cms\model\Brand;
 use addons\cms\model\CompanyStore;
 use addons\cms\model\User;
 use addons\cms\model\Distribution;
 use addons\cms\model\StoreLevel;
+use addons\cms\model\Config as ConfigModel;
+use addons\cms\model\EarningDetailed;
 use think\Cache;
 use think\Db;
 use think\Exception;
@@ -30,44 +33,68 @@ class Shop extends Base
         $user_id = $this->request->post('user_id');
         $inviter_user_id = $this->request->post('inviter_user_id');//邀请人user_id
 
-        //得到品牌列表
-        if (!Cache::get('brandCate')) {
-            Cache::set('brandCate', Index::brand());
+        try {
+            //得到品牌列表
+            if (!Cache::get('brandCate')) {
+                Cache::set('brandCate', $this->getBrandList());
+            }
+            $brand = Cache::get('brandCate');
+
+            //如果传入邀请人ID，获取邀请人的二维码
+            $inviter_code = '';
+
+            if ($inviter_user_id) {
+                $inviter_code = User::get($inviter_user_id)->invite_code;
+                $inviter_level_id = CompanyStore::get(['user_id' => $inviter_user_id])->level_id;
+            }
+
+            $data = [
+                'submit_type' => 'insert',
+                'inviter_code' => $inviter_code,
+                'store_level_list' => $this->getVisibleStoreList(empty($inviter_level_id) ? null : $inviter_level_id),
+                'brand_list' => $brand
+            ];
+
+            //是否已经有店铺，并且未通过审核
+            $no_pass = CompanyStore::get([
+                'user_id' => $user_id,
+                'auditstatus' => 'audit_failed'
+            ]);
+
+            if ($no_pass) {
+                $no_pass = $no_pass->visible(['id', 'cities_name', 'store_name', 'store_address', 'phone', 'store_img', 'level_id', 'store_description', 'main_camp', 'business_life', 'bank_card', 'id_card_images', 'business_licenseimages'])->toArray();
+                $no_pass['id_card_images'] = explode(',', $no_pass['id_card_images']);
+                $no_pass['id_card_positive'] = $no_pass['id_card_images'][0];
+                $no_pass['id_card_opposite'] = $no_pass['id_card_images'][1];
+                unset($no_pass['id_card_images']);
+                $data['submit_type'] = 'update';
+                $data['fail_default_value'] = $no_pass;
+            }
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
         }
-        $brand = Cache::get('brandCate');
 
-        //如果传入邀请人ID，获取邀请人的二维码
-        $inviter_code = '';
-
-        if ($inviter_user_id) {
-            $inviter_code = User::get($inviter_user_id)->invite_code;
-            $inviter_level_id = CompanyStore::get(['user_id' => $inviter_user_id])->level_id;
-        }
-
-        $data = [
-            'submit_type' => 'insert',
-            'inviter_code' => $inviter_code,
-            'store_level_list' => $this->getVisibleStoreList(empty($inviter_level_id) ? null : $inviter_level_id),
-            'brand_list' => $brand
-        ];
-
-        //是否已经有店铺，并且未通过审核
-        $no_pass = CompanyStore::get([
-            'user_id' => $user_id,
-            'auditstatus' => 'audit_failed'
-        ]);
-
-        if ($no_pass) {
-            $no_pass = $no_pass->visible(['id', 'cities_name', 'store_name', 'store_address', 'phone', 'store_img', 'level_id', 'store_description', 'main_camp', 'business_life', 'bank_card', 'id_card_images', 'business_licenseimages'])->toArray();
-            $no_pass['id_card_images'] = explode(',', $no_pass['id_card_images']);
-            $no_pass['id_card_positive'] = $no_pass['id_card_images'][0];
-            $no_pass['id_card_opposite'] = $no_pass['id_card_images'][1];
-            unset($no_pass['id_card_images']);
-            $data['submit_type'] = 'update';
-            $data['fail_default_value'] = $no_pass;
-        }
 
         $this->success('请求成功', $data);
+    }
+
+    /**
+     * 品牌列表
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function getBrandList()
+    {
+        $brandList = collection(Brand::field('id,name,brand_initials')->where('pid', 0)->select())->toArray();
+
+        $screen_data = [];
+        foreach ($brandList as $k => $v) {
+            $screen_data[$v['brand_initials']][] =['id'=>$v['id'],'name'=>$v['name']];
+        }
+
+        return $screen_data;
     }
 
     /**
@@ -110,17 +137,21 @@ class Shop extends Base
         //输入的邀请码
         $code = $this->request->post('code');
 
-        $inviter = User::get(['invite_code' => $code]);
+        try {
+            $inviter = User::get(['invite_code' => $code]);
 
-        if (!$inviter) {
-            $this->success('未匹配到该邀请码', ['store_level_list' => $this->getVisibleStoreList(), 'inviter_info' => []]);
+            if (!$inviter) {
+                $this->success('未匹配到该邀请码', ['store_level_list' => $this->getVisibleStoreList(), 'inviter_info' => []]);
+            }
+
+            $inviter = $inviter->visible(['id', 'avatar'])->toArray();
+
+            $company_info = CompanyStore::get(['user_id' => $inviter['id']])->visible(['store_name', 'level_id']);
+
+            $inviter['store_name'] = $company_info['store_name'];
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
         }
-
-        $inviter = $inviter->visible(['id', 'avatar'])->toArray();
-
-        $company_info = CompanyStore::get(['user_id' => $inviter['id']])->visible(['store_name', 'level_id']);
-
-        $inviter['store_name'] = $company_info['store_name'];
 
         $this->success('已匹配到邀请码', ['store_level_list' => $this->getVisibleStoreList($company_info['level_id']), 'inviter_info' => $inviter]);
     }
@@ -137,7 +168,7 @@ class Shop extends Base
         $infos['user_id'] = $user_id;
         $infos['id_card_images'] = $infos['id_card_positive'] . ',' . $infos['id_card_opposite'];
 
-        try{
+        try {
             $check_phone = Db::name('cms_login_info')
                 ->where([
                     'user_id' => $user_id,
@@ -169,23 +200,23 @@ class Shop extends Base
             }
 
             if ($result) {
-                $superior_store_id = empty($inviter)?0:CompanyStore::get(['user_id' => $inviter])->id;
-                $my_store_id = CompanyStore::get(['user_id'=>$user_id])->id;
-                if($submit_type=='insert'){
+                $superior_store_id = empty($inviter) ? 0 : CompanyStore::get(['user_id' => $inviter])->id;
+                $my_store_id = CompanyStore::get(['user_id' => $user_id])->id;
+                if ($submit_type == 'insert') {
                     Distribution::create([
                         'store_id' => $superior_store_id,
                         'level_store_id' => $my_store_id,
                         'earnings' => 0,
                         'second_earnings' => 0
                     ]);
-                }else{
-                    Distribution::where('level_store_id',$my_store_id)->setField('store_id',$superior_store_id);
+                } else {
+                    Distribution::where('level_store_id', $my_store_id)->setField('store_id', $superior_store_id);
                 }
 
-            }else{
-                $this->error('添加失败','error');
+            } else {
+                $this->error('添加失败', 'error');
             }
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $this->error($e->getMessage());
         }
 
@@ -247,5 +278,71 @@ class Shop extends Base
         $store_id = $this->request->post('store_id');
 
         CompanyStore::destroy($store_id) ? $this->success('取消成功', 'success') : $this->error('取消失败', 'error');
+    }
+
+    /**
+     * 支付成功后接口
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function after_successful_payment()
+    {
+        $user_id = $this->request->post('user_id');
+
+        Db::startTrans();
+        try {
+            $company_info = CompanyStore::field('id')
+                ->with(['belongsStoreLevel' => function ($q) {
+                    $q->withField('id,money');
+                }])->where('user_id', $user_id)->find();
+
+            //查出收益率
+            $rate = ConfigModel::where('group', 'rate')->column('value');
+
+            $check_earning = EarningDetailed::get(['store_id' => $company_info['id']]);
+
+            //如果没有收益明细表，创建
+            if (!$check_earning) {
+                EarningDetailed::create(['store_id' => $company_info['id']]);
+            }
+
+            //能获取的1级收益
+            $first_income = $company_info['belongs_store_level']['money'] * floatval($rate[0]);
+            //能获取的2级收益
+            $second_income = $company_info['belongs_store_level']['money'] * floatval($rate[1]);
+
+            Distribution::where('level_store_id', $company_info['id'])->update([
+                'earnings' => $first_income,
+                'second_earnings' => $second_income
+            ]);
+
+            $up_id = Distribution::get(['level_store_id' => $company_info['id']])->store_id;
+            if ($up_id) {
+                //加锁查询上级的金额信息
+                $up_data = EarningDetailed::field('first_earnings,total_earnings')->where('store_id', $up_id)->lock(true)->select();
+                //如果有上级，将上级的收益加入上级收益明细表中
+                EarningDetailed::where('store_id', $up_id)
+                    ->update(['first_earnings' => $up_data['first_earnings'] + $first_income,
+                        'total_earnings' => $up_data['total_earnings'] + $first_income]);
+
+                $up_up_id = Distribution::get(['level_store_id' => $up_id])->store_id;
+
+                if ($up_up_id) {
+                    //加锁查询上上级的金额信息
+                    $up_up_data = EarningDetailed::field('second_earnings,total_earnings')->where('store_id', $up_id)->lock(true)->select();
+                    //如果有上上级，将上级的收益加入上上级收益明细表中
+                    EarningDetailed::where('store_id', $up_up_id)
+                        ->update(['second_earnings' => $up_up_data['second_earnings'] + $second_income,
+                            'total_earnings' => $up_up_data['total_earnings'] + $second_income]);
+                }
+            }
+            Db::commit();
+        } catch (Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+
+        $this->success('请求成功');
     }
 }
