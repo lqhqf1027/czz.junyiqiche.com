@@ -31,3 +31,53 @@
         </div>
     </div>
 </div>
+
+
+<script>
+
+
+var func = function () {
+        $.ajax({
+            type:'POST',
+            url:'merchant/store/hint',
+            dataType:'json',
+            success:function(data){
+                console.log(data);
+                if (window.Notification) {
+                    for(var i = 0; i < data.length; i++) {
+                        var popNotice = function() {
+                            if (Notification.permission == "granted") {
+                                var notification = new Notification("Hi，帅哥：", {
+                                    body: '店铺名：' + data[i].store_name + '，正在等待您的审核，请加快审核速度呦！',
+                                    icon: data[i].store_img,
+                                    silent: true
+                                });
+                            }    
+                        };
+                        
+                        console.log(data[i].auditstatus);
+                        if (data[i].auditstatus == 'wait_the_review') {
+
+                            console.log(Notification.permission);
+                            if (Notification.permission == "granted") {
+                                popNotice();
+                            } else if (Notification.permission != "denied") {
+                                Notification.requestPermission(function (permission) {
+                                  popNotice();
+                                });
+                            }
+                        }
+                    }
+
+                } else {
+                    alert('浏览器不支持Notification');    
+                }
+            }
+        });
+    }
+
+    //主动调用
+    setInterval("func()", 30000);
+
+    
+</script>

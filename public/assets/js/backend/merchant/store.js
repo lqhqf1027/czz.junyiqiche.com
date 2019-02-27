@@ -1,6 +1,7 @@
 define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefined, Backend, Table, Form) {
-
+    
     var Controller = {
+        
         index: function () {
             // 初始化表格参数配置
             Table.api.init({
@@ -32,9 +33,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'store_address', title: __('Store_address')},
                         {field: 'phone', title: __('Phone')},
                         {field: 'store_img', title: __('Store_img'), formatter: Controller.api.formatter.images},
-                        {field: 'store_qrcode', title: __('Store_qrcode')},
+                        {field: 'user.invitation_code_img', title: __('Store_qrcode'), formatter: Controller.api.formatter.invitation_code_img},
                         {field: 'count', title: __('邀请店铺数量'), formatter: Controller.api.formatter.count},
-                        {field: 'invitation_code', title: __('Invitation_code')},
+                        {field: 'user.invite_code', title: __('Invitation_code'), formatter: Controller.api.formatter.invite_code},
                         {field: 'main_camp', title: __('Main_camp')},
                         {
                             field: 'recommend',
@@ -251,8 +252,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
             // 为表格绑定事件
             Table.api.bindevent(table);
+            
         },
-
+        
         //店铺推广
         storepromotion: function () {
 
@@ -562,6 +564,18 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         html.push('<a href="https://czz.junyiqiche.com' + value + '" target="_blank"><img class="' + classname + '" src="https://czz.junyiqiche.com' + value + '" /></a>');
                     });
                     return html.join(' ');
+                },
+                invite_code: function (value, row, index) {
+                    if (row.auditstatus == 'paid_the_money') {
+                        return row.user.invite_code;
+                    }
+                },
+                invitation_code_img: function (value, row, index) {
+                    if (row.auditstatus == 'paid_the_money') {
+                        value = value ? value : '/assets/img/blank.gif';
+                        return '<a href="https://czz.junyiqiche.com' + value + '" target="_blank"><img class="img-sm img-center" src="https://czz.junyiqiche.com' + value + '" /></a>';
+                    
+                    }
                 },
             },
         }
