@@ -16,6 +16,17 @@ class EarningDetailed extends Model
     // 表名
     protected $name = 'earning_detailed';
 
+    protected $autoWriteTimestamp = true;
+
+    protected $createTime = 'createtime';
+
+    protected $updateTime = 'updatetime';
+
+    // 定义全局的查询范围
+    protected function base($query)
+    {
+        $query->where('status', 'normal');
+    }
 
     public function store() 
     {
