@@ -43,7 +43,7 @@ return array (
   'grade_two' => '0.15',
   'default_picture' => '/uploads/20190219/cf0983c686b9a61391a28baaea8064c5.jpg',
   'shares_title' => '来友车圈看好车！',
-  'shares_img' => '/uploads/20190213/cf0983c686b9a61391a28baaea8064c5.jpg',
+  'shares_img' => '/uploads/20190226/ed7ada210922f12d6d1eba156d40fe4f.png',
   'shares_bg_img' => '/uploads/20190213/8105e6eb128185d115158a74f9765b64.jpg',
   'shares_bk_qrocde' => '/uploads/20190213/d1f75cbaeea2f8e09bc4e8477c6bb48a.jpg',
   'agreement' => '<p class="MsoNormal" align="center" style="text-align:center"><span style="font-family: 宋体;">友车圈平台服务协议</span><span lang="EN-US"><o:p></o:p></span></p><p class="MsoNormal" style="text-indent:21.0pt;mso-char-indent-count:2.0"><span style="font-family: 宋体;">尊敬的用户，为使用友车圈平台的服务，您应当阅读并遵守《友车圈平台服务协议》，本协议是用户注册友车圈账号与使用友车圈平台服务的通用协议。请您务必审慎阅读、充分理解各条款内容，特别是关于用户信息的使用范围、免责条款、管辖与法律适用条款。用户信息的使用范围、免责条款以黑体加粗的形式提示您重点注意。您不应当以友车圈平台未对本协议以合理方式提醒用户注意或未根据用户要求尽到说明义务为理由而声称或要求法院或其它任何第三方确认相关条款非法或无效。除非您已阅读并接受本协议所有条款，否则您无权使用友车圈提供的服务。您使用友车圈提供的服务即视为您已阅读并同意上述协议的约束。</span><span lang="EN-US"><o:p></o:p></span></p><div style="mso-element:para-border-div;border:none black 1.0pt;mso-border-alt:
@@ -315,4 +315,5 @@ tab-stops:15.6pt"><!--[if !supportLists]--><span lang="EN-US">1.<span style="fon
     1 => '/uploads/20190225/ad50df8be498585cfb78d3c849f6a784.png',
     2 => '/uploads/20190225/ebf3aee0c03180b21d1f5dbf20cd003e.png',
   ),
+  'invite_bg_img' => '/uploads/20190226/10299620f0bcc206c7b4896c693ab5cb.png',
 );

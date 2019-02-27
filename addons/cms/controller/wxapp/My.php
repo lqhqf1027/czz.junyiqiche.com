@@ -18,7 +18,7 @@ use addons\cms\model\BrandCate;
 use addons\cms\model\EarningDetailed;
 use think\Db;
 use Endroid\QrCode\QrCode;
-
+use fast\Random;
 /**
  * 我的
  */
@@ -72,24 +72,26 @@ class My extends Base
     public function index()
     {
         $user_id = $this->request->post('user_id');
+        if (!(int)$user_id) $this->error('参数错误');
         try {
             //auditstatus审核是否通过，审核状态:pass_the_audit=审核通过;audit_failed=审核不通过;wait_for_review=待审核;in_the_review = 审核中；paid_the_money=已认证
             $userInfo = User::field('id,nickname,avatar,invite_code,invitation_code_img')
-                ->with(['companystoreone' => function ($q) {
-                    $q->withField('id,auditstatus,store_name,level_id');
+                ->with(['storeHasMany' => function ($q) {
+                    $q->with(['storelevel' => function ($q) {
+                        $q->withField(['id', 'partner_rank']);
+                    }]);
                 }])->find($user_id);
             if (!$userInfo) $this->error('未查询到用户信息');
-            //如果已认证通过，更改nickname 为门店名称  paid_the_money
-            if ($userInfo['companystoreone']['auditstatus'] == 'paid_the_money') $userInfo['nickname'] = $userInfo['companystoreone']['store_name'];
+            //如果已认证通过 auditstatus=>paid_the_money，更改nickname 为门店名称
+            if ($userInfo['store_has_many']['auditstatus'] == 'paid_the_money') $userInfo['nickname'] = $userInfo['store_has_many']['store_name'];
             $BuycarModel = $this->isOffer(new \addons\cms\model\BuycarModel, $user_id);
             $ModelsInfo = $this->isOffer(new \addons\cms\model\ModelsInfo, $user_id);
             $userInfo['isNewOffer'] = 0;
             if (!empty($BuycarModel) || !empty($ModelsInfo)) {
                 $userInfo['isNewOffer'] = 1;
             }
-//            $userInfo['storeLevel'] = CompanyStore::with(['storelevel' => function ($q) {
-//                $q->withField(['partner_rank,id']);
-//            }])->select();
+            //查询邀请码背景图片
+            $userInfo['invite_bg_img'] = \addons\cms\model\Config::get(['name' => 'invite_bg_img'])->value;
             //如果当前用户的二维码为空
         } catch (\Exception $e) {
             $this->error($e->getMessage());
@@ -174,8 +176,8 @@ class My extends Base
      */
     public function about_riders()
     {
-        $riders =  ConfigModel::get(['name'=>'about_riders'])->visible(['name','value']);
-        $this->success('请求成功',[$riders['name']=>$riders['value']]);
+        $riders = ConfigModel::get(['name' => 'about_riders'])->visible(['name', 'value']);
+        $this->success('请求成功', [$riders['name'] => $riders['value']]);
     }
 
 
