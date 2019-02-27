@@ -56,6 +56,7 @@ class Index extends Base
             $bannerList[] = ['image' => cdnurl($item['image'], true), 'url' => '/', 'title' => $item['title']];
         }
 
+
         //推荐店铺
         $storeList = CompanyStore::field('id,store_name,cities_name,main_camp')
             ->withCount(['modelsinfo'])->where('recommend', 1)->select();

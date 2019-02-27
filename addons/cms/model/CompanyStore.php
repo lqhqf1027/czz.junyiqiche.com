@@ -45,7 +45,7 @@ class CompanyStore extends Model
 
     public function storelevel()
     {
-        return $this->hasMany('StoreLevel', 'level_id', 'id');
+        return $this->belongsTo('StoreLevel', 'level_id', 'id');
     }
 
 

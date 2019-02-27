@@ -25,6 +25,10 @@ class User extends Model
     {
         return $this->hasOne('CompanyStore', 'user_id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
+    public function storeHasMany()
+    {
+        return $this->hasMany('CompanyStore', 'user_id', 'id')->field('id,auditstatus,store_name,level_id,user_id');
+    }
 
     // 定义全局的查询范围
     protected function base($query)

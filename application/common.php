@@ -354,6 +354,7 @@ if (!function_exists('getAccessToken')) {
 
         //判断缓存的access_token是否存在和过期，如果不存在和过期则重新获取.
         if ($access_token_data !== null && $access_token_data['access_token'] && $access_token_data['expires_in'] > time()) {
+
             return $access_token_data['access_token'];
         } else {
             //重新获取access_token,并全局缓存

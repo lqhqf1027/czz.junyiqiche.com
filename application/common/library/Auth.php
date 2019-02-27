@@ -170,7 +170,8 @@ class Auth
             'logintime' => $time,
             'loginip'   => $ip,
             'prevtime'  => $time,
-            'status'    => 'normal'
+            'status'    => 'normal',
+            'invite_code'=>Random::invite_code()  //邀请码
         ]);
         $params['password'] = $this->getEncryptPassword($password, $params['salt']);
         $params = array_merge($params, $extend);
