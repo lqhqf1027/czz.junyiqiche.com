@@ -118,7 +118,7 @@ class Common extends Base
             //判断该用户该车辆是否报价
             $isOffer = QuotedPrice::get([$car_id_key => $car_id, 'type' => $type, 'user_ids' => $user_id]);
 
-            $condition = 'emission_standard,id,models_name,car_licensetime,kilometres,guide_price,parkingposition,phone,store_id,user_id,store_description,createtime';
+            $condition = 'emission_standard,id,models_name,car_licensetime,kilometres,guide_price,parkingposition,phone,store_id,user_id,store_description,createtime,factorytime';
 
             if ($type == 'sell') {
                 $condition = $condition . ',modelsimages';
@@ -140,6 +140,8 @@ class Common extends Base
                 $q->where('group', 'default_image')->field('name,value');
             }))->toArray();
 
+            $detail['factorytime'] = $detail['factorytime']?date('Y',$detail['factorytime']):'';
+            $detail['emission_standard'] = $detail['emission_standard'] ? $detail['emission_standard'] . '次' : '';
             $detail['kilometres'] = $detail['kilometres'] ? round($detail['kilometres'] / 10000, 2) . '万公里' : null;
             $detail['guide_price'] = $detail['guide_price'] ? round($detail['guide_price'] / 10000, 2) . '万' : null;
             $detail['car_licensetime'] = $detail['car_licensetime'] ? date('Y-m-d', intval($detail['car_licensetime'])) : null;

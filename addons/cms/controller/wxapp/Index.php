@@ -18,6 +18,7 @@ use GuzzleHttp\Client;
 use think\Cache;
 use think\Config;
 use think\Db;
+use think\Exception;
 
 /**
  * 首页
@@ -49,39 +50,73 @@ class Index extends Base
      */
     public function index()
     {
-        $bannerList = $modelsInfoList = $buycarModelList = [];
-        $list = Block::getBlockList(['name' => 'focus']);
-        foreach ($list as $index => $item) {
+        $user_id = $this->request->post('user_id');
+        $info = [
+            'msg' => '',
+            'status' => 'success',
+        ];
+        try {
+            $bannerList = $modelsInfoList = $buycarModelList = [];
+            $list = Block::getBlockList(['name' => 'focus']);
+            foreach ($list as $index => $item) {
 
-            $bannerList[] = ['image' => cdnurl($item['image'], true), 'url' => '/', 'title' => $item['title']];
-        }
-
-
-        //推荐店铺
-        $storeList = CompanyStore::field('id,store_name,cities_name,main_camp')
-            ->withCount(['modelsinfo'])->where('recommend', 1)->select();
-
-        Cache::rm('CAR_LIST');
-        if (!Cache::get('CAR_LIST')) {
-
-            Cache::set('CAR_LIST', Carselect::getCarCache(0));
-        }
-
-        $dataList = Cache::get('CAR_LIST')['carList'];
-        foreach ($dataList as $v) {
-            if ($v['type'] == 'sell') {
-                $modelsInfoList[] = $v;
-            } else {
-                $buycarModelList[] = $v;
+                $bannerList[] = ['image' => cdnurl($item['image'], true), 'url' => '/', 'title' => $item['title']];
             }
 
+            $res = CompanyStore::field('id,level_id')
+                ->with(['storelevel' => function ($q) {
+                    $q->withField('id,max_release_number');
+                }])->where([
+                    'user_id' => $user_id,
+                    'auditstatus' => 'paid_the_money'
+                ])->find();
+
+            if (empty($res)) {
+                $info['msg'] = '您暂未认证！';
+                $info['status'] = 'error';
+            } else {
+                if ($res['storelevel']['max_release_number'] != -1) {
+                    $my_release_number = ModelsInfo::where([
+                        'user_id' => $user_id,
+                        'shelfismenu' => 1
+                    ])->count('id');
+
+                    if ($my_release_number >= $res['storelevel']['max_release_number']) {
+                        $info['msg'] = '发布卖车已达到限制' . $res['storelevel']['max_release_number'] . '次，想要发布更多请升级店铺';
+                        $info['status'] = 'error';
+                    }
+                }
+            }
+
+            //推荐店铺
+            $storeList = CompanyStore::field('id,store_name,cities_name,main_camp')
+                ->withCount(['modelsinfo'])->where('recommend', 1)->select();
+
+            Cache::rm('CAR_LIST');
+            if (!Cache::get('CAR_LIST')) {
+
+                Cache::set('CAR_LIST', Carselect::getCarCache(0));
+            }
+
+            $dataList = Cache::get('CAR_LIST')['carList'];
+            foreach ($dataList as $v) {
+                if ($v['type'] == 'sell') {
+                    $modelsInfoList[] = $v;
+                } else {
+                    $buycarModelList[] = $v;
+                }
+
+            }
+
+            array_multisort(array_column($modelsInfoList, 'browse_volume'), SORT_DESC, $modelsInfoList);
+            array_multisort(array_column($buycarModelList, 'browse_volume'), SORT_DESC, $buycarModelList);
+
+            $modelsInfoList = array_slice($modelsInfoList, 0, 15);
+            $buycarModelList = array_slice($buycarModelList, 0, 15);
+
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
         }
-
-        array_multisort(array_column($modelsInfoList, 'browse_volume'), SORT_DESC, $modelsInfoList);
-        array_multisort(array_column($buycarModelList, 'browse_volume'), SORT_DESC, $buycarModelList);
-
-        $modelsInfoList = array_slice($modelsInfoList, 0, 15);
-        $buycarModelList = array_slice($buycarModelList, 0, 15);
 
 
         $this->success('请求成功', [
@@ -92,7 +127,8 @@ class Index extends Base
                 'buycarModelList' => $buycarModelList,
             ],
             'default_image' => ConfigModel::get(['name' => 'default_picture'])->value,
-            'share' => self::get_share()
+            'share' => self::get_share(),
+            'sell_car_condition' => $info
         ]);
 
     }
@@ -115,6 +151,7 @@ class Index extends Base
             $share[3]['name'] => $share[3]['value']
         ];
     }
+
     /**
      * 不同总类车辆数据
      * @param $modelType
@@ -145,13 +182,14 @@ class Index extends Base
 
         $else = $modelType == 2 ? '' : ',modelsimages';
 
-        $fields = $field ? $field : 'id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime,store_description' . $else;
+        $fields = $field ? $field : 'id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime,store_description,factorytime' . $else;
 
         $modelsInfoList = collection($modelName->field($fields)
             ->with(['brand' => function ($q) {
                 $q->withField('id,name,brand_initials,brand_default_images');
             }])
-            ->where($where)->order($tables.'.createtime desc')->select())->toArray();
+//            ->where('shelfismenu', 1)
+            ->where($where)->order($tables . '.createtime desc')->select())->toArray();
 
         $default_image = self::$default_image;
 
@@ -165,6 +203,9 @@ class Index extends Base
 
                 $modelsInfoList[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y-m', $v['car_licensetime']) : null;
             }
+
+            $modelsInfoList[$k]['factorytime'] = $v['factorytime'] ? date('Y', $v['factorytime']) : '';
+
         }
 
         return $modelsInfoList;
@@ -220,31 +261,20 @@ class Index extends Base
     {
         $user_id = $this->request->post('user_id');
 
-//        $inviter_user_id = $this->request->post('inviter_user_id');
-
         if (!$user_id) {
             $this->error('缺少参数,请求失败', 'error');
         }
         //用户信息
         $userData = User::where('id', $user_id)->find();
 
-        //得到所有的品牌列表
-        if (Cache::get('brandCate')) {
-            $brand = Cache::get('brandCate');
-        } else {
-            Cache::set('brandCate', self::brand());
-            $brand = Cache::get('brandCate');
-        }
+        $transmission = ConfigModel::get(['name' => 'transmission'])->visible(['name', 'value']);
+
+        $transmission['value'] = json_decode($transmission['value'], true);
 
         $data = [
-            'brand' => $brand,
             'mobile' => $userData['mobile'],
+            $transmission['name'] => $transmission['value']
         ];
-
-//        if($inviter_user_id){
-//            $inviter_code = User::get($inviter_user_id)->invite_code;
-//            $data['inviter_code'] = $inviter_code;
-//        }
 
         $this->success('请求成功', $data);
     }
@@ -326,7 +356,7 @@ class Index extends Base
 
         //得到所有的品牌列表
         if (Cache::get('brandCatesList')) {
-            $brand = Cache::get('brandCatesList') ;
+            $brand = Cache::get('brandCatesList');
         } else {
             Cache::set('brandCatesList', $this->getBrand());
             $brand = Cache::get('brandCatesList');
@@ -376,9 +406,9 @@ class Index extends Base
         $mobile = $this->request->post('mobile');
         $user_id = $this->request->post('user_id');
 
-        $result = message_send($mobile,'430761',$user_id);
+        $result = message_send($mobile, '430761', $user_id);
 
-        $result[0]=='success'?$this->success($result['msg']):$this->error($result['msg']);
+        $result[0] == 'success' ? $this->success($result['msg']) : $this->error($result['msg']);
 //        if (!$mobile || !$user_id) $this->error('参数缺失或格式错误');
 //        if (!checkPhoneNumberValidate($mobile)) $this->error('手机号格式错误', $mobile);
 //        $authnum = '';
@@ -572,6 +602,8 @@ class Index extends Base
         if ($store_id) {
             $carInfo['store_id'] = $store_id;
         }
+
+
         $carInfo['user_id'] = $user_id;
         $carInfo['browse_volume'] = rand(500, 2000);
         $buyModels = new BuycarModel();
@@ -618,7 +650,7 @@ class Index extends Base
         }
 
         $brand_id = Brand::where('name', 'like', '%' . $query . '%')
-            ->where('pid',0)
+            ->where('pid', 0)
             ->column('id');
 
         if ($brand_id) {
