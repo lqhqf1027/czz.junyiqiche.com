@@ -284,16 +284,4 @@ class Store extends Backend
         return $this->view->fetch();
     }
 
-    /** 
-     * 店铺状态
-     */
-    public function hint()
-    {
-        $result = Collection(CompanyStore::field('id,store_name,auditstatus,store_img')->select())->toArray();
-
-        return $result;
-        
-    }
-
-
 }

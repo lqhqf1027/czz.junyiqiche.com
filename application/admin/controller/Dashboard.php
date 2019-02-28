@@ -3,6 +3,7 @@
 namespace app\admin\controller;
 
 use app\common\controller\Backend;
+use app\admin\model\CompanyStore;
 use think\Config;
 
 /**
@@ -21,6 +22,17 @@ class Dashboard extends Backend
     {
       
         return $this->view->fetch();
+    }
+
+    /** 
+     * 店铺状态
+     */
+    public function hint()
+    {
+        $result = Collection(CompanyStore::field('id,store_name,auditstatus,store_img')->select())->toArray();
+
+        return $result;
+        
     }
 
 }
