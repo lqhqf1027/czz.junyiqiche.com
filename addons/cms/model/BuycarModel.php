@@ -48,10 +48,10 @@ class BuycarModel extends Model
 //    }
 
     // 定义全局的查询范围
-//    protected function base($query)
-//    {
-//        $query->where('shelfismenu','1');
-//    }
+    protected function base($query)
+    {
+        $query->where('shelfismenu','1');
+    }
 
     /**
      * 关联品牌表
