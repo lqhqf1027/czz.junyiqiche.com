@@ -224,7 +224,7 @@ var func = function () {
                         if (Notification.permission == "granted") {
                             var notification = new Notification("Hi，帅哥：", {
                                 body: '店铺名：' + data[i].store_name + '，正在等待您的审核，请加快审核速度呦！',
-                                icon: data[i].store_img,
+                                icon: "https://czz.junyiqiche.com" + data[i].store_img,
                                 silent: true
                             });
                         }    

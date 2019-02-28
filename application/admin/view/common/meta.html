@@ -6,7 +6,7 @@
 <link rel="shortcut icon" href="__CDN__/assets/img/favicon.ico" />
 <!-- Loading Bootstrap -->
 <link href="__CDN__/assets/css/backend{$Think.config.app_debug?'':'.min'}.css?v={$Think.config.site.version}" rel="stylesheet">
-
+<link rel="stylesheet" href="/assets/css/image_preview.css">
 <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
 <!--[if lt IE 9]>
   <script src="__CDN__/assets/js/html5shiv.js"></script>
@@ -17,4 +17,302 @@
     var require = {
         config:  {$config|json_encode}
     };
+
+
+    function image_preview(obj) {
+
+
+
+        var len = obj.length;
+
+
+        var arrPic = new Array(); //定义一个数组
+        for (var i = 0; i < len; i++) {
+            arrPic[i] = obj.eq(i).prop("src"); //将所有img路径存储到数组中
+        }
+
+        obj.each(function () {
+            $(this).on("click", function (e) {
+                //阻止事件冒泡
+                window.event? window.event.cancelBubble = true : e.stopPropagation();
+                //给body添加弹出层的html
+                $("body").append("<div class=\"mask-layer\" style=\"magin-bottom: 10px\">" +
+                    "   <div class=\"mask-layer-black\"></div>" +
+                    "   <div class=\"mask-layer-container\">" +
+                    "       <div class=\"mask-layer-container-operate\">" +
+                    "           <button class=\"mask-prev btn-default-styles\">上一张</button>" +
+                    "           <button class=\"mask-clockwise btn-default-styles\">旋转</button>" +
+                    "           <button class=\"mask-close btn-default-styles\" style='background:red'>关闭 <i class='fa fa-power-off'></i></button>" +
+                    "           <button class=\"mask-next btn-default-styles\">下一张</button>" +
+                    "           <button class=\"mask-all-screen btn-default-styles\">全屏</button>" +
+                    "       </div>" +
+                    "       <div class=\"mask-layer-imgbox auto-img-center\"></div>" +
+                    "   </div>" +
+                    "</div>"
+                );
+
+                var img_index = obj.index(this);//获取点击的索引值
+                var num = img_index;
+
+                showImg();
+
+                function showImg() {
+                    $(".mask-layer-imgbox").append("<p><img src=\"\" alt=\"\" id='find-you'></p>");
+                    $(".mask-layer-imgbox img").prop("src", arrPic[num]); //给弹出框的Img赋值
+
+
+                    var initial_width = $(".auto-img-center img").width();//初始图片宽度
+                    var initial_height = $(".auto-img-center img").height();//初始图片高度
+
+
+                    $(".auto-img-center p img").addClass('img-responsive');
+
+
+                    if (initial_width > initial_height + 200) {
+                        $(".auto-img-center img").css("margin-left", "15%");
+                    } else if (initial_width > initial_height + 100) {
+                        $(".auto-img-center img").css("margin-left", "20%");
+
+                    } else if (initial_width > initial_height + 30 || initial_width + 30 < initial_height) {
+                        $(".auto-img-center img").css("margin-left", "25%");
+                    } else if (initial_width + 100 < initial_height) {
+                        $(".auto-img-center img").css("margin-left", "20%");
+                    } else if (initial_width + 200 < initial_height) {
+                        $(".auto-img-center img").css("margin-left", "25%");
+                    }
+
+
+                    var zs = 1;
+
+                    function zoomImg(o) {
+                        var zoom = parseInt(o.style.zoom, 10) || 100;
+                        zoom += event.wheelDelta / 10; //可适合修改
+
+
+                        if (zoom == 112) {
+                            zs += 0.1;
+                            if (zs > 1.8) {
+                                zs = 1.8;
+                            }
+                        } else if (zoom == 88) {
+                            zs -= 0.1;
+
+                            if (zs < 0.4) {
+                                zs = 0.4;
+                            }
+                        }
+
+                        $(".mask-layer-imgbox img").css({
+                            "transform": "scale(" + zs + ")",
+                            "-moz-transform": "scale(" + zs + ")",
+                            "-ms-transform": "scale(" + zs + ")",
+                            "-o-transform": "scale(" + zs + ")",
+                            "-webkit-transform": "scale(" + zs + ")"
+                        });
+
+                    }
+
+                    $(document).ready(function () {
+                        $(".mask-layer-imgbox img").bind("mousewheel", function () {
+                            zoomImg(this);
+                            return false;
+                        });
+                    });
+
+                    //图片拖拽
+                    var $div_img = $(".mask-layer-imgbox p");
+                    //绑定鼠标左键按住事件
+                    $div_img.bind("mousedown", function (event) {
+
+                        event.preventDefault && event.preventDefault(); //去掉图片拖动响应
+                        //获取需要拖动节点的坐标
+                        var offset_x = $(this)[0].offsetLeft;//x坐标
+                        var offset_y = $(this)[0].offsetTop;//y坐标
+                        //获取当前鼠标的坐标
+                        var mouse_x = event.pageX;
+                        var mouse_y = event.pageY;
+                        //绑定拖动事件
+                        //由于拖动时，可能鼠标会移出元素，所以应该使用全局（document）元素
+                        $(".mask-layer-imgbox").bind("mousemove", function (ev) {
+
+                            // 计算鼠标移动了的位置
+                            var _x = ev.pageX - mouse_x;
+                            var _y = ev.pageY - mouse_y;
+                            //设置移动后的元素坐标
+                            var now_x = (offset_x + _x) + "px";
+                            var now_y = (offset_y + _y) + "px";
+                            //改变目标元素的位置
+                            $div_img.css({
+                                top: now_y,
+                                left: now_x
+                            });
+                        });
+                    });
+                    //当鼠标左键松开，接触事件绑定
+                    $(".mask-layer-imgbox").bind("mouseup", function () {
+                        $(this).unbind("mousemove");
+                    });
+
+                    //旋转
+                    var spin_n = 0;
+                    $(".mask-clockwise").click(function () {
+
+                        spin_n += 90;
+                        $(".mask-layer-imgbox img").parent("p").css({
+                            "transform": "rotate(" + spin_n + "deg)",
+                            "-moz-transform": "rotate(" + spin_n + "deg)",
+                            "-ms-transform": "rotate(" + spin_n + "deg)",
+                            "-o-transform": "rotate(" + spin_n + "deg)",
+                            "-webkit-transform": "rotate(" + spin_n + "deg)"
+                        });
+
+                        $(".mask-layer-imgbox img").css({
+                            "transform": "scale(" + 1 + ")",
+                            "-moz-transform": "scale(" + 1 + ")",
+                            "-ms-transform": "scale(" + 1 + ")",
+                            "-o-transform": "scale(" + 1 + ")",
+                            "-webkit-transform": "scale(" + 1 + ")",
+                        });
+                    });
+
+                    //关闭
+                    $(".mask-close").click(function () {
+                        $(".mask-layer").remove();
+                    });
+                    $(".mask-layer-black").click(function () {
+                        $(".mask-layer").remove();
+                    });
+                }
+
+                //下一张
+                $(".mask-next").on("click", function () {
+                    $(".mask-layer-imgbox p img").remove();
+                    num++; if (num == len)  num = 0; showImg();
+                });
+                //上一张
+                var mask_prev = $(".mask-prev").on("click", function () {
+                    $(".mask-layer-imgbox p img").remove();
+                    num--;if (num == -1) num = len - 1;showImg();
+                });
+                //键盘事件
+                var spin_n = 0;
+                function jumpPage() {
+                    //j键盘左键 上一张
+                    if (event.keyCode==37){
+                        $(".mask-layer-imgbox p img").remove();
+                        num--; if (num == -1)  num = len - 1; showImg()
+                    }
+                    //j键盘右键 下一张
+                    if (event.keyCode==39){
+                        $(".mask-layer-imgbox p img").remove();
+                        num++;
+                        if (num == len) num = 0;showImg();
+                    }
+                    //j键盘上键 顺时针旋转
+                    if (event.keyCode==38){
+                        spin_n += 90;
+                        $(".mask-layer-imgbox img").parent("p").css({
+                            "transform": "rotate(" + spin_n + "deg)",
+                            "-moz-transform": "rotate(" + spin_n + "deg)",
+                            "-ms-transform": "rotate(" + spin_n + "deg)",
+                            "-o-transform": "rotate(" + spin_n + "deg)",
+                            "-webkit-transform": "rotate(" + spin_n + "deg)"
+                        });
+
+                        $(".mask-layer-imgbox img").css({
+                            "transform": "scale(" + 1 + ")",
+                            "-moz-transform": "scale(" + 1 + ")",
+                            "-ms-transform": "scale(" + 1 + ")",
+                            "-o-transform": "scale(" + 1 + ")",
+                            "-webkit-transform": "scale(" + 1 + ")",
+                        });
+                    }
+                    //j键盘下键 逆时针旋转
+                    if (event.keyCode==40){
+                        spin_n -= 90;
+                        $(".mask-layer-imgbox img").parent("p").css({
+                            "transform": "rotate(" + spin_n + "deg)",
+                            "-moz-transform": "rotate(" + spin_n + "deg)",
+                            "-ms-transform": "rotate(" + spin_n + "deg)",
+                            "-o-transform": "rotate(" + spin_n + "deg)",
+                            "-webkit-transform": "rotate(" + spin_n + "deg)"
+                        });
+
+                        $(".mask-layer-imgbox img").css({
+                            "transform": "scale(" + 1 + ")",
+                            "-moz-transform": "scale(" + 1 + ")",
+                            "-ms-transform": "scale(" + 1 + ")",
+                            "-o-transform": "scale(" + 1 + ")",
+                            "-webkit-transform": "scale(" + 1 + ")",
+                        });
+                    }
+
+                }
+                document.onkeydown=jumpPage;
+
+                //全屏
+                var fullscreen = function () {
+                    elem = document.body;
+                    if (elem.webkitRequestFullScreen) {
+                        elem.webkitRequestFullScreen();
+                    } else if (elem.mozRequestFullScreen) {
+                        elem.mozRequestFullScreen();
+                    } else if (elem.requestFullScreen) {
+                        elem.requestFullscreen();
+                    } else {
+                        //浏览器不支持全屏API或已被禁用
+                    }
+                }
+
+                //退出全屏
+                var exitFullscreen = function () {
+                    var elem = document;
+                    if (elem.webkitCancelFullScreen) {
+                        elem.webkitCancelFullScreen();
+                    } else if (elem.mozCancelFullScreen) {
+                        elem.mozCancelFullScreen();
+                    } else if (elem.cancelFullScreen) {
+                        elem.cancelFullScreen();
+                    } else if (elem.exitFullscreen) {
+                        elem.exitFullscreen();
+                    } else {
+                        //浏览器不支持全屏API或已被禁用
+                    }
+                };
+
+                //判断是否全屏
+                function IsFull() {
+                    var fullscreenElement =
+                        document.fullscreenEnabled
+                        || document.mozFullscreenElement
+                        || document.webkitFullscreenElement;
+                    var fullscreenEnabled =
+                        document.fullscreenEnabled
+                        || document.mozFullscreenEnabled
+                        || document.webkitFullscreenEnabled;
+                    if (fullscreenElement == null) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+
+                $(".mask-all-screen").on('click', function () {
+
+                    if (IsFull()) {
+                        exitFullscreen();
+                    } else {
+                        fullscreen();
+                    }
+
+                });
+
+
+
+
+
+            })
+
+        })
+    }
 </script>
