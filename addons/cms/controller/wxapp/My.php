@@ -19,6 +19,7 @@ use addons\cms\model\EarningDetailed;
 use think\Db;
 use Endroid\QrCode\QrCode;
 use fast\Random;
+
 /**
  * 我的
  */
@@ -134,13 +135,11 @@ class My extends Base
      */
     public function setQrcode()
     {
-
-//        $logo = \Think\Config::get('upload')['cdnurl'] . \addons\cms\model\Config::get(['name' => 'site_logo'])->value;
         $user_id = $this->request->post('user_id');
         if (!(int)$user_id) $this->error('参数错误');
         $time = date('Ymd');
         $qrCode = new QrCode();
-        $qrCode->setText($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/?user_id=4444')
+        $qrCode->setText($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/?user_id=' . $user_id)
             ->setSize(150)
             ->setPadding(10)
             ->setErrorCorrection('high')
@@ -149,11 +148,10 @@ class My extends Base
             ->setLabel(' ')
             ->setLabelFontSize(10)
             ->setImageType(\Endroid\QrCode\QrCode::IMAGE_TYPE_PNG);
-//        $qrCode ->render();die;
         $fileName = DS . 'uploads' . DS . 'qrcode' . DS . $time . '_' . $user_id . '.png';
         $qrCode->save(ROOT_PATH . 'public' . $fileName);
         if ($qrCode) {
-            User::update(['id' => 20, 'invitation_code_img' => $fileName]) ? $this->success('创建成功', $fileName) : $this->error('创建失败');
+            User::update(['id' => $user_id, 'invitation_code_img' => $fileName]) ? $this->success('创建成功', $fileName) : $this->error('创建失败');
         }
         $this->error('未知错误');
     }
@@ -391,19 +389,19 @@ class My extends Base
             $user = User::where('id', $user_id)->field('id,nickname,avatar')->find();
 
             $store_id = CompanyStore::where('user_id', $user_id)->value('id');
-            
+
             $mymoney = EarningDetailed::field('first_earnings,second_earnings,total_earnings')->where('store_id', $store_id)->find()->toArray();
 
             $first_store = Collection(Distribution::field('level_store_id')->with(['store' => function ($q) {
 
-                    $q->withField('id,store_name,user_id');
+                $q->withField('id,store_name,user_id');
 
-                }])->where('store_id', $store_id)->select())->toArray();
+            }])->where('store_id', $store_id)->select())->toArray();
 
             foreach ($first_store as $k => $v) {
 
-                $first_store[$k]['second_count'] = Distribution::where('store_id',$v['level_store_id'])->count();
-                $first_store[$k]['second_moneycount'] = Distribution::where('store_id',$v['level_store_id'])->sum('second_earnings');
+                $first_store[$k]['second_count'] = Distribution::where('store_id', $v['level_store_id'])->count();
+                $first_store[$k]['second_moneycount'] = Distribution::where('store_id', $v['level_store_id'])->sum('second_earnings');
                 $first_store[$k]['user'] = User::field('id,nickname,avatar')->where('id', $v['store']['user_id'])->find();
 
             }
@@ -417,8 +415,8 @@ class My extends Base
             $this->error($e->getMessage());
         }
 
-        $this->success('请求成功',['data' => $data]);
-       
+        $this->success('请求成功', ['data' => $data]);
+
     }
 
 }

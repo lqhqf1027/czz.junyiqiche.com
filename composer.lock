@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d1920d9f2aea48315d3828c1fa3167d8",
+    "content-hash": "00e433b4335667f76746d56833ff87b1",
     "packages": [
         {
             "name": "doctrine/cache",
@@ -318,6 +318,50 @@
                 "url"
             ],
             "time": "2018-12-04T20:46:45+00:00"
+        },
+        {
+            "name": "hooklife/thinkphp5-wechat",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hooklife/thinkphp5-wechat.git",
+                "reference": "d820c9d2c76de45e4fd3ded10df00a525e13fe1a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github-api-proxy.cnpkg.org/repos/hooklife/thinkphp5-wechat/zipball/d820c9d2c76de45e4fd3ded10df00a525e13fe1a",
+                "reference": "d820c9d2c76de45e4fd3ded10df00a525e13fe1a",
+                "shasum": ""
+            },
+            "require": {
+                "overtrue/wechat": "~3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Hooklife\\ThinkphpWechat\\": "src/"
+                },
+                "files": [
+                    "src/helper.php"
+                ]
+            },
+            "notification-url": "https://repo.packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "hooklife",
+                    "email": "miaogaopeng123@gmail.com"
+                }
+            ],
+            "description": "微信 SDK for thinkphp5, 基于 overtrue/wechat",
+            "keywords": [
+                "thinkphp5",
+                "wechat",
+                "weixin"
+            ],
+            "time": "2017-01-12T08:27:27+00:00"
         },
         {
             "name": "karsonzhang/fastadmin-addons",
@@ -879,6 +923,54 @@
                 "dependency injection"
             ],
             "time": "2018-01-21T07:42:36+00:00"
+        },
+        {
+            "name": "pingplusplus/pingpp-php",
+            "version": "2.4.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PingPlusPlus/pingpp-php.git",
+                "reference": "ce11a340abea605d76114f0d1587b54cf5ad85bf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github-api-proxy.cnpkg.org/repos/PingPlusPlus/pingpp-php/zipball/ce11a340abea605d76114f0d1587b54cf5ad85bf",
+                "reference": "ce11a340abea605d76114f0d1587b54cf5ad85bf",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=5.6.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": []
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pingpp\\": "lib/"
+                }
+            },
+            "notification-url": "https://repo.packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Pingplusplus and contributors",
+                    "homepage": "https://github.com/PingPlusPlus/pingpp-php/contributors"
+                }
+            ],
+            "description": "Pingplusplus PHP Library",
+            "homepage": "https://pingxx.com/",
+            "keywords": [
+                "api",
+                "mobile payment processing",
+                "pingpp"
+            ],
+            "time": "2018-12-28T02:01:53+00:00"
         },
         {
             "name": "psr/container",

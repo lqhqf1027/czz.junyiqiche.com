@@ -13,9 +13,10 @@ class ComposerStaticInitd15e2bd93c7f83bfccc320b8bde0c0e9
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
-        '9b552a3cc426e3287cc811caefa3cf53' => __DIR__ . '/..' . '/topthink/think-helper/src/helper.php',
-        '488987c28e9b5e95a1ce6b6bcb94606c' => __DIR__ . '/..' . '/karsonzhang/fastadmin-addons/src/common.php',
         '9e090711773bfc38738f5dbaee5a7f14' => __DIR__ . '/..' . '/overtrue/wechat/src/Payment/helpers.php',
+        '9b552a3cc426e3287cc811caefa3cf53' => __DIR__ . '/..' . '/topthink/think-helper/src/helper.php',
+        'b248b9358a8992876b21eddc15455b97' => __DIR__ . '/..' . '/hooklife/thinkphp5-wechat/src/helper.php',
+        '488987c28e9b5e95a1ce6b6bcb94606c' => __DIR__ . '/..' . '/karsonzhang/fastadmin-addons/src/common.php',
         '1cfd2761b63b0a29ed23657ea394cb2d' => __DIR__ . '/..' . '/topthink/think-captcha/src/helper.php',
     );
 
@@ -40,6 +41,7 @@ class ComposerStaticInitd15e2bd93c7f83bfccc320b8bde0c0e9
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
+            'Pingpp\\' => 7,
         ),
         'O' => 
         array (
@@ -49,6 +51,10 @@ class ComposerStaticInitd15e2bd93c7f83bfccc320b8bde0c0e9
         'M' => 
         array (
             'Monolog\\' => 8,
+        ),
+        'H' => 
+        array (
+            'Hooklife\\ThinkphpWechat\\' => 24,
         ),
         'G' => 
         array (
@@ -117,6 +123,10 @@ class ComposerStaticInitd15e2bd93c7f83bfccc320b8bde0c0e9
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
+        'Pingpp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/pingplusplus/pingpp-php/lib',
+        ),
         'Overtrue\\Socialite\\' => 
         array (
             0 => __DIR__ . '/..' . '/overtrue/socialite/src',
@@ -128,6 +138,10 @@ class ComposerStaticInitd15e2bd93c7f83bfccc320b8bde0c0e9
         'Monolog\\' => 
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
+        ),
+        'Hooklife\\ThinkphpWechat\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/hooklife/thinkphp5-wechat/src',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
