@@ -11,7 +11,9 @@ namespace addons\cms\model;
 
 use think\Model;
 
-class ModelsInfo extends Model
+
+
+class ModelsInfo  extends Model
 {
     protected $name = 'models_info';
 
@@ -32,10 +34,10 @@ class ModelsInfo extends Model
     }
 
     // 定义全局的查询范围
-//    protected function base($query)
-//    {
-//        $query->where('shelfismenu','1');
-//    }
+    protected function base($query)
+    {
+        $query->where('shelfismenu','1');
+    }
 
 //    public function setKilometresAttr($value)
 //    {

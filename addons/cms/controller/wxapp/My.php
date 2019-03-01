@@ -178,68 +178,6 @@ class My extends Base
         $this->success('请求成功', [$riders['name'] => $riders['value']]);
     }
 
-
-    /**
-     * 支付成功后接口
-     * @throws \think\exception\DbException
-     */
-    public function after_payment()
-    {
-//        $arr = [
-//            'bank_card' => '6217003810028413121',
-//            'id_card_images' => [
-//                'positive' => '/uploads/20181116/c25d72c53440bd4580923a91e083b189.png',
-//                'negative' => '/uploads/20181116/c25d72c53440bd4580923a91e083b189.png',
-//            ],
-//            'level_id' => 1
-//        ];
-
-        $afterInfo = $this->request->post('afterInfo');
-//        $this->success(json_encode($arr));
-
-        $afterInfo = "{\"bank_card\":\"6217003810028413121\",\"id_card_images\":{\"positive\":\"\\/uploads\\/20181116\\/c25d72c53440bd4580923a91e083b189.png\",\"negative\":\"\\/uploads\\/20181116\\/c25d72c53440bd4580923a91e083b189.png\"},\"level_id\":1}";
-
-        $user_id = $this->request->post('user_id');
-
-        $afterInfo = json_decode($afterInfo, true);
-
-        $store_id = CompanyStore::get(['user_id' => $user_id])->id;
-
-        $distribution_id = Distribution::get(['level_store_id' => $store_id])->id;
-
-//        $this->success($distribution_id.' -'.$store_id);
-
-        $resultUser = User::update([
-            'id' => $user_id,
-            'bank_card' => $afterInfo['bank_card'],
-            'id_card_images' => $afterInfo['id_card_images']['positive'] . ';' . $afterInfo['id_card_images']['negative']
-        ]);
-
-        $resultCompany = CompanyStore::update([
-            'id' => $store_id,
-            'level_id' => $afterInfo['level_id']
-        ]);
-
-        if ($distribution_id) {
-            $money = StoreLevel::get($afterInfo['level_id'])->money;
-            $gradeOne = Config::where(['group' => 'rate'])->column('value');
-            $earnings = floatval($gradeOne[0]) * $money;
-            $second_earnings = floatval($gradeOne[1]) * $money;
-
-            $res = Distribution::update([
-                'id' => $distribution_id,
-                'earnings' => $earnings,
-                'second_earnings' => $second_earnings
-            ]);
-
-            $resultUser && $resultCompany && $res ? $this->success('请求成功', 'success') : $this->error('请求失败', 'error');
-
-        }
-
-        $resultUser && $resultCompany ? $this->success('请求成功', 'success') : $this->error('请求失败', 'error');
-
-    }
-
     /**
      * 邀请码
      * @return bool|string
@@ -254,72 +192,6 @@ class My extends Base
 
     }
 
-    /**
-     * 我的店铺主页接口
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     */
-    public function homepages()
-    {
-        $user_id = $this->request->post('user_id');
-
-        $users = User::field('id,name,avatar')
-            ->with(['companystoreone' => function ($q) {
-                $q->withField('id,store_qrcode');
-            }])->find($user_id);
-
-        $partner = User::field('id,name,avatar')->with(['companystore' => function ($q) use ($users) {
-            $q->with(['sondistribution' => function ($sondistribution) use ($users) {
-                $sondistribution->where('store_id', $users['companystoreone']['id']);
-            }]);
-        }])->select();
-
-        $commission = 0;     //佣金收益
-        $people_number = 0;  //总人数
-
-        //去除不是下级店铺的数据
-        foreach ($partner as $k => $v) {
-            if (empty($v['companystore'][0]['sondistribution'])) {
-                unset($partner[$k]);
-            }
-        }
-
-        $partner = array_values($partner);
-//        $this->success($partner);
-        foreach ($partner as $k => $v) {
-            //得到下1级店铺所有下2级店铺的收益
-            $partner[$k]['allProfit'] = Db::name('distribution')
-                ->where('store_id', $v['companystore'][0]['id'])
-                ->sum('second_earnings');
-
-            //得到下1级店铺所有下2级店铺的数量
-            $partner[$k]['memberNumber'] = Db::name('distribution')
-                ->where('store_id', $v['companystore'][0]['id'])
-                ->count('id');
-
-            $partner[$k]['memberNumber'] = $partner[$k]['memberNumber'] + 1;
-
-            $partner[$k]['allProfit'] = $partner[$k]['allProfit'] + $v['companystore'][0]['sondistribution'][0]['earnings'];
-
-            $commission = $commission + $partner[$k]['allProfit'];
-            $people_number += $partner[$k]['memberNumber'];
-
-            unset($partner[$k]['companystore']);
-
-        }
-        $users['allProfit'] = $commission;
-        $users['memberNumber'] = $people_number;
-//        $this->success($partner);
-        $data = [
-            'userInfo' => $users,
-            'memeberList' => $partner
-        ];
-
-        $this->success($data);
-
-    }
 
     /**
      * 我的页面---我想买的
@@ -332,11 +204,13 @@ class My extends Base
             $this->error('缺少参数');
         }
 
-        $buyCarList = collection(BuycarModel::field('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime')
+        $buyCarList = collection(BuycarModel::useGlobalScope(false)->field('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime')
             ->with(['brand' => function ($q) {
-                $q->withField('id,name,bfirstletter');
+                $q->withField('id,name,brand_initials');
             }])
-            ->order('createtime desc')->where('user_id', $user_id)->select())->toArray();
+            ->order('createtime desc')->where([
+                'user_id'=> $user_id,
+            ])->select())->toArray();
 
         $default_image = ConfigModel::get(['name' => 'default_picture'])->value;
 
@@ -344,7 +218,7 @@ class My extends Base
 
             $buyCarList[$k]['modelsimages'] = $default_image;
 
-            $buyCarList[$k]['shelfismenu'] = $v['shelfismenu'] = 2 ? 0 : 1;
+            $buyCarList[$k]['shelfismenu'] = $v['shelfismenu'] == 2 ? 0 : 1;
 
             $buyCarList[$k]['kilometres'] = $v['kilometres'] ? round(($v['kilometres'] / 10000), 2) . '万公里' : null;
             $buyCarList[$k]['guide_price'] = $v['guide_price'] ? round(($v['guide_price'] / 10000), 2) . '万' : null;

@@ -295,7 +295,14 @@ class Shop extends Base
             $company_info = CompanyStore::field('id')
                 ->with(['belongsStoreLevel' => function ($q) {
                     $q->withField('id,money');
-                }])->where('user_id', $user_id)->find();
+                }])->where([
+                    'user_id'=> $user_id,
+                    'auditstatus'=>'paid_the_money'
+                ])->find();
+
+            if(!$company_info){
+                $this->error('未知错误');
+            }
 
             //查出收益率
             $rate = ConfigModel::where('group', 'rate')->column('value');
