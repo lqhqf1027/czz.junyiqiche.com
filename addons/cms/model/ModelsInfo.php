@@ -11,7 +11,9 @@ namespace addons\cms\model;
 
 use think\Model;
 
-class ModelsInfo extends Model
+
+
+class ModelsInfo  extends Model
 {
     protected $name = 'models_info';
 
