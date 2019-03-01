@@ -315,5 +315,12 @@ tab-stops:15.6pt"><!--[if !supportLists]--><span lang="EN-US">1.<span style="fon
     1 => '/uploads/20190225/ad50df8be498585cfb78d3c849f6a784.png',
     2 => '/uploads/20190225/ebf3aee0c03180b21d1f5dbf20cd003e.png',
   ),
-  'invite_bg_img' => '/uploads/20190226/10299620f0bcc206c7b4896c693ab5cb.png',
+  'invite_bg_img' => '/uploads/20190228/66eae0f50a801fd0294dfeebf419935f.png',
+  'transmission' => 
+  array (
+    '手动变速' => '手动变速',
+    '自动变速' => '自动变速',
+    '无级变速' => '无级变速',
+    '双离合变速' => '双离合变速',
+  ),
 );

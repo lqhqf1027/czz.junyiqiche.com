@@ -1,6 +1,6 @@
 /nbproject/
 /thinkphp/
-/vendor/
+#/vendor/
 /runtime/*
 /application/admin/command/Install/*.lock
 
@@ -13,8 +13,9 @@
 !.gitkeep
 .env
 /runtime
-/application/extra/addons.php
-/public/assets/js/addons.js
+#/application/extra/addons.php
+#/public/assets/js/addons.js
 
  
 /runtime
+/public/uploads
