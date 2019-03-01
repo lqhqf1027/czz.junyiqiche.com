@@ -33,6 +33,10 @@ class Shop extends Base
         $user_id = $this->request->post('user_id');
         $inviter_user_id = $this->request->post('inviter_user_id');//邀请人user_id
 
+        if(!$user_id){
+            $this->error('缺少参数');
+        }
+
         try {
             //得到品牌列表
             if (!Cache::get('brandCate')) {
@@ -91,7 +95,7 @@ class Shop extends Base
 
         $screen_data = [];
         foreach ($brandList as $k => $v) {
-            $screen_data[$v['brand_initials']][] =['id'=>$v['id'],'name'=>$v['name']];
+            $screen_data[$v['brand_initials']][] = ['id' => $v['id'], 'name' => $v['name']];
         }
 
         return $screen_data;
@@ -164,6 +168,11 @@ class Shop extends Base
     {
         $user_id = $this->request->post('user_id');
         $infos = $this->request->post('auditInfo/a');
+
+        if(!$user_id){
+            $this->error('缺少参数');
+        }
+
         $submit_type = $this->request->post('submit_type');   //表单提交类型【insert/update】
         $infos['user_id'] = $user_id;
         $infos['id_card_images'] = $infos['id_card_positive'] . ',' . $infos['id_card_opposite'];
@@ -235,6 +244,10 @@ class Shop extends Base
     {
         $user_id = $this->request->post('user_id');
 
+        if(!$user_id){
+            $this->error('缺少参数');
+        }
+
         $info = User::field('id,nickname,avatar')
             ->with(['companystoreone' => function ($q) {
                 $q->withField('id,level_id,auditstatus');
@@ -290,17 +303,22 @@ class Shop extends Base
     {
         $user_id = $this->request->post('user_id');
 
+        if(!$user_id){
+            $this->error('缺少参数');
+        }
+
+
         Db::startTrans();
         try {
             $company_info = CompanyStore::field('id')
                 ->with(['belongsStoreLevel' => function ($q) {
                     $q->withField('id,money');
                 }])->where([
-                    'user_id'=> $user_id,
-                    'auditstatus'=>'paid_the_money'
+                    'user_id' => $user_id,
+                    'auditstatus' => 'paid_the_money'
                 ])->find();
 
-            if(!$company_info){
+            if (!$company_info) {
                 $this->error('未知错误');
             }
 
@@ -351,5 +369,30 @@ class Shop extends Base
         }
 
         $this->success('请求成功');
+    }
+
+    /**
+     * 店铺详情接口
+     * @throws Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function store_detail()
+    {
+        $store_id = $this->request->post('store_id');
+
+        if(!$store_id){
+            $this->error('缺少参数');
+        }
+
+
+        $store_info = CompanyStore::get($store_id)->visible(['id','cities_name','store_name','store_address','phone','main_camp'])->toArray();
+
+        $car_list = Index::typeCar(1,0,['store_id'=>$store_id]);
+
+        $store_info['car_list'] = $car_list;
+
+        $this->success('请求成功',['detail'=>$store_info]);
     }
 }

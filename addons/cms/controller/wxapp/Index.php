@@ -51,7 +51,12 @@ class Index extends Base
     public function index()
     {
         $user_id = $this->request->post('user_id');
-        $info = [
+        $sell_info = [
+            'msg' => '',
+            'status' => 'success',
+        ];
+
+        $buy_info = [
             'msg' => '',
             'status' => 'success',
         ];
@@ -72,8 +77,8 @@ class Index extends Base
                 ])->find();
 
             if (empty($res)) {
-                $info['msg'] = '您暂未认证！';
-                $info['status'] = 'error';
+                $sell_info['msg'] = $buy_info['msg'] = '您暂未认证！';
+                $sell_info['status'] =$buy_info['status']= 'error';
             } else {
                 if ($res['storelevel']['max_release_number'] != -1) {
                     $my_release_number = ModelsInfo::where([
@@ -82,8 +87,8 @@ class Index extends Base
                     ])->count('id');
 
                     if ($my_release_number >= $res['storelevel']['max_release_number']) {
-                        $info['msg'] = '发布卖车已达到限制' . $res['storelevel']['max_release_number'] . '次，想要发布更多请升级店铺';
-                        $info['status'] = 'error';
+                        $sell_info['msg'] = '发布卖车已达到限制' . $res['storelevel']['max_release_number'] . '次，想要发布更多请升级店铺';
+                        $sell_info['status'] = 'error';
                     }
                 }
             }
@@ -128,7 +133,8 @@ class Index extends Base
             ],
             'default_image' => ConfigModel::get(['name' => 'default_picture'])->value,
             'share' => self::get_share(),
-            'sell_car_condition' => $info
+            'sell_car_condition' => $sell_info,
+            'buy_car_condition' =>$buy_info
         ]);
 
     }
