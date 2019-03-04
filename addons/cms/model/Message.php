@@ -14,4 +14,10 @@ use think\Model;
 class Message extends Model
 {
      protected $name = 'cms_message';
+
+    // // 定义全局的查询范围
+     protected function base($query)
+     {
+         $query->where('ismenu', 1);
+     }
 }

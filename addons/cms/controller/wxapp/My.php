@@ -16,6 +16,7 @@ use addons\cms\model\Config as ConfigModel;
 use addons\cms\model\QuotedPrice;
 use addons\cms\model\BrandCate;
 use addons\cms\model\EarningDetailed;
+use addons\cms\model\Message;
 use think\Db;
 use Endroid\QrCode\QrCode;
 use fast\Random;
@@ -417,6 +418,61 @@ class My extends Base
 
         $this->success('请求成功', ['data' => $data]);
 
+    }
+
+
+    /**
+     * 消息列表接口
+     * @throws \think\exception\DbException
+     */
+    public function message_list()
+    {
+        $user_id = $this->request->post('user_id');
+
+        if (!$user_id) {
+            $this->error('缺少参数,请求失败', 'error');
+        }
+        $message = Message::all(function ($q) {
+            $q->order('createtime desc')->field('id,title,createtime,use_id');
+        });
+
+        foreach ($message as $k => $v) {
+            $v['isRead'] = 0;
+
+            if (strpos($v['use_id'], ',' . $user_id . ',') !== false) {
+                $v['isRead'] = 1;
+            }
+            unset($v['use_id']);
+        }
+
+        $this->success('请求成功', ['message_list' => $message]);
+    }
+
+
+    /**
+     * 消息详情接口
+     * @throws \think\exception\DbException
+     */
+    public function message_details()
+    {
+        $user_id = $this->request->post('user_id');
+        $message_id = $this->request->post('message_id');
+        $isRead = $this->request->post('isRead') ? 1 : 2;
+        if (!$user_id || !$message_id || !$isRead) {
+            $this->error('缺少参数,请求失败', 'error');
+        }
+
+        $message = Message::get($message_id)->visible(['id','title','content','analysis','createtime','use_id']);
+
+        if ($isRead == 2) {
+            $updateUses = $message['use_id'] == '' ? ',' . $user_id . ',' : $message['use_id'] . $user_id . ',';
+
+            //如果未读,更新为已读
+            Message::where('id', $message_id)->setField('use_id', $updateUses);
+        }
+        unset($message['use_id']);
+
+        $this->success('请求成功', ['message_details' => $message]);
     }
 
 }

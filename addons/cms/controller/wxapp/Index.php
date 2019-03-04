@@ -51,6 +51,7 @@ class Index extends Base
     public function index()
     {
         $user_id = $this->request->post('user_id');
+
         $sell_info = [
             'msg' => '',
             'status' => 'success',
@@ -194,7 +195,6 @@ class Index extends Base
             ->with(['brand' => function ($q) {
                 $q->withField('id,name,brand_initials,brand_default_images');
             }])
-//            ->where('shelfismenu', 1)
             ->where($where)->order($tables . '.createtime desc')->select())->toArray();
 
         $default_image = self::$default_image;
@@ -344,7 +344,6 @@ class Index extends Base
         Cache::set('brandCatesList', $check);
 
         return Cache::get('brandCatesList');
-
     }
 
     /**
@@ -387,20 +386,17 @@ class Index extends Base
         $mobile = $this->request->post('mobile');
         $code = $this->request->post('code');
 
-
-        if (!$user_id) {
-            $this->error('缺少参数,请求失败', 'error');
+        if (!$user_id || !$code || !checkPhoneNumberValidate(!$mobile)) {
+            $this->error('缺少参数或格式错误,请求失败', 'error');
         }
-        if ($code) {
+
             $userInfo = Db::name('cms_login_info')
                 ->where(['user_id' => $user_id, 'login_state' => 0])->find();
             if (!$userInfo || $code != $userInfo['login_code']) {
                 $this->error('验证码输入错误');
             }
-        }
 
-
-        $this->success('发布成功', 'success');
+        $this->success('验证成功', 'success');
     }
 
     /**
@@ -412,71 +408,13 @@ class Index extends Base
         $mobile = $this->request->post('mobile');
         $user_id = $this->request->post('user_id');
 
+        if (!$user_id || !checkPhoneNumberValidate(!$mobile)) {
+            $this->error('缺少参数或格式错误,请求失败', 'error');
+        }
+
         $result = message_send($mobile, '430761', $user_id);
 
         $result[0] == 'success' ? $this->success($result['msg']) : $this->error($result['msg']);
-//        if (!$mobile || !$user_id) $this->error('参数缺失或格式错误');
-//        if (!checkPhoneNumberValidate($mobile)) $this->error('手机号格式错误', $mobile);
-//        $authnum = '';
-//        //随机生成四位数验证码
-//        $list = explode(",", "0,1,2,3,4,5,6,7,8,9");
-//        for ($i = 0; $i < 4; $i++) {
-//            $randnum = rand(0, 9);
-//            $authnum .= $list[$randnum];
-//        }
-//
-//        $url = 'http://open.ucpaas.com/ol/sms/sendsms';
-//        $client = new Client();
-//        $response = $client->request('POST', $url, [
-//            'json' => [
-//                'sid' => self::$Ucpass['accountsid'],
-//                'token' => self::$Ucpass['token'],
-//                'appid' => self::$Ucpass['appid'],
-//                'templateid' => self::$Ucpass['templateid'],
-//                'param' => $authnum,
-//                'mobile' => $mobile,
-//                'uid' => $user_id
-//            ]
-//        ]);
-//        if ($response) {
-//            $result = json_decode($response->getBody(), true);
-//            $num = '';
-//            if ($result['code'] == '000000') {
-//                //查询当前手机号，如果存在更新他的的请求次数与 请求时间
-//                $getPhone = Db::name('cms_login_info')->where(['login_phone' => $mobile])->find();
-//                if ($getPhone) {
-//                    $num = $getPhone['login_num'];
-//                    ++$num;
-//                    Db::name('cms_login_info')->update([
-//                        'login_time' => strtotime($result['create_date']),
-//                        'login_code' => $authnum,
-//                        'login_num' => $num,
-//                        'login_phone' => $mobile,
-//                        'id' => $getPhone['id'],
-//                        'login_state' => 0,
-//                        'user_id' => $user_id
-//                    ]) ? $this->success('发送成功') : $this->error('发送失败');
-//
-//                } else {
-//                    //否则新增当前用户到登陆表
-//                    Db::name('cms_login_info')->insert([
-//                        'login_time' => strtotime($result['create_date']),
-//                        'login_code' => $authnum,
-//                        'login_num' => 1,
-//                        'login_phone' => $mobile,
-//                        'login_state' => 0,
-//                        'user_id' => $user_id
-//                    ]) ? $this->success('发送成功') : $this->error('发送失败');
-//                }
-//            } else {
-//                $this->error($result['msg'], $result);
-//            }
-//        } else {
-//            $err = json_decode($response->getBody(), true);
-//            $this->error($err['msg'], $err);
-//        }
-
-
     }
 
     /**
@@ -491,13 +429,16 @@ class Index extends Base
         if (!$user_id || !$carInfo) {
             $this->error('缺少参数，请求失败', 'error');
         }
-        $store_id = CompanyStore::get(['user_id' => $user_id])->id;
-
-        $carInfo['store_id'] = $store_id;
-        $carInfo['user_id'] = $user_id;
-        $carInfo['browse_volume'] = rand(500, 2000);
-        $modelsInfo = new ModelsInfo();
-        $modelsInfo->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
+        try{
+            $store_id = CompanyStore::get(['user_id' => $user_id])->id;
+            $carInfo['store_id'] = $store_id;
+            $carInfo['user_id'] = $user_id;
+            $carInfo['browse_volume'] = rand(500, 2000);
+            $modelsInfo = new ModelsInfo();
+            $modelsInfo->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
+        }catch (Exception $e){
+            $this->success($e->getMessage());
+        }
     }
 
     /**
@@ -604,16 +545,19 @@ class Index extends Base
         if (!$user_id || !$carInfo) {
             $this->error('缺少参数，请求失败', 'error');
         }
-        $store_id = CompanyStore::get(['user_id' => $user_id])->id;
-        if ($store_id) {
-            $carInfo['store_id'] = $store_id;
+        try{
+            $store_id = CompanyStore::get(['user_id' => $user_id])->id;
+            if ($store_id) {
+                $carInfo['store_id'] = $store_id;
+            }
+
+            $carInfo['user_id'] = $user_id;
+            $carInfo['browse_volume'] = rand(500, 2000);
+            $buyModels = new BuycarModel();
+            $buyModels->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
+        }catch (Exception $e){
+            $this->error($e->getMessage());
         }
-
-
-        $carInfo['user_id'] = $user_id;
-        $carInfo['browse_volume'] = rand(500, 2000);
-        $buyModels = new BuycarModel();
-        return $buyModels->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
     }
 
     /**
