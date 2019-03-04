@@ -26,17 +26,18 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {checkbox: true},
                         {field: 'id', title: __('Id')},
-                        {field: 'cities_name', title: __('Cities_name')},
                         {field: 'store_name', title: __('Store_name')},
+                        {field: 'store_address', title: __('店铺地址'),formatter:function (v,r,i) {
+                                return r.cities_name+r.store_address
+                        }},
                         {field: 'storelevel.partner_rank', title: __('店铺等级')},
-                        {field: 'user.name', title: __('店铺所有人姓名')},
-                        {field: 'store_address', title: __('Store_address')},
+                        {field: 'user.name', title: __('店铺所有人微信昵称')},
                         {field: 'phone', title: __('Phone')},
-                        {field: 'store_img', title: __('Store_img'), formatter: Controller.api.formatter.images},
-                        {field: 'user.invitation_code_img', title: __('Store_qrcode'), formatter: Controller.api.formatter.invitation_code_img},
-                        {field: 'count', title: __('邀请店铺数量'), formatter: Controller.api.formatter.count},
-                        {field: 'user.invite_code', title: __('Invitation_code'), formatter: Controller.api.formatter.invite_code},
-                        {field: 'main_camp', title: __('Main_camp')},
+                        // {field: 'store_img', title: __('Store_img'), formatter: Controller.api.formatter.images},
+                        // {field: 'user.invitation_code_img', title: __('Store_qrcode'), formatter: Controller.api.formatter.invitation_code_img},
+                        // {field: 'count', title: __('邀请店铺数量'), formatter: Controller.api.formatter.count},
+                        // {field: 'user.invite_code', title: __('Invitation_code'), formatter: Controller.api.formatter.invite_code},
+                        // {field: 'main_camp', title: __('Main_camp')},
                         {
                             field: 'recommend',
                             title: __('是否为推荐'),
@@ -45,8 +46,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         },
                         {field: 'statuss', title: __('Statuss'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.normal},
                         // {field: 'auditstatus', title: __('审核状态'), searchList: {"audit_failed":__('Audit_failed'),"pass_the_audit":__('Pass_the_audit'),"wait_the_review":__('Wait_the_review')}, formatter: Table.api.formatter.status},
-                        {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
-                        {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
+                        {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime,datetimeFormat: "YYYY-MM-DD",},
+                        // {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         {
                             field: 'operate', title: __('Operate'), table: table, 
                             buttons: [
