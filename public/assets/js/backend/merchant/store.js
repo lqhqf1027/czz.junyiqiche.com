@@ -22,6 +22,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
                 pk: 'id',
                 sortName: 'id',
+                searchFormVisible: true,
                 columns: [
                     [
                         {checkbox: true},
@@ -29,24 +30,27 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'cities_name', title: __('Cities_name')},
                         {field: 'store_name', title: __('Store_name')},
                         {field: 'storelevel.partner_rank', title: __('店铺等级')},
-                        {field: 'user.name', title: __('店铺所有人姓名')},
-                        {field: 'store_address', title: __('Store_address')},
+                        // {field: 'user.name', title: __('店铺所有人姓名')},
+                        {field: 'store_address', title: __('Store_address'), operate:false},
                         {field: 'phone', title: __('Phone')},
-                        {field: 'store_img', title: __('Store_img'), formatter: Controller.api.formatter.images},
-                        {field: 'user.invitation_code_img', title: __('Store_qrcode'), formatter: Controller.api.formatter.invitation_code_img},
-                        {field: 'count', title: __('邀请店铺数量'), formatter: Controller.api.formatter.count},
-                        {field: 'user.invite_code', title: __('Invitation_code'), formatter: Controller.api.formatter.invite_code},
+                        {field: 'store_img', title: __('Store_img'), operate:false, formatter: Controller.api.formatter.images},
+                        {field: 'user.invitation_code_img', title: __('Store_qrcode'), operate:false, formatter: Controller.api.formatter.invitation_code_img},
+                        {field: 'count', title: __('邀请店铺数量'), operate:false, formatter: Controller.api.formatter.count},
+                        {field: 'user.invite_code', title: __('Invitation_code'), operate:false, formatter: Controller.api.formatter.invite_code},
                         {field: 'main_camp', title: __('Main_camp')},
+                        {field: 'salecount', title: __('店铺在售车型数量'), operate:false, formatter: Controller.api.formatter.count},
+                        {field: 'buycount', title: __('店铺想买车型数量'), operate:false, formatter: Controller.api.formatter.count},
                         {
                             field: 'recommend',
                             title: __('是否为推荐'),
+                            operate:false,
                             events: Controller.api.events.operate,
                             formatter: Controller.api.formatter.toggle, searchList: {"1": "是", "0": "否"},
                         },
-                        {field: 'statuss', title: __('Statuss'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, formatter: Table.api.formatter.normal},
+                        {field: 'statuss', title: __('Statuss'), searchList: {"normal":__('Normal'),"hidden":__('Hidden')}, operate:false, formatter: Table.api.formatter.normal},
                         // {field: 'auditstatus', title: __('审核状态'), searchList: {"audit_failed":__('Audit_failed'),"pass_the_audit":__('Pass_the_audit'),"wait_the_review":__('Wait_the_review')}, formatter: Table.api.formatter.status},
-                        {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
-                        {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
+                        {field: 'createtime', title: __('Createtime'), operate:false, addclass:'datetimerange', formatter: Table.api.formatter.datetime},
+                        {field: 'updatetime', title: __('Updatetime'), operate:false, addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         {
                             field: 'operate', title: __('Operate'), table: table, 
                             buttons: [
@@ -241,6 +245,46 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     },
 
                                 },
+                                /**
+                                 * 查看店铺在售车型
+                                 */
+                                {
+                                    name: 'store_salemodels',
+                                    text: '查看店铺在售车型',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('查看店铺在售车型'), 
+                                    classname: 'btn btn-xs btn-primary btn-store_salemodels',
+                                    hidden: function (row, value, index) {
+                                        if (row.salecount != 0) {
+                                            return false;
+                                        }
+                                        else if (row.salecount == 0) {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 查看店铺想买车型
+                                 */
+                                {
+                                    name: 'store_salemodels',
+                                    text: '查看店铺想买车型',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('查看店铺想买车型'), 
+                                    classname: 'btn btn-xs btn-info btn-store_buymodels',
+                                    hidden: function (row, value, index) {
+                                        if (row.buycount != 0) {
+                                            return false;
+                                        }
+                                        else if (row.buycount == 0) {
+                                            return true;
+                                        }
+                                    },
+
+                                },
                                 
                             ],
                             events: Controller.api.events.operate,
@@ -400,6 +444,320 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
     
         },
+        /**
+         * 店铺在售车型
+         */
+        salemodels: function () {
+           // 初始化表格参数配置
+           Table.api.init({
+                extend: {
+                    'dragsort_url': ''
+                }
+            });
+
+            var table = $("#table");
+            $.fn.bootstrapTable.locales[Table.defaults.locale]['formatSearch'] = function(){};
+            // 初始化表格
+            table.bootstrapTable({
+                url: 'merchant/store/salemodels',
+                toolbar: '#toolbar',
+                pk: 'id',
+                sortName: 'id',
+                searchFormVisible: true,
+                queryParams:function (params) {
+                    params.filter = JSON.stringify({'store_id': Config.store_id});
+                    params.op = JSON.stringify({'store_id': '='});
+                    return {
+                        search: params.search,
+                        sort: params.sort,
+                        order: params.order,
+                        filter: params.filter,
+                        op: params.op,
+                        offset: params.offset,
+                        limit: params.limit
+                    }
+                },
+                columns: [
+                    [
+                        {checkbox: true},
+                        {field: 'id', title: __('Id')},
+                        {field: 'brand.name', title: __('品牌名称')},
+                        {field: 'models_name', title: __('车型名称')},
+                        {field: 'kilometres', title: __('公里数'), operate:false},
+                        {field: 'parkingposition', title: __('车辆所在地'), operate:false},
+                        {field: 'phone', title: __('手机号')},
+                        {field: 'modelsimages', title: __('车型亮点图'), operate:false, formatter: Controller.api.formatter.images},
+                        {field: 'guide_price', title: __('批发一口价（元）'), operate:false},
+                        {field: 'emission_standard', title: __('过户次数'), operate:false},
+                        {field: 'browse_volume', title: __('浏览量'), operate:false},
+                        {field: 'car_licensetime', title: __('上牌时间'), operate:false, addclass:'datetimerange', formatter: Controller.api.formatter.datetime},
+                        {field: 'factorytime', title: __('出厂时间'), operate:false, addclass:'datetimerange', formatter: Controller.api.formatter.datetime},
+                        {field: 'count', title: __('共收到报价次数'), operate:false, formatter: Controller.api.formatter.count},
+                        {field: 'shelfismenu', title: __('是否上下架'), formatter: Controller.api.formatter.toggle1},
+                        {field: 'createtime', title: __('创建时间'), operate:false, addclass:'datetimerange', formatter: Table.api.formatter.datetime},
+                        {field: 'updatetime', title: __('更新时间'), operate:false, addclass:'datetimerange', formatter: Table.api.formatter.datetime},
+                        {field: 'operate', title: __('Operate'), table: table, 
+                            buttons: [
+                                /**
+                                 * 查看车型的报价
+                                 */
+                                {
+                                    name: 'salemodels_price',
+                                    text: '查看车型的报价',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('查看车型的报价'), 
+                                    classname: 'btn btn-xs btn-success btn-salemodels_price',
+                                    hidden: function (row, value, index) {
+                                        if (row.count != 0) {
+                                            return false;
+                                        }
+                                        else if (row.count == 0) {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 暂无车型报价可查看
+                                 */
+                                {
+                                    name: 'salemodels_noprice',
+                                    text: '暂无车型报价可查看',
+                                    icon: 'fa fa-eye-slash', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('暂无车型报价可查看'), 
+                                    classname: 'btn btn-xs btn-danger',
+                                    hidden: function (row, value, index) {
+                                        if (row.count == 0) {
+                                            return false;
+                                        }
+                                        else if (row.count != 0) {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                
+                            ],
+                            events: Controller.api.events.operate, 
+                            formatter: Controller.api.formatter.operate
+                        }
+
+                    ]
+                ]
+            });
+            // 为表格1绑定事件
+            Table.api.bindevent(table);
+
+        },
+        /**
+         * 店铺想买车型
+         */
+        buymodels: function () {
+            // 初始化表格参数配置
+            Table.api.init({
+                 extend: {
+                     'dragsort_url': ''
+                 }
+             });
+ 
+             var table = $("#table");
+             $.fn.bootstrapTable.locales[Table.defaults.locale]['formatSearch'] = function(){};
+             // 初始化表格
+             table.bootstrapTable({
+                 url: 'merchant/store/buymodels',
+                 toolbar: '#toolbar',
+                 pk: 'id',
+                 sortName: 'id',
+                 searchFormVisible: true,
+                 queryParams:function (params) {
+                     params.filter = JSON.stringify({'store_id': Config.store_id});
+                     params.op = JSON.stringify({'store_id': '='});
+                     return {
+                         search: params.search,
+                         sort: params.sort,
+                         order: params.order,
+                         filter: params.filter,
+                         op: params.op,
+                         offset: params.offset,
+                         limit: params.limit
+                     }
+                 },
+                 columns: [
+                     [
+                        {checkbox: true},
+                        {field: 'id', title: __('Id')},
+                        {field: 'brand.name', title: __('品牌名称')},
+                        {field: 'models_name', title: __('车型名称')},
+                        {field: 'phone', title: __('手机号')},
+                        {field: 'browse_volume', title: __('浏览量'), operate:false},
+                        {field: 'parkingposition', title: __('期望车辆所在地'), operate:false},
+                        {field: 'guide_price', title: __('心理价（元）'), operate:false},
+                        {field: 'count', title: __('共收到报价次数'), operate:false, formatter: Controller.api.formatter.count},
+                        {field: 'shelfismenu', title: __('是否上下架'), formatter: Controller.api.formatter.toggle1},
+                        {field: 'createtime', title: __('创建时间'), operate:false, addclass:'datetimerange', formatter: Table.api.formatter.datetime},
+                        {field: 'updatetime', title: __('更新时间'), operate:false, addclass:'datetimerange', formatter: Table.api.formatter.datetime},
+                        {field: 'operate', title: __('Operate'), table: table, 
+                            buttons: [
+                                /**
+                                 * 查看车型的报价
+                                 */
+                                {
+                                    name: 'buymodels_price',
+                                    text: '查看车型的报价',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('查看车型的报价'), 
+                                    classname: 'btn btn-xs btn-success btn-buymodels_price',
+                                    hidden: function (row, value, index) {
+                                        if (row.count != 0) {
+                                            return false;
+                                        }
+                                        else if (row.count == 0) {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 暂无车型报价可查看
+                                 */
+                                {
+                                    name: 'buymodels_noprice',
+                                    text: '暂无车型报价可查看',
+                                    icon: 'fa fa-eye-slash', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('暂无车型报价可查看'), 
+                                    classname: 'btn btn-xs btn-danger',
+                                    hidden: function (row, value, index) {
+                                        if (row.count == 0) {
+                                            return false;
+                                        }
+                                        else if (row.count != 0) {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                
+                            ],
+                            events: Controller.api.events.operate, 
+                            formatter: Controller.api.formatter.operate
+                        }
+ 
+                     ]
+                 ]
+             });
+             // 为表格1绑定事件
+             Table.api.bindevent(table);
+ 
+        },
+         //店铺在售车型----报价
+        salemodelsprice: function () {
+
+            // 初始化表格参数配置
+            Table.api.init({
+                extend: {
+                    'dragsort_url': ''
+                }
+            });
+    
+            var table = $("#table");
+            $.fn.bootstrapTable.locales[Table.defaults.locale]['formatSearch'] = function(){};
+            // 初始化表格
+            table.bootstrapTable({
+                url: 'merchant/store/salemodelsprice',
+                pk: 'id',
+                sortName: 'id',
+                toolbar: '#toolbar',
+                searchFormVisible: true,
+                queryParams:function (params) {
+                    params.filter = JSON.stringify({'models_info_id': Config.models_info_id});
+                    params.op = JSON.stringify({'models_info_id': '='});
+                    return {
+                        search: params.search,
+                        sort: params.sort,
+                        order: params.order,
+                        filter: params.filter,
+                        op: params.op,
+                        offset: params.offset,
+                        limit: params.limit
+                    }
+                },
+                columns: [
+                    [
+                        {field: 'id', title: __('Id'),operate:false},
+
+                        {field: 'user.nickname', title: __('报价用户昵称')},
+                        {field: 'user.avatar', title: __('报价用户头像'), formatter: Table.api.formatter.images, operate:false},
+                        {field: 'user.mobile', title: __('报价用户手机')},
+
+                        {field: 'money', title: __('报价价格（元）')},
+                        {field: 'quotationtime', title: __('报价时间'), operate:false, addclass:'datetimerange', formatter: Controller.api.formatter.datetime},
+                    
+                    ]
+                ] 
+                });
+    
+                // 为表格绑定事件
+                Table.api.bindevent(table);
+
+    
+        },
+        //店铺想买车型----报价
+        buymodelsprice: function () {
+
+            // 初始化表格参数配置
+            Table.api.init({
+                extend: {
+                    'dragsort_url': ''
+                }
+            });
+    
+            var table = $("#table");
+            // $.fn.bootstrapTable.locales[Table.defaults.locale]['formatSearch'] = function(){return "快速搜索:车型";};
+            // 初始化表格
+            table.bootstrapTable({
+                url: 'merchant/store/buymodelsprice',
+                pk: 'id',
+                sortName: 'id',
+                toolbar: '#toolbar',
+                searchFormVisible: true,
+                queryParams:function (params) {
+                    params.filter = JSON.stringify({'buy_car_id': Config.buy_car_id});
+                    params.op = JSON.stringify({'buy_car_id': '='});
+                    return {
+                        search: params.search,
+                        sort: params.sort,
+                        order: params.order,
+                        filter: params.filter,
+                        op: params.op,
+                        offset: params.offset,
+                        limit: params.limit
+                    }
+                },
+                columns: [
+                    [
+                        {field: 'id', title: __('Id'), operate:false},
+
+                        {field: 'user.nickname', title: __('报价用户昵称')},
+                        {field: 'user.avatar', title: __('报价用户头像'), formatter: Table.api.formatter.images, operate:false},
+                        {field: 'user.mobile', title: __('报价用户手机')},
+
+                        {field: 'money', title: __('报价价格（元）')},
+                        {field: 'quotationtime', title: __('报价时间'), operate:false, addclass:'datetimerange', formatter: Controller.api.formatter.datetime},
+                    
+                    ]
+                ] 
+                });
+    
+                // 为表格绑定事件
+                Table.api.bindevent(table);
+
+                
+    
+        },
         add: function () {
             Controller.api.bindevent();
         },
@@ -519,6 +877,82 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         Fast.api.open(Table.api.replaceurl(url, row, table), __('查看店铺推广'), $(this).data() || {})
 
                     },
+                    /**
+                     * 查看店铺在售车型
+                     * @param e
+                     * @param value
+                     * @param row
+                     * @param index
+                     */
+                    'click .btn-store_salemodels': function (e, value, row, index) {
+                        $(".btn-store_salemodels").data("area", ["95%", "95%"]);
+                        e.stopPropagation();
+                        e.preventDefault();
+                        var table = $(this).closest('table');
+                        var options = table.bootstrapTable('getOptions');
+                        var ids = row[options.pk];
+                        row = $.extend({}, row ? row : {}, {ids: ids});
+                        var url = 'merchant/store/salemodels';
+                        Fast.api.open(Table.api.replaceurl(url, row, table), __('查看店铺在售车型'), $(this).data() || {})
+
+                    },
+                    /**
+                     * 查看店铺想买车型
+                     * @param e
+                     * @param value
+                     * @param row
+                     * @param index
+                     */
+                    'click .btn-store_buymodels': function (e, value, row, index) {
+                        $(".btn-store_buymodels").data("area", ["95%", "95%"]);
+                        e.stopPropagation();
+                        e.preventDefault();
+                        var table = $(this).closest('table');
+                        var options = table.bootstrapTable('getOptions');
+                        var ids = row[options.pk];
+                        row = $.extend({}, row ? row : {}, {ids: ids});
+                        var url = 'merchant/store/buymodels';
+                        Fast.api.open(Table.api.replaceurl(url, row, table), __('查看店铺想买车型'), $(this).data() || {})
+
+                    },
+                    /**
+                     * 查看店铺在售车型的报价
+                     * @param e
+                     * @param value
+                     * @param row
+                     * @param index
+                     */
+                    'click .btn-salemodels_price': function (e, value, row, index) {
+                        $(".btn-salemodels_price").data("area", ["95%", "95%"]);
+                        e.stopPropagation();
+                        e.preventDefault();
+                        var table = $(this).closest('table');
+                        var options = table.bootstrapTable('getOptions');
+                        var ids = row[options.pk];
+                        row = $.extend({}, row ? row : {}, {ids: ids});
+                        var url = 'merchant/store/salemodelsprice';
+                        Fast.api.open(Table.api.replaceurl(url, row, table), __('查看车型报价'), $(this).data() || {})
+
+                    },
+                    /**
+                     * 查看店铺想买车型的报价
+                     * @param e
+                     * @param value
+                     * @param row
+                     * @param index
+                     */
+                    'click .btn-buymodels_price': function (e, value, row, index) {
+                        $(".btn-buymodels_price").data("area", ["95%", "95%"]);
+                        e.stopPropagation();
+                        e.preventDefault();
+                        var table = $(this).closest('table');
+                        var options = table.bootstrapTable('getOptions');
+                        var ids = row[options.pk];
+                        row = $.extend({}, row ? row : {}, {ids: ids});
+                        var url = 'merchant/store/buymodelsprice';
+                        Fast.api.open(Table.api.replaceurl(url, row, table), __('查看车型报价'), $(this).data() || {})
+
+                    },
 
                 },
             },
@@ -549,6 +983,17 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                    
                 }, 
+                toggle1: function (value, row, index) {
+                        
+                    if (row.shelfismenu ==  1) {
+                        return "<strong class='text-success'>上架中</strong>";
+                        
+                    }
+                    else {
+                        return "<strong class='text-danger'>下架中</strong>";
+                    }
+                        
+                },
                 count: function (value, row, index) {
 
                     return '<strong class="text-success">'+ value +'</strong>';
@@ -576,6 +1021,16 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         return '<a href="https://czz.junyiqiche.com' + value + '" target="_blank"><img class="img-sm img-center" src="https://czz.junyiqiche.com' + value + '" /></a>';
                     
                     }
+                },
+                datetime: function (value, row, index) {
+
+                    var datetimeFormat = typeof this.datetimeFormat === 'undefined' ? 'YYYY-MM-DD' : this.datetimeFormat;
+                    if (isNaN(value)) {
+                        return value ? Moment(value).format(datetimeFormat) : __('None');
+                    } else {
+                        return value ? Moment(parseInt(value) * 1000).format(datetimeFormat) : __('None');
+                    }
+
                 },
             },
         }
