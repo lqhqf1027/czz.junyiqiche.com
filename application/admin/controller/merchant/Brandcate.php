@@ -37,8 +37,6 @@ class Brandcate extends Backend
      */
     public function index()
     {
-        //当前是否为关联查询
-        $this->relationSearch = false;
         //设置过滤方法
         $this->request->filter(['strip_tags']);
         if ($this->request->isAjax())
@@ -48,7 +46,7 @@ class Brandcate extends Backend
             {
                 return $this->selectpage();
             }
-            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams('name');
             $total = $this->model
                     ->where($where)
                     ->where('pid', 0)

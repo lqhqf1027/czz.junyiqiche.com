@@ -209,6 +209,11 @@
     </div>
 </div> 
 
+<audio id="audio"  style="position:absolute;top:0;left:0;z-index:-1">
+    <source src="http://w.qq.com/audio/classic.mp3" type="audio/mpeg">
+ </audio>
+
+
 <script>
 
 var func = function () {
@@ -218,6 +223,7 @@ var func = function () {
         dataType:'json',
         success:function(data){
             console.log(data);
+
             if (window.Notification) {
                 for(var i = 0; i < data.length; i++) {
                     var popNotice = function() {
@@ -225,9 +231,14 @@ var func = function () {
                             var notification = new Notification("Hi，帅哥：", {
                                 body: '店铺名：' + data[i].store_name + '，正在等待您的审核，请加快审核速度呦！',
                                 icon: "https://czz.junyiqiche.com" + data[i].store_img,
-                                silent: true
                             });
-                        }    
+                        } 
+
+                        notification.onshow = function () {
+
+                            $("#audio")[0].play();
+                        }
+                    
                     };
                     
                     console.log(data[i].auditstatus);
@@ -238,7 +249,7 @@ var func = function () {
                             popNotice();
                         } else if (Notification.permission != "denied") {
                             Notification.requestPermission(function (permission) {
-                              popNotice();
+                                popNotice();
                             });
                         }
                     }
@@ -252,7 +263,7 @@ var func = function () {
 }
 
 //主动调用
-setInterval("func()", 30000);
+setInterval("func()", 10000000);
 
 
 </script>
