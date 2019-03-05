@@ -33,7 +33,7 @@ class Shop extends Base
         $user_id = $this->request->post('user_id');
         $inviter_user_id = $this->request->post('inviter_user_id');//邀请人user_id
 
-        if(!$user_id){
+        if (!$user_id) {
             $this->error('缺少参数');
         }
 
@@ -145,10 +145,16 @@ class Shop extends Base
             $inviter = User::get(['invite_code' => $code]);
 
             if (!$inviter) {
-                $this->success('未匹配到该邀请码', ['store_level_list' => $this->getVisibleStoreList(), 'inviter_info' => []]);
+                $this->success('错误的邀请码', ['store_level_list' => $this->getVisibleStoreList(), 'inviter_info' => []]);
             }
 
             $inviter = $inviter->visible(['id', 'avatar'])->toArray();
+
+            $company_check = CompanyStore::get(['user_id' => $inviter['id'], 'auditstatus' => 'paid_the_money']);
+
+            if (!$company_check) {
+                $this->success('该邀请码暂不可用', ['store_level_list' => $this->getVisibleStoreList(), 'inviter_info' => []]);
+            }
 
             $company_info = CompanyStore::get(['user_id' => $inviter['id']])->visible(['store_name', 'level_id']);
 
@@ -169,7 +175,7 @@ class Shop extends Base
         $user_id = $this->request->post('user_id');
         $infos = $this->request->post('auditInfo/a');
 
-        if(!$user_id){
+        if (!$user_id) {
             $this->error('缺少参数');
         }
 
@@ -244,7 +250,7 @@ class Shop extends Base
     {
         $user_id = $this->request->post('user_id');
 
-        if(!$user_id){
+        if (!$user_id) {
             $this->error('缺少参数');
         }
 
@@ -290,6 +296,10 @@ class Shop extends Base
     {
         $store_id = $this->request->post('store_id');
 
+        if (!$store_id) {
+            $this->error('缺少参数,请求失败', 'error');
+        }
+
         CompanyStore::destroy($store_id) ? $this->success('取消成功', 'success') : $this->error('取消失败', 'error');
     }
 
@@ -303,10 +313,9 @@ class Shop extends Base
     {
         $user_id = $this->request->post('user_id');
 
-        if(!$user_id){
+        if (!$user_id) {
             $this->error('缺少参数');
         }
-
 
         Db::startTrans();
         try {
@@ -382,17 +391,28 @@ class Shop extends Base
     {
         $store_id = $this->request->post('store_id');
 
-        if(!$store_id){
+        if (!$store_id) {
             $this->error('缺少参数');
         }
 
+        $store_info = CompanyStore::get($store_id)->visible(['id', 'cities_name', 'store_name', 'store_address', 'phone', 'main_camp'])->toArray();
 
-        $store_info = CompanyStore::get($store_id)->visible(['id','cities_name','store_name','store_address','phone','main_camp'])->toArray();
-
-        $car_list = Index::typeCar(1,0,['store_id'=>$store_id]);
+        $car_list = Index::typeCar(1, 0, ['store_id' => $store_id]);
 
         $store_info['car_list'] = $car_list;
 
-        $this->success('请求成功',['detail'=>$store_info]);
+        $this->success('请求成功', ['detail' => $store_info]);
+    }
+
+    public function cash_withdrawal()
+    {
+
+        $user_id = $this->request->post('user_id');
+
+        $company = CompanyStore::get(['user_id' => $user_id])->visible(['id', 'bank_card']);
+
+        $all_money = EarningDetailed::get(['store_id' => $company['id']])->total_earnings;
+
+        $this->success($company['bank_card']);
     }
 }
