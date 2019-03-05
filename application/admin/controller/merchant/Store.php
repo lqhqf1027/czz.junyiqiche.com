@@ -5,6 +5,9 @@ namespace app\admin\controller\merchant;
 use app\common\controller\Backend;
 use app\admin\model\CompanyStore;
 use app\admin\model\Distribution;
+use app\admin\model\QuotedPrice;
+use app\admin\model\ModelsInfo;
+use app\admin\model\BuycarModel;
 use think\Config;
 use think\Db;
 
@@ -72,7 +75,12 @@ class Store extends Backend
                 
                 $row->getRelation('storelevel')->visible(['partner_rank']);
                 $row->getRelation('user')->visible(['name']);
+                //邀请店铺数量
                 $list[$k]['count'] = Distribution::where('store_id', $row['id'])->count();
+                //店铺在售车型数量
+                $list[$k]['salecount'] = ModelsInfo::where('store_id', $row['id'])->count();
+                //店铺想买车型数量
+                $list[$k]['buycount'] = BuycarModel::where('store_id', $row['id'])->count();
             }
             $list = collection($list)->toArray();
             $result = array("total" => $total, "rows" => $list);
@@ -281,6 +289,202 @@ class Store extends Backend
             return json($result);
         }
         $this->assignconfig('level_store_ids', $level_store_ids);
+        return $this->view->fetch();
+    }
+
+    /**
+     * 查看店铺在售车型
+     */
+    public function salemodels($ids = null)
+    {
+        $this->model = model('ModelsInfo');
+        //当前是否为关联查询
+        $this->relationSearch = true;
+        //设置过滤方法
+        $this->request->filter(['strip_tags']);
+        if ($this->request->isAjax())
+        {
+            //如果发送的来源是Selectpage，则转发到Selectpage
+            if ($this->request->request('keyField'))
+            {
+                return $this->selectpage();
+            }
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            $total = $this->model
+                    ->with(['brand'])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->count();
+
+            $list = $this->model
+                    ->with(['brand'])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->limit($offset, $limit)
+                    ->select();
+
+            foreach ($list as $key => $row) {
+                
+                $row->getRelation('brand')->visible(['name']);
+                //收到报价次数
+                $list[$key]['count'] = QuotedPrice::where(['models_info_id' => $row['id']])->count();
+            }
+            $list = collection($list)->toArray();
+    
+            $result = array("total" => $total, "rows" => $list);
+
+            return json($result);
+        }
+        $this->assignconfig('store_id', $ids);
+        $store_name = CompanyStore::where('id', $ids)->value('store_name');
+        $this->view->assign('store_name', $store_name);
+        return $this->view->fetch();
+    }
+
+    /**
+     * 查看店铺想买车型
+     */
+    public function buymodels($ids = null)
+    {
+        $this->model = model('BuycarModel');
+        //当前是否为关联查询
+        $this->relationSearch = true;
+        //设置过滤方法
+        $this->request->filter(['strip_tags']);
+        if ($this->request->isAjax())
+        {
+            //如果发送的来源是Selectpage，则转发到Selectpage
+            if ($this->request->request('keyField'))
+            {
+                return $this->selectpage();
+            }
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            $total = $this->model
+                    ->with(['brand'])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->count();
+
+            $list = $this->model
+                    ->with(['brand'])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->limit($offset, $limit)
+                    ->select();
+
+            foreach ($list as $key => $row) {
+                
+                $row->getRelation('brand')->visible(['name']);
+                //收到报价次数
+                $list[$key]['count'] = QuotedPrice::where(['buy_car_id' => $row['id']])->count();
+            }
+            $list = collection($list)->toArray();
+            $result = array("total" => $total, "rows" => $list);
+
+            return json($result);
+        }
+        $this->assignconfig('store_id', $ids);
+        $store_name = CompanyStore::where('id', $ids)->value('store_name');
+        $this->view->assign('store_name', $store_name);
+        return $this->view->fetch();
+    }
+
+    /**
+     * 查看店铺在售车型的报价
+     */
+    public function salemodelsprice($ids = null)
+    {
+        $this->model = model('QuotedPrice');
+        //当前是否为关联查询
+        $this->relationSearch = true;
+        //设置过滤方法
+        $this->request->filter(['strip_tags']);
+        if ($this->request->isAjax())
+        {
+            //如果发送的来源是Selectpage，则转发到Selectpage
+            if ($this->request->request('keyField'))
+            {
+                return $this->selectpage();
+            }
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            $total = $this->model
+                    ->with(['user' => function ($query) {
+                        $query->withField('id,nickname,avatar,mobile');
+                    }])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->count();
+
+            $list = $this->model
+                    ->with(['user' => function ($query) {
+                        $query->withField('id,nickname,avatar,mobile');
+                    }])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->limit($offset, $limit)
+                    ->select();
+
+            foreach ($list as $row) {
+                
+            }
+            $list = collection($list)->toArray();
+    
+            $result = array("total" => $total, "rows" => $list);
+
+            return json($result);
+        }
+        $this->assignconfig('models_info_id', $ids);
+        $models_name = ModelsInfo::where('id', $ids)->value('models_name');
+        $this->view->assign('models_name', $models_name);
+        return $this->view->fetch();
+    }
+
+    /**
+     * 查看店铺想买车型的报价
+     */
+    public function buymodelsprice($ids = null)
+    {
+        $this->model = model('QuotedPrice');
+        //当前是否为关联查询
+        $this->relationSearch = true;
+        //设置过滤方法
+        $this->request->filter(['strip_tags']);
+        if ($this->request->isAjax())
+        {
+            //如果发送的来源是Selectpage，则转发到Selectpage
+            if ($this->request->request('keyField'))
+            {
+                return $this->selectpage();
+            }
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            $total = $this->model
+                    ->with(['user' => function ($query) {
+                        $query->withField('id,nickname,avatar,mobile');
+                    }])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->count();
+
+            $list = $this->model
+                    ->with(['user' => function ($query) {
+                        $query->withField('id,nickname,avatar,mobile');
+                    }])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->limit($offset, $limit)
+                    ->select();
+
+            foreach ($list as $row) {
+                
+            }
+            $list = collection($list)->toArray();
+            $result = array("total" => $total, "rows" => $list);
+
+            return json($result);
+        }
+        $this->assignconfig('buy_car_id', $ids);
+        $models_name = BuycarModel::where('id', $ids)->value('models_name');
+        $this->view->assign('models_name', $models_name);
         return $this->view->fetch();
     }
 
