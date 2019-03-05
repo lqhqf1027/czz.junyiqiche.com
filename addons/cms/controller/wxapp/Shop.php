@@ -183,6 +183,11 @@ class Shop extends Base
         $infos['user_id'] = $user_id;
         $infos['id_card_images'] = $infos['id_card_positive'] . ',' . $infos['id_card_opposite'];
 
+        if (!check_bankCard($infos['bank_card'])) {
+            $this->error('错误的银行卡号');
+        }
+
+        Db::startTrans();
         try {
             $check_phone = Db::name('cms_login_info')
                 ->where([
@@ -203,6 +208,12 @@ class Shop extends Base
                     $this->error('输入了错误的邀请码');
                 }
 
+                $check_code = CompanyStore::get(['user_id' => $inviter, 'auditstatus' => 'paid_the_money']);
+
+                if (!$check_code) {
+                    $this->error('该店铺未实名认证,无效的邀请码');
+                }
+
             }
 
             $company = new CompanyStore();
@@ -217,6 +228,21 @@ class Shop extends Base
             if ($result) {
                 $superior_store_id = empty($inviter) ? 0 : CompanyStore::get(['user_id' => $inviter])->id;
                 $my_store_id = CompanyStore::get(['user_id' => $user_id])->id;
+
+                $result = gets('http://bankcardsilk.api.juhe.cn/bankcardsilk/query.php?key=e0ebcb671fa0f2e181c2cc967813a9bf&num=' . $infos['bank_card']);
+
+                if ($result['error_code'] == 0) {
+                    $check_bank = Db::name('bank_info')->where('store_id', $my_store_id)->find();
+                    $result['result']['logo'] = 'http://images.juheapi.com/banklogo/' . $result['result']['logo'];
+                    if ($check_bank) {
+                        Db::name('bank_info')->where('store_id', $my_store_id)->update($result['result']);
+                    } else {
+                        $result['result']['store_id'] = $my_store_id;
+                        Db::name('bank_info')->insert($result['result']);
+                    }
+
+                }
+
                 if ($submit_type == 'insert') {
                     Distribution::create([
                         'store_id' => $superior_store_id,
@@ -231,7 +257,9 @@ class Shop extends Base
             } else {
                 $this->error('添加失败', 'error');
             }
+            Db::commit();
         } catch (Exception $e) {
+            Db::rollback();
             $this->error($e->getMessage());
         }
 
@@ -256,7 +284,7 @@ class Shop extends Base
 
         $info = User::field('id,nickname,avatar')
             ->with(['companystoreone' => function ($q) {
-                $q->withField('id,level_id,auditstatus');
+                $q->withField('id,store_name,level_id,auditstatus');
             }])->find($user_id);
 
         if ($info) {
@@ -299,8 +327,28 @@ class Shop extends Base
         if (!$store_id) {
             $this->error('缺少参数,请求失败', 'error');
         }
+        Db::startTrans();
+        try {
+            $bank_info_id = Db::name('bank_info')->where('store_id', $store_id)->value('id');
 
-        CompanyStore::destroy($store_id) ? $this->success('取消成功', 'success') : $this->error('取消失败', 'error');
+            $distribution_id = Distribution::get(['level_store_id' => $store_id])->id;
+
+            if ($distribution_id) {
+                Distribution::destroy($distribution_id);
+            }
+
+            if ($bank_info_id) {
+                Db::name('bank_info')->where('i', $bank_info_id)->delete();
+            }
+            $res = CompanyStore::destroy($store_id);
+            Db::commit();
+
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+        !empty($res) ? $this->success('取消成功', 'success') : $this->error('取消失败', 'error');
+
     }
 
     /**
@@ -395,7 +443,7 @@ class Shop extends Base
             $this->error('缺少参数');
         }
 
-        $store_info = CompanyStore::get($store_id)->visible(['id', 'cities_name', 'store_name', 'store_address', 'phone', 'main_camp'])->toArray();
+        $store_info = CompanyStore::get($store_id)->visible(['id', 'cities_name', 'store_name', 'store_address', 'phone', 'main_camp', 'store_img', 'store_description'])->toArray();
 
         $car_list = Index::typeCar(1, 0, ['store_id' => $store_id]);
 
@@ -409,10 +457,17 @@ class Shop extends Base
 
         $user_id = $this->request->post('user_id');
 
-        $company = CompanyStore::get(['user_id' => $user_id])->visible(['id', 'bank_card']);
+        $company_id = CompanyStore::get(['user_id' => $user_id])->id;
 
-        $all_money = EarningDetailed::get(['store_id' => $company['id']])->total_earnings;
+        $all_money = EarningDetailed::get(['store_id' => $company_id])->total_earnings;
 
-        $this->success($company['bank_card']);
+        $bank_info = Db::name('bank_info')
+            ->where('store_id', $company_id)
+            ->select();
+
+        $this->success('请求成功', ['total_money' => $all_money, 'bank_info' => $bank_info]);
+
     }
+
+
 }
