@@ -21,9 +21,6 @@ class User extends Model
         'prevtime_text',
         'logintime_text',
         'jointime_text',
-        'name',
-        'invitation_code_img',
-        'invite_code'
     ];
     
 

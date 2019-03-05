@@ -973,4 +973,41 @@ if (!function_exists('var_export_short')) {
         }
 
     }
+
+    /**
+     * 检查是否为银行卡号
+     * @param $card_number
+     * @return string
+     */
+    if (!function_exists('check_bankCard')) {
+        function check_bankCard($card_number)
+        {
+            $arr_no = str_split($card_number);
+            $last_n = $arr_no[count($arr_no) - 1];
+            krsort($arr_no);
+            $i = 1;
+            $total = 0;
+            foreach ($arr_no as $n) {
+                if ($i % 2 == 0) {
+                    $ix = $n * 2;
+                    if ($ix >= 10) {
+                        $nx = 1 + ($ix % 10);
+                        $total += $nx;
+                    } else {
+                        $total += $ix;
+                    }
+                } else {
+                    $total += $n;
+                }
+                $i++;
+            }
+            $total -= $last_n;
+            $x = 10 - ($total % 10);
+            if ($x == $last_n) {
+                return 'true';
+            } else {
+                return 'false';
+            }
+        }
+    }
 }

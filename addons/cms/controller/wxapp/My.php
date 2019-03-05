@@ -15,7 +15,9 @@ use addons\cms\model\BuycarModel;
 use addons\cms\model\Config as ConfigModel;
 use addons\cms\model\QuotedPrice;
 use addons\cms\model\BrandCate;
+use addons\cms\model\Brand;
 use addons\cms\model\EarningDetailed;
+use addons\cms\model\Message;
 use think\Db;
 use Endroid\QrCode\QrCode;
 use fast\Random;
@@ -72,6 +74,7 @@ class My extends Base
      */
     public function index()
     {
+
         $user_id = $this->request->post('user_id');
         if (!(int)$user_id) $this->error('参数错误');
         try {
@@ -94,6 +97,17 @@ class My extends Base
             //查询邀请码背景图片
             $userInfo['invite_bg_img'] = \addons\cms\model\Config::get(['name' => 'invite_bg_img'])->value;
             //如果当前用户的二维码为空
+
+            $userInfo['unread'] = 0;
+            $message_list = Message::column('use_id');
+
+            foreach ($message_list as $k => $v) {
+                if (strpos($v, ',' . $user_id . ',') === false) {
+                    $userInfo['unread'] = 1;
+                    break;
+                }
+            }
+
         } catch (\Exception $e) {
             $this->error($e->getMessage());
         }
@@ -206,10 +220,10 @@ class My extends Base
 
         $buyCarList = collection(BuycarModel::useGlobalScope(false)->field('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime')
             ->with(['brand' => function ($q) {
-                $q->withField('id,name,brand_initials');
+                $q->withField('id,name,brand_initials,brand_default_images');
             }])
             ->order('createtime desc')->where([
-                'user_id'=> $user_id,
+                'user_id' => $user_id,
             ])->select())->toArray();
 
         $default_image = ConfigModel::get(['name' => 'default_picture'])->value;
@@ -230,6 +244,7 @@ class My extends Base
 
     }
 
+
     /**
      * 我的页面---我的报价
      */
@@ -247,80 +262,56 @@ class My extends Base
         if ($quotedPriceId) {
             QuotedPrice::where('id', 'in', $quotedPriceId)->setField('is_see', 1);
         }
+
         //收到报价
-        $ModelsInfoList = collection(QuotedPrice::field('id,user_ids,models_info_id,money,quotationtime,type')
-            ->with(['ModelsInfo' => function ($q) use ($user_id) {
-                $q->where(['user_id' => $user_id])->withField('id,models_name,guide_price,user_id,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,modelsimages,brand_id');
-            },
-                'user' => function ($q) {
-                    $q->withField('id,nickname,avatar,mobile');
-                }])
-            ->where(['type' => 'sell'])->select())->toArray();
-
-
+        $ModelsInfoList = $this->ModelsInfo('ModelsInfo', $user_id, ['type' => 'sell']);
         foreach ($ModelsInfoList as $k => $v) {
-
             $ModelsInfoList[$k]['models_info']['modelsimages'] = explode(',', $ModelsInfoList[$k]['models_info']['modelsimages'])[0];
-
             $ModelsInfoList[$k]['user']['mobile'] = $default_phone;
             $ModelsInfoList[$k]['models_info']['car_licensetime'] = $ModelsInfoList[$k]['models_info']['car_licensetime'] ? date('Y-m', $ModelsInfoList[$k]['models_info']['car_licensetime']) : null;
 
-            $ModelsInfoList[$k]['models_info']['brand_name'] = BrandCate::where('id', $ModelsInfoList[$k]['models_info']['brand_id'])->value('name');
+            $brand_info = Brand::where('id', $ModelsInfoList[$k]['models_info']['brand_id'])->field('name,brand_default_images')->find();
+            $ModelsInfoList[$k]['models_info']['brand_name'] = $brand_info['name'];
+            $ModelsInfoList[$k]['models_info']['brand_default_images'] = $brand_info['brand_default_images'];
+
             $ModelsInfoList[$k]['quotationtime'] = $ModelsInfoList[$k]['quotationtime'] ? format_date($ModelsInfoList[$k]['quotationtime']) : null;
             $ModelsInfoList[$k]['money'] = $ModelsInfoList[$k]['money'] ? round(($ModelsInfoList[$k]['money'] / 10000), 2) : null;
             $ModelsInfoList[$k]['models_info']['kilometres'] = $ModelsInfoList[$k]['models_info']['kilometres'] ? round(($ModelsInfoList[$k]['models_info']['kilometres'] / 10000), 2) . '万' : null;
             $ModelsInfoList[$k]['models_info']['guide_price'] = $ModelsInfoList[$k]['models_info']['guide_price'] ? round(($ModelsInfoList[$k]['models_info']['guide_price'] / 10000), 2) : null;
 
         }
+
         //我的报价----卖车
-        $SellcarModelList = collection(QuotedPrice::field('id,user_ids,money,quotationtime,type,models_info_id')
-            ->with(['ModelsInfo' => function ($q) {
-                $q->withField('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,modelsimages,brand_id');
-            },
-                'user' => function ($q) {
-                    $q->withField('mobile');
-                }])
-            ->where('user_ids', $user_id)->select())->toArray();
-
+        $SellcarModelList = $this->ModelsInfo('ModelsInfo', null, ['user_ids' => $user_id]);
         foreach ($SellcarModelList as $k => $v) {
-            $SellcarModelList[$k]['models_info']['car_licensetime'] = $SellcarModelList[$k]['models_info']['car_licensetime'] ? date('Y-m', $SellcarModelList[$k]['models_info']['car_licensetime']) : null;
             $SellcarModelList[$k]['models_info']['modelsimages'] = explode(',', $SellcarModelList[$k]['models_info']['modelsimages'])[0];
-            $SellcarModelList[$k]['models_info']['brand_name'] = BrandCate::where('id', $SellcarModelList[$k]['models_info']['brand_id'])->value('name');
-            $SellcarModelList[$k]['quotationtime'] = $SellcarModelList[$k]['quotationtime'] ? format_date($SellcarModelList[$k]['quotationtime']) : null;
-            $SellcarModelList[$k]['money'] = $SellcarModelList[$k]['money'] ? round(($SellcarModelList[$k]['money'] / 10000), 2) : null;
-            $SellcarModelList[$k]['models_info']['kilometres'] = $SellcarModelList[$k]['models_info']['kilometres'] ? round(($SellcarModelList[$k]['models_info']['kilometres'] / 10000), 2) . '万' : null;
-            $SellcarModelList[$k]['models_info']['guide_price'] = $SellcarModelList[$k]['models_info']['guide_price'] ? round(($SellcarModelList[$k]['models_info']['guide_price'] / 10000), 2) : null;
-
-            $SellcarModelList[$k]['user']['mobile'] = $default_phone;
-
         }
 
         //我的报价---买车
-        $BuycarModelList = collection(QuotedPrice::field('id,user_ids,money,quotationtime,type,buy_car_id')
-            ->with(['BuycarModel' => function ($q) {
-                $q->withField('id,models_name,guide_price,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,brand_id');
-            },
-                'user' => function ($q) {
-                    $q->withField('mobile');
-                }])
-            ->where('user_ids', $user_id)->select())->toArray();
+        $BuycarModelList = $this->ModelsInfo('BuycarModel', null, ['user_ids' => $user_id]);
         //卖车默认---图片
         $default_image = ConfigModel::get(['name' => 'default_picture'])->value;
         foreach ($BuycarModelList as $k => $v) {
             $BuycarModelList[$k]['models_info'] = $v['buycar_model'];
             $BuycarModelList[$k]['models_info']['modelsimages'] = $default_image;
-            $BuycarModelList[$k]['models_info']['brand_name'] = BrandCate::where('id', $BuycarModelList[$k]['models_info']['brand_id'])->value('name');
-            $BuycarModelList[$k]['quotationtime'] = $BuycarModelList[$k]['quotationtime'] ? format_date($BuycarModelList[$k]['quotationtime']) : null;
-            $BuycarModelList[$k]['money'] = $v['money'] ? round(($BuycarModelList[$k]['money'] / 10000), 2) : null;
-            $BuycarModelList[$k]['models_info']['kilometres'] = $BuycarModelList[$k]['models_info']['kilometres'] ? round(($BuycarModelList[$k]['models_info']['kilometres'] / 10000), 2) . '万' : null;
-            $BuycarModelList[$k]['models_info']['guide_price'] = $BuycarModelList[$k]['models_info']['guide_price'] ? round(($BuycarModelList[$k]['models_info']['guide_price'] / 10000), 2) : null;
-            $BuycarModelList[$k]['user']['mobile'] = $default_phone;
-            $BuycarModelList[$k]['models_info']['car_licensetime'] = $BuycarModelList[$k]['models_info']['car_licensetime'] ? date('Y-m', $BuycarModelList[$k]['models_info']['car_licensetime']) : null;
-
             unset($BuycarModelList[$k]['buycar_model']);
         }
+
         //我的报价合并
         $MyBuycarModelList = array_merge($SellcarModelList, $BuycarModelList);
+        foreach ($MyBuycarModelList as $k => $v) {
+
+            $brand_info = Brand::where('id', $MyBuycarModelList[$k]['models_info']['brand_id'])->field('name,brand_default_images')->find();
+            $MyBuycarModelList[$k]['models_info']['brand_name'] = $brand_info['name'];
+            $MyBuycarModelList[$k]['models_info']['brand_default_images'] = $brand_info['brand_default_images'];
+
+            $MyBuycarModelList[$k]['quotationtime'] = $MyBuycarModelList[$k]['quotationtime'] ? format_date($MyBuycarModelList[$k]['quotationtime']) : null;
+            $MyBuycarModelList[$k]['money'] = $v['money'] ? round(($MyBuycarModelList[$k]['money'] / 10000), 2) : null;
+            $MyBuycarModelList[$k]['models_info']['kilometres'] = $MyBuycarModelList[$k]['models_info']['kilometres'] ? round(($MyBuycarModelList[$k]['models_info']['kilometres'] / 10000), 2) . '万' : null;
+            $MyBuycarModelList[$k]['models_info']['guide_price'] = $MyBuycarModelList[$k]['models_info']['guide_price'] ? round(($MyBuycarModelList[$k]['models_info']['guide_price'] / 10000), 2) : null;
+            $MyBuycarModelList[$k]['user']['mobile'] = $default_phone;
+            $MyBuycarModelList[$k]['models_info']['car_licensetime'] = $MyBuycarModelList[$k]['models_info']['car_licensetime'] ? date('Y-m', $MyBuycarModelList[$k]['models_info']['car_licensetime']) : null;
+        }
 
         //收到报价
         $QuotedPriceList['sell'] = $ModelsInfoList;
@@ -328,6 +319,28 @@ class My extends Base
         $QuotedPriceList['buy'] = $MyBuycarModelList;
 
         $this->success('请求成功', ['QuotedPriceList' => $QuotedPriceList]);
+
+    }
+
+    /**
+     * 我的页面---我的报价信息
+     */
+    public function ModelsInfo($models, $user_id = null, $where)
+    {
+        $modelsimages = $models == 'ModelsInfo' ? ',modelsimages' : '';
+        $ModelsInfo = collection(QuotedPrice::field('id,user_ids,models_info_id,money,quotationtime,type,buy_car_id')
+            ->with([$models => function ($q) use ($user_id, $modelsimages) {
+                $field = $user_id == null ? null : ['user_id' => $user_id];
+
+                $q->where($field)->withField('id,models_name,guide_price,user_id,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,brand_id' . $modelsimages);
+
+            },
+                'user' => function ($q) {
+                    $q->withField('id,nickname,avatar,mobile');
+                }])
+            ->where($where)->select())->toArray();
+
+        return $ModelsInfo;
 
     }
 
@@ -417,6 +430,65 @@ class My extends Base
 
         $this->success('请求成功', ['data' => $data]);
 
+    }
+
+
+    /**
+     * 消息列表接口
+     * @throws \think\exception\DbException
+     */
+    public function message_list()
+    {
+        $user_id = $this->request->post('user_id');
+
+        if (!$user_id) {
+            $this->error('缺少参数,请求失败', 'error');
+        }
+        $message = Message::all(function ($q) {
+            $q->order('createtime desc')->field('id,title,createtime,use_id');
+        });
+
+        foreach ($message as $k => $v) {
+            $v['isRead'] = 0;
+
+            if (strpos($v['use_id'], ',' . $user_id . ',') !== false) {
+                $v['isRead'] = 1;
+            }
+            unset($v['use_id']);
+        }
+
+        $this->success('请求成功', ['message_list' => $message]);
+    }
+
+
+    /**
+     * 消息详情接口
+     * @throws \think\exception\DbException
+     */
+    public function message_details()
+    {
+        $user_id = $this->request->post('user_id');
+        $isRead = $this->request->post('isRead') ? 1 : 2;
+        if (!$user_id || !$isRead) {
+            $this->error('缺少参数,请求失败', 'error');
+        }
+
+        $message = Message::field(['id', 'title', 'content', 'analysis', 'createtime', 'use_id'])->order('createtime desc')->select();
+
+        if ($isRead == 2) {
+            foreach ($message as $k => $v) {
+                if (strpos($v['use_id'], ',' . $user_id . ',') === false) {
+
+                    $update_value = $v['use_id'] ? $user_id . ',' : ',' . $user_id . ',';
+
+                    Message::where('id', $v['id'])->setField('use_id', $v['use_id'] . $update_value);
+                }
+                unset($message[$k]['use_id']);
+
+            }
+        }
+
+        $this->success('请求成功', ['message_details' => $message]);
     }
 
 }

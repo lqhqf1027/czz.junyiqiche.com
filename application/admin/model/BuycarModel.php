@@ -35,6 +35,6 @@ class BuycarModel extends Model
     //关联品牌
     public function brand()
     {
-        return $this->belongsTo('BrandCate', 'brand_id', 'id', [], 'LEFT')->setEagerlyType(0);
+        return $this->belongsTo('Brand', 'brand_id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
 }

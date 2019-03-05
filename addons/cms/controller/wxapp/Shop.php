@@ -33,6 +33,10 @@ class Shop extends Base
         $user_id = $this->request->post('user_id');
         $inviter_user_id = $this->request->post('inviter_user_id');//邀请人user_id
 
+        if (!$user_id) {
+            $this->error('缺少参数');
+        }
+
         try {
             //得到品牌列表
             if (!Cache::get('brandCate')) {
@@ -91,7 +95,7 @@ class Shop extends Base
 
         $screen_data = [];
         foreach ($brandList as $k => $v) {
-            $screen_data[$v['brand_initials']][] =['id'=>$v['id'],'name'=>$v['name']];
+            $screen_data[$v['brand_initials']][] = ['id' => $v['id'], 'name' => $v['name']];
         }
 
         return $screen_data;
@@ -141,10 +145,16 @@ class Shop extends Base
             $inviter = User::get(['invite_code' => $code]);
 
             if (!$inviter) {
-                $this->success('未匹配到该邀请码', ['store_level_list' => $this->getVisibleStoreList(), 'inviter_info' => []]);
+                $this->success('错误的邀请码', ['store_level_list' => $this->getVisibleStoreList(), 'inviter_info' => []]);
             }
 
             $inviter = $inviter->visible(['id', 'avatar'])->toArray();
+
+            $company_check = CompanyStore::get(['user_id' => $inviter['id'], 'auditstatus' => 'paid_the_money']);
+
+            if (!$company_check) {
+                $this->success('该邀请码暂不可用', ['store_level_list' => $this->getVisibleStoreList(), 'inviter_info' => []]);
+            }
 
             $company_info = CompanyStore::get(['user_id' => $inviter['id']])->visible(['store_name', 'level_id']);
 
@@ -164,10 +174,20 @@ class Shop extends Base
     {
         $user_id = $this->request->post('user_id');
         $infos = $this->request->post('auditInfo/a');
+
+        if (!$user_id) {
+            $this->error('缺少参数');
+        }
+
         $submit_type = $this->request->post('submit_type');   //表单提交类型【insert/update】
         $infos['user_id'] = $user_id;
         $infos['id_card_images'] = $infos['id_card_positive'] . ',' . $infos['id_card_opposite'];
 
+        if (!check_bankCard($infos['bank_card'])) {
+            $this->error('错误的银行卡号');
+        }
+
+        Db::startTrans();
         try {
             $check_phone = Db::name('cms_login_info')
                 ->where([
@@ -188,6 +208,12 @@ class Shop extends Base
                     $this->error('输入了错误的邀请码');
                 }
 
+                $check_code = CompanyStore::get(['user_id' => $inviter, 'auditstatus' => 'paid_the_money']);
+
+                if (!$check_code) {
+                    $this->error('该店铺未实名认证,无效的邀请码');
+                }
+
             }
 
             $company = new CompanyStore();
@@ -202,6 +228,21 @@ class Shop extends Base
             if ($result) {
                 $superior_store_id = empty($inviter) ? 0 : CompanyStore::get(['user_id' => $inviter])->id;
                 $my_store_id = CompanyStore::get(['user_id' => $user_id])->id;
+
+                $result = gets('http://bankcardsilk.api.juhe.cn/bankcardsilk/query.php?key=e0ebcb671fa0f2e181c2cc967813a9bf&num=' . $infos['bank_card']);
+
+                if ($result['error_code'] == 0) {
+                    $check_bank = Db::name('bank_info')->where('store_id', $my_store_id)->find();
+                    $result['result']['logo'] = 'http://images.juheapi.com/banklogo/' . $result['result']['logo'];
+                    if ($check_bank) {
+                        Db::name('bank_info')->where('store_id', $my_store_id)->update($result['result']);
+                    } else {
+                        $result['result']['store_id'] = $my_store_id;
+                        Db::name('bank_info')->insert($result['result']);
+                    }
+
+                }
+
                 if ($submit_type == 'insert') {
                     Distribution::create([
                         'store_id' => $superior_store_id,
@@ -216,7 +257,9 @@ class Shop extends Base
             } else {
                 $this->error('添加失败', 'error');
             }
+            Db::commit();
         } catch (Exception $e) {
+            Db::rollback();
             $this->error($e->getMessage());
         }
 
@@ -235,9 +278,13 @@ class Shop extends Base
     {
         $user_id = $this->request->post('user_id');
 
+        if (!$user_id) {
+            $this->error('缺少参数');
+        }
+
         $info = User::field('id,nickname,avatar')
             ->with(['companystoreone' => function ($q) {
-                $q->withField('id,level_id,auditstatus');
+                $q->withField('id,store_name,level_id,auditstatus');
             }])->find($user_id);
 
         if ($info) {
@@ -277,7 +324,31 @@ class Shop extends Base
     {
         $store_id = $this->request->post('store_id');
 
-        CompanyStore::destroy($store_id) ? $this->success('取消成功', 'success') : $this->error('取消失败', 'error');
+        if (!$store_id) {
+            $this->error('缺少参数,请求失败', 'error');
+        }
+        Db::startTrans();
+        try {
+            $bank_info_id = Db::name('bank_info')->where('store_id', $store_id)->value('id');
+
+            $distribution_id = Distribution::get(['level_store_id' => $store_id])->id;
+
+            if ($distribution_id) {
+                Distribution::destroy($distribution_id);
+            }
+
+            if ($bank_info_id) {
+                Db::name('bank_info')->where('i', $bank_info_id)->delete();
+            }
+            $res = CompanyStore::destroy($store_id);
+            Db::commit();
+
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+        !empty($res) ? $this->success('取消成功', 'success') : $this->error('取消失败', 'error');
+
     }
 
     /**
@@ -290,17 +361,21 @@ class Shop extends Base
     {
         $user_id = $this->request->post('user_id');
 
+        if (!$user_id) {
+            $this->error('缺少参数');
+        }
+
         Db::startTrans();
         try {
             $company_info = CompanyStore::field('id')
                 ->with(['belongsStoreLevel' => function ($q) {
                     $q->withField('id,money');
                 }])->where([
-                    'user_id'=> $user_id,
-                    'auditstatus'=>'paid_the_money'
+                    'user_id' => $user_id,
+                    'auditstatus' => 'paid_the_money'
                 ])->find();
 
-            if(!$company_info){
+            if (!$company_info) {
                 $this->error('未知错误');
             }
 
@@ -352,4 +427,47 @@ class Shop extends Base
 
         $this->success('请求成功');
     }
+
+    /**
+     * 店铺详情接口
+     * @throws Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function store_detail()
+    {
+        $store_id = $this->request->post('store_id');
+
+        if (!$store_id) {
+            $this->error('缺少参数');
+        }
+
+        $store_info = CompanyStore::get($store_id)->visible(['id', 'cities_name', 'store_name', 'store_address', 'phone', 'main_camp', 'store_img', 'store_description'])->toArray();
+
+        $car_list = Index::typeCar(1, 0, ['store_id' => $store_id]);
+
+        $store_info['car_list'] = $car_list;
+
+        $this->success('请求成功', ['detail' => $store_info]);
+    }
+
+    public function cash_withdrawal()
+    {
+
+        $user_id = $this->request->post('user_id');
+
+        $company_id = CompanyStore::get(['user_id' => $user_id])->id;
+
+        $all_money = EarningDetailed::get(['store_id' => $company_id])->total_earnings;
+
+        $bank_info = Db::name('bank_info')
+            ->where('store_id', $company_id)
+            ->select();
+
+        $this->success('请求成功', ['total_money' => $all_money, 'bank_info' => $bank_info]);
+
+    }
+
+
 }

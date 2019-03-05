@@ -5,24 +5,24 @@ namespace app\admin\controller\merchant;
 use app\common\controller\Backend;
 
 /**
- * 品牌列管理
+ * 店铺认证支付订单管理
  *
  * @icon fa fa-circle-o
  */
-class Brandcate extends Backend
+class Payorder extends Backend
 {
     
     /**
-     * Brand模型对象
-     * @var \app\admin\model\Brand
+     * Order模型对象
+     * @var \app\admin\model\pay\Order
      */
     protected $model = null;
 
     public function _initialize()
     {
         parent::_initialize();
-        $this->model = new \app\admin\model\Brand;
-        $this->view->assign("statusList", $this->model->getStatusList());
+        $this->model = new \app\admin\model\PayOrder;
+        $this->view->assign("payTypeList", $this->model->getPayTypeList());
     }
     
     /**
@@ -37,6 +37,8 @@ class Brandcate extends Backend
      */
     public function index()
     {
+        //当前是否为关联查询
+        $this->relationSearch = true;
         //设置过滤方法
         $this->request->filter(['strip_tags']);
         if ($this->request->isAjax())
@@ -46,23 +48,25 @@ class Brandcate extends Backend
             {
                 return $this->selectpage();
             }
-            list($where, $sort, $order, $offset, $limit) = $this->buildparams('name');
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
             $total = $this->model
+                    ->with(['store','user','level'])
                     ->where($where)
-                    ->where('pid', 0)
                     ->order($sort, $order)
                     ->count();
 
             $list = $this->model
+                    ->with(['store','user','level'])
                     ->where($where)
-                    ->where('pid', 0)
                     ->order($sort, $order)
                     ->limit($offset, $limit)
                     ->select();
 
             foreach ($list as $row) {
-                $row->visible(['id','name','status','createtime','updatetime','brand_initials','brand_default_images']);
                 
+                $row->getRelation('store')->visible(['store_name','store_img','bank_card']);
+				$row->getRelation('user')->visible(['nickname','mobile','avatar']);
+				$row->getRelation('level')->visible(['partner_rank']);
             }
             $list = collection($list)->toArray();
             $result = array("total" => $total, "rows" => $list);

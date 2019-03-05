@@ -4,6 +4,7 @@ namespace addons\cms\controller\wxapp;
 
 use addons\cms\model\Block;
 use addons\cms\model\Channel;
+use addons\cms\model\CompanyStore;
 use addons\cms\model\ModelsInfo;
 use addons\cms\model\BuycarModel;
 use addons\cms\model\Clue;
@@ -118,16 +119,15 @@ class Common extends Base
             //判断该用户该车辆是否报价
             $isOffer = QuotedPrice::get([$car_id_key => $car_id, 'type' => $type, 'user_ids' => $user_id]);
 
-            $condition = 'emission_standard,id,models_name,car_licensetime,kilometres,guide_price,parkingposition,phone,store_id,user_id,store_description,createtime,factorytime';
+            $condition = 'emission_standard,id,models_name,car_licensetime,kilometres,guide_price,parkingposition,phone,store_id,user_id,store_description,createtime,factorytime,transmission_case,displacement';
 
             if ($type == 'sell') {
                 $condition = $condition . ',modelsimages';
                 $condition = $condition . ',modelsimages';
             }
-
             $detail = $modelName->field($condition)
                 ->with(['brand' => function ($q) {
-                    $q->withField('id,name');
+                    $q->withField('id,name,brand_default_images');
                 }])
                 ->find($car_id)->toArray();
 
@@ -157,6 +157,6 @@ class Common extends Base
             $this->error($e->getMessage());
         }
 
-        $this->success('请求成功', ['detail' => $detail]);
+        $this->success('请求成功', ['is_authentication'=>CompanyStore::get(['user_id'=>$user_id,'auditstatus'=>'paid_the_money'])?1:0,'detail' => $detail]);
     }
 }
