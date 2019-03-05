@@ -343,10 +343,10 @@ if (!function_exists('getAccessToken')) {
      */
     function getAccessToken()
     {
+        $config = get_addon_config('cms');
 
-        $appid = Config::get('oauth')['appid'];
-        $secret = Config::get('oauth')['appsecret'];
-
+        $appid = $config['wxappid'];
+        $secret = $config['wxappsecret'];
         //我们将access_token全局缓存在文件中,每次获取的时候,先判断是否过期,如果过期重新获取再全局缓存
         //我们缓存的在文件中的数据，包括access_token和该access_token的过期时间戳.
         //获取缓存的access_token
@@ -380,6 +380,59 @@ if (!function_exists('getAccessToken')) {
             }
         }
     }
+}
+
+if (!function_exists('curl_post_send_information')) {
+    function curl_post_send_information($token, $vars, $second = 120, $aHeader = array())
+
+    {
+
+        $ch = curl_init();
+
+        //超时时间
+
+        curl_setopt($ch, CURLOPT_TIMEOUT, $second);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        //这里设置代理，如果有的话
+
+        curl_setopt($ch, CURLOPT_URL, 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' . $token);
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+        if (count($aHeader) >= 1) {
+
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $aHeader);
+
+        }
+
+        curl_setopt($ch, CURLOPT_POST, 1);
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $vars);
+
+        $data = curl_exec($ch);
+
+        if ($data) {
+
+            curl_close($ch);
+
+            return $data;
+
+        } else {
+
+            $error = curl_errno($ch);
+
+            curl_close($ch);
+
+            return $error;
+
+        }
+
+    }
+
 }
 ///////////////////////////////////////////
 /**

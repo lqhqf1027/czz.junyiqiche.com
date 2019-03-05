@@ -26,19 +26,6 @@ class Wechat extends Base
     protected $noNeedLogin = '*';
     protected $noNeedRight = '*';
     protected $model = '';
-    /**
-     * 云之讯短信发送模板
-     * @var array
-     */
-    protected static $Ucpass = [
-        'accountsid' => 'ffc7d537e8eb86b6ffa3fab06c77fc02',
-        'token' => '894cfaaf869767dce526a6eba54ffe52',
-        'appid' => '33553da944fb487089dadb16a37c53cc',
-        'templateid' => [
-            'sendOffer' => '432305'
-        ]
-    ];
-
     public function _initialize()
     {
         parent::_initialize();
@@ -58,36 +45,12 @@ class Wechat extends Base
         return $this->https_request($url, $data);
     }
 
-    /** 微信toke
-     * @return array|mixed  返回Token
-     */
-    /* public static function getWxtoken()
-     {
 
-         $appid = Config::get('oauth')['appid'];
-         $secret = Config::get('oauth')['appsecret'];
-         $token = cache('Token');
-         if (!$token['access_token'] || $token['expires_in'] <= time()) {
- //            https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . $appid . '&secret=' . $secret
-             $rslt = gets("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" . $appid . '&secret=' . $secret);
-             if ($rslt) { //怎么测试
-                 $accessArr = array(
-                     'access_token' => $rslt['access_token'],
-                     'expires_in' => time() + $rslt['expires_in'] - 200
-                 );
-                 cache('Token', $accessArr);
-                 $token = $accessArr;
-             }
-         }
-         return $token;
-     }*/
 
     // 获取 access_token
 
     private function getAccessToken()
     {
-
-
         $appid = Config::get('oauth')['appid'];
         $secret = Config::get('oauth')['appsecret'];
         $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$appid}&secret={$secret}";
@@ -275,7 +238,7 @@ class Wechat extends Base
 //
 //    function sendOffer()
 //    {
-//        $access_token = Cache::get("token");  //微信说7200有效，加个缓存避免频繁请求
+//        $access_token = Cache::get("token");
 //        if (!$access_token) {
 //            $access_token = $this->getAccessToken();
 //            Cache::set("token", $access_token, 7200);
