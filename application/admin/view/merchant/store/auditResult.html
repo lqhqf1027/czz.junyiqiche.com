@@ -170,6 +170,9 @@
 
 </form>
 <script>
+
+    image_preview($("img"));
+
     var id = $('#hidden1').val();
     $('#pass').on('click',function () {
         var confirm = layer.confirm(
@@ -222,87 +225,5 @@
         );
     })
 
-    image_preview($("img"));
-    $(function () {
-        var imgClickTitle = $('.imgClickTitle'),btn = $('.btn-embossed'),count_s = 0;
-        imgClickTitle.css({'cursor':'pointer'})
-        if(imgClickTitle.find('span').length==0){
-            $(document).delegate('.imgClickTitle','click',function (e) {
-                window.event? window.event.cancelBubble = true : e.stopPropagation();//阻止事件冒泡
-                var that  = $(this);
-                if (that.closest('div').find(".check-dowload").length == 0) {
-                    that.closest('div').append('<strong style="position: absolute;left: 15px;top: 60px;" class=" text-success check-dowload">已选中下载 <i class="fa fa-check"></i> </strong>');
-                    count_s++
-                } else {
-                    count_s--
-                    that.closest('div').find(".check-dowload").remove();
-                }
-                count_s == 0?btn.addClass("disabled"):btn.hasClass("disabled")?btn.removeClass("disabled"):'';
-                var all_val = [];
-                var all_font = [];
-                $(".row").find(".check-dowload").each(function () {
-                    var count = 1;
-                    $(this).prevAll("img").each(function () {
-                        all_val.push($(this).attr("src"));
-                        var fonts = $.trim($(this).prevAll("strong").html());
-                        fonts = fonts.replace("：", "");
-                        //判断如果文件名重复就加括号数字区分
-                        if(all_font.indexOf(fonts)>-1){
-                            fonts = fonts+"("+count+")";
-                            count++;
-                        }
-                        all_font.push(fonts);
-                    })
-                })
-
-                $("#hid").val(all_val);
-                $("#font").val(all_font);
-            })
-        }
-
-    //判断如果是单图，直接在js下载图片
-    $(".btn-embossed").on('click', function (event) {
-
-        var selects = imgClickTitle.closest('div').find(".check-span");
-
-        if (count_s.length == 1) {
-
-            var src = count_s.prevAll("img");
-
-            if (src.length == 1) {
-                event.preventDefault();
-                download(src.attr("src"));
-            }else{
-                layer.msg('加载中', {
-                    icon: 16,
-                    shade: 0.01,
-                    time: 2000
-                });
-            }
-
-
-        } else {
-            layer.msg('加载中', {
-                icon: 16,
-                shade: 0.01,
-                time: 2000
-            });
-        }
-
-    });
-
-    //浏览器单个下载图片
-    function download(src) {
-        var $a = document.createElement('a');
-        $a.setAttribute("href", src);
-        $a.setAttribute("download", "");
-
-
-        var evObj = document.createEvent('MouseEvents');
-        evObj.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, true, true, true, true, 0, null);
-        $a.dispatchEvent(evObj);
-    };
-
-    })
 
 </script>
