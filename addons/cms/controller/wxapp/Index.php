@@ -54,12 +54,12 @@ class Index extends Base
 
         $sell_info = [
             'msg' => '',
-            'status' => 'success',
+            'code'=>0,
         ];
 
         $buy_info = [
             'msg' => '',
-            'status' => 'success',
+            'code'=>0,
         ];
         try {
             $bannerList = $modelsInfoList = $buycarModelList = [];
@@ -79,7 +79,7 @@ class Index extends Base
 
             if (empty($res)) {
                 $sell_info['msg'] = $buy_info['msg'] = '您暂未认证！';
-                $sell_info['status'] =$buy_info['status']= 'error';
+                $sell_info['code']= $buy_info['code'] = 1;
             } else {
                 if ($res['storelevel']['max_release_number'] != -1) {
                     $my_release_number = ModelsInfo::where([
@@ -89,7 +89,7 @@ class Index extends Base
 
                     if ($my_release_number >= $res['storelevel']['max_release_number']) {
                         $sell_info['msg'] = '发布卖车已达到限制' . $res['storelevel']['max_release_number'] . '次，想要发布更多请升级店铺';
-                        $sell_info['status'] = 'error';
+                        $sell_info['code'] = 2;
                     }
                 }
             }
@@ -98,13 +98,8 @@ class Index extends Base
             $storeList = CompanyStore::field('id,store_name,cities_name,main_camp')
                 ->withCount(['modelsinfo'])->where('recommend', 1)->select();
 
-            Cache::rm('CAR_LIST');
-            if (!Cache::get('CAR_LIST')) {
+            $dataList = Carselect::getCarCache()['carList'];
 
-                Cache::set('CAR_LIST', Carselect::getCarCache(0));
-            }
-
-            $dataList = Cache::get('CAR_LIST')['carList'];
             foreach ($dataList as $v) {
                 if ($v['type'] == 'sell') {
                     $modelsInfoList[] = $v;
@@ -123,7 +118,6 @@ class Index extends Base
         } catch (Exception $e) {
             $this->error($e->getMessage());
         }
-
 
         $this->success('请求成功', [
             'bannerList' => $bannerList,
@@ -386,7 +380,7 @@ class Index extends Base
         $mobile = $this->request->post('mobile');
         $code = $this->request->post('code');
 
-        if (!$user_id || !$code || !checkPhoneNumberValidate(!$mobile)) {
+        if (!$user_id || !$code || !checkPhoneNumberValidate($mobile)) {
             $this->error('缺少参数或格式错误,请求失败', 'error');
         }
 
@@ -408,7 +402,7 @@ class Index extends Base
         $mobile = $this->request->post('mobile');
         $user_id = $this->request->post('user_id');
 
-        if (!$user_id || !checkPhoneNumberValidate(!$mobile)) {
+        if (!$user_id || !checkPhoneNumberValidate($mobile)) {
             $this->error('缺少参数或格式错误,请求失败', 'error');
         }
 
