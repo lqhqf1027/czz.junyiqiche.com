@@ -839,7 +839,7 @@ if (!function_exists('var_export_short')) {
     if (!function_exists('message_send')) {
         function message_send($mobile, $template_id, $user_id = null)
         {
-            if (!$mobile || !$user_id) return ['error', 'msg' => '参数缺失或格式错误'];
+            if (!$mobile) return ['error', 'msg' => '参数缺失或格式错误'];
             if (!checkPhoneNumberValidate($mobile)) return ['error', 'msg' => '手机号格式错误'];
             $authnum = '';
             //随机生成四位数验证码

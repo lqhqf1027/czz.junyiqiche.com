@@ -162,9 +162,10 @@
     <input type="hidden" name="hidden1" id="hidden1" value="{$row.id}" />
     <div class="form-group layer-footer">
         <label class="control-label col-xs-12 col-sm-3"></label>
-        <div class="col-xs-12 col-sm-7">
+        <div class="col-xs-12 col-sm-8">
             <button type="button" class="btn btn-success btn-embossed" id="pass">{:__('店铺审核通过')}</button>
             <button type="button" class="btn btn-danger btn-embossed" id="nopass">{:__('店铺审核不通过，需修改资料')}</button>
+            <button type="button" class="btn btn-success btn-embossed" id="special_through">{:__('店铺审核特殊通道')}</button>
         </div>
     </div>
 
@@ -220,6 +221,52 @@
                     return false;
                 });
 
+
+            }
+        );
+    })
+    $('#special_through').on('click',function () {
+        var confirm = layer.confirm(
+            __('确定通过店铺审核并通过支付吗?'),
+            {icon: 3, title: __('Warning'), shadeClose: true},
+            function (index) {
+
+                Fast.api.ajax({
+                    url: 'merchant/store/sendCode',
+                    // data: {id: JSON.stringify(id)}
+                }, function (data, ret) {
+                                
+                    Layer.close(confirm);
+                               
+                    var prompt = Layer.prompt(
+                        {title: '输入验证码，并确认', shadeClose: true},
+
+                        function (text, index) {
+                            console.log(text);
+                            Fast.api.ajax({
+                                url: 'merchant/store/checkCode',
+                                data: {id: JSON.stringify(id), text: text}
+                            }, function (data, ret) {
+
+                                parent.$('#toolbar .btn-refresh', parent.document).trigger('click')
+                                
+                                Layer.close(prompt);
+                                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                parent.layer.close(index);
+                                return false;
+                            }, function (data, ret) {
+                                //失败的回调
+
+                                return false;
+                            });
+
+
+                        }
+                    );
+                }, function (data, ret) {
+                    //失败的回调
+                    return false;
+                });
 
             }
         );

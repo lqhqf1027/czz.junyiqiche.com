@@ -25,8 +25,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {checkbox: true},
                         {field: 'id', title: __('Id')},
-                        {field: 'order_number', title: __('Order_number')},
-                        {field: 'money', title: __('Money'), operate:'BETWEEN'},
+                        {field: 'out_trade_no', title: __('商户订单号')},
+                        {field: 'total_fee', title: __('最终支付金额'), operate:'BETWEEN'},
                         {field: 'store.store_name', title: __('Store.store_name')},
                         {field: 'store.store_img', title: __('Store.store_img'), formatter: Controller.api.formatter.images},
                         {field: 'store.bank_card', title: __('Store.bank_card')},
@@ -35,7 +35,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'user.mobile', title: __('User.mobile')},
                         {field: 'level.partner_rank', title: __('Level.partner_rank')},
                         {field: 'pay_type', title: __('Pay_type'), formatter: Controller.api.formatter.normal},
-                        {field: 'pay_time', title: __('Pay_time'), formatter: Controller.api.formatter.datetime},
+                        {field: 'time_end', title: __('支付完成时间'), formatter: Controller.api.formatter.datetime},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
                 ]
