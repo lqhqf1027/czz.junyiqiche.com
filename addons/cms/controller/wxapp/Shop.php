@@ -15,6 +15,7 @@ use addons\cms\model\Distribution;
 use addons\cms\model\StoreLevel;
 use addons\cms\model\Config as ConfigModel;
 use addons\cms\model\EarningDetailed;
+use addons\cms\model\BankInfo;
 use think\Cache;
 use think\Db;
 use think\Exception;
@@ -229,16 +230,15 @@ class Shop extends Base
                 $superior_store_id = empty($inviter) ? 0 : CompanyStore::get(['user_id' => $inviter])->id;
                 $my_store_id = CompanyStore::get(['user_id' => $user_id])->id;
 
-                $result = gets('http://bankcardsilk.api.juhe.cn/bankcardsilk/query.php?key=e0ebcb671fa0f2e181c2cc967813a9bf&num=' . $infos['bank_card']);
-
+                $result = gets('http://apis.juhe.cn/bankcardcore/query?key=c1eb4e7f42babb67e82559c87222472b&bankcard=' . $infos['bank_card']);
                 if ($result['error_code'] == 0) {
-                    $check_bank = Db::name('bank_info')->where('store_id', $my_store_id)->find();
-                    $result['result']['logo'] = 'http://images.juheapi.com/banklogo/' . $result['result']['logo'];
+                    $bank = new BankInfo();
+                    $check_bank = BankInfo::get(['store_id' => $my_store_id])->id;
                     if ($check_bank) {
-                        Db::name('bank_info')->where('store_id', $my_store_id)->update($result['result']);
+                        $bank->allowField(true)->save($result['result'], ['id' => $check_bank]);
                     } else {
                         $result['result']['store_id'] = $my_store_id;
-                        Db::name('bank_info')->insert($result['result']);
+                        $bank->allowField(true)->save($result['result']);
                     }
 
                 }
@@ -338,7 +338,7 @@ class Shop extends Base
             }
 
             if ($bank_info_id) {
-                Db::name('bank_info')->where('i', $bank_info_id)->delete();
+                Db::name('bank_info')->where('id', $bank_info_id)->delete();
             }
             $res = CompanyStore::destroy($store_id);
             Db::commit();
@@ -367,6 +367,9 @@ class Shop extends Base
 
         Db::startTrans();
         try {
+
+            CompanyStore::where(['user_id'=>$user_id])->setField('auditstatus','paid_the_money');
+
             $company_info = CompanyStore::field('id')
                 ->with(['belongsStoreLevel' => function ($q) {
                     $q->withField('id,money');
@@ -376,7 +379,7 @@ class Shop extends Base
                 ])->find();
 
             if (!$company_info) {
-                $this->error('未知错误');
+                throw new Exception('未知错误');
             }
 
             //查出收益率
@@ -452,18 +455,33 @@ class Shop extends Base
         $this->success('请求成功', ['detail' => $store_info]);
     }
 
+    /**
+     * 提现收益接口
+     * @throws Exception
+     * @throws \think\exception\DbException
+     */
     public function cash_withdrawal()
     {
 
         $user_id = $this->request->post('user_id');
 
-        $company_id = CompanyStore::get(['user_id' => $user_id])->id;
+        if (!$user_id) {
+            $this->error('缺少参数');
+        }
 
-        $all_money = EarningDetailed::get(['store_id' => $company_id])->total_earnings;
+        try {
+            $company_info = CompanyStore::get(['user_id' => $user_id])->visible(['id', 'bank_card']);
 
-        $bank_info = Db::name('bank_info')
-            ->where('store_id', $company_id)
-            ->select();
+            $all_money = EarningDetailed::get(['store_id' => $company_info['id']])->total_earnings;
+
+            $bank_info = BankInfo::get(['store_id' => $company_info['id']])->hidden(['store_id'])->toArray();
+
+            $bank_info['cardtype'] = $bank_info['cardtype'] == '借记卡' ? '储蓄卡' : '信用卡';
+
+            $bank_info['last_number'] = substr($company_info['bank_card'], -4);
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
+        }
 
         $this->success('请求成功', ['total_money' => $all_money, 'bank_info' => $bank_info]);
 

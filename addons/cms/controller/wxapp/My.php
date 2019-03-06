@@ -21,6 +21,7 @@ use addons\cms\model\Message;
 use think\Db;
 use Endroid\QrCode\QrCode;
 use fast\Random;
+use think\Exception;
 
 /**
  * 我的
@@ -489,6 +490,58 @@ class My extends Base
         }
 
         $this->success('请求成功', ['message_details' => $message]);
+    }
+
+    /**
+     * 取消报价单接口
+     */
+    public function cancellation_of_quotation()
+    {
+        $quoted_id = $this->request->post('quoted_id');
+
+        if (!$quoted_id) {
+            $this->error('缺少参数');
+        }
+        if (!QuotedPrice::get($quoted_id)) {
+            $this->error('该订单已被取消');
+        }
+        Db::startTrans();
+        try {
+            $check = QuotedPrice::where([
+                'id' => $quoted_id,
+                'offeror_payment_status|offeree_payment_status' => 'already_paid'
+            ])->lock(true)->find();
+
+            if ($check) {
+                throw new \Exception('已完成支付，订单不能取消');
+            }
+
+            $res = QuotedPrice::destroy($quoted_id);
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+
+        !empty($res) ? $this->success('取消成功') : $this->error('取消失败');
+    }
+
+    /**
+     * 进入升级店铺接口
+     * @throws \think\exception\DbException
+     */
+    public function upgrade_shop()
+    {
+        $user_id = $this->request->post('user_id');
+
+        if (!$user_id) {
+            $this->error('缺少参数');
+        }
+
+
+        $store_info = CompanyStore::get(['user_id' => $user_id])->visible(['id', 'cities_name', 'store_name', 'store_address', 'phone', 'business_life', 'main_camp', 'bank_card', 'store_img', 'id_card_images', 'business_licenseimages', 'level_id','store_description','real_name']);
+
+        $this->success('请求成功', $store_info);
     }
 
 }
