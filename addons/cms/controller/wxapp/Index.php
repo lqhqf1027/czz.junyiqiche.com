@@ -12,6 +12,7 @@ use addons\cms\model\CompanyStore;
 use addons\cms\model\Config as ConfigModel;
 use addons\cms\model\ModelsInfo;
 use addons\cms\model\User;
+use addons\cms\model\Message;
 use app\common\model\Addon;
 use fast\Random;
 use GuzzleHttp\Client;
@@ -43,7 +44,6 @@ class Index extends Base
     {
         parent::_initialize();
     }
-
 
     /**
      * 首页
@@ -109,15 +109,28 @@ class Index extends Base
 
             }
 
+            unset($dataList,$res);
+
             array_multisort(array_column($modelsInfoList, 'browse_volume'), SORT_DESC, $modelsInfoList);
             array_multisort(array_column($buycarModelList, 'browse_volume'), SORT_DESC, $buycarModelList);
 
             $modelsInfoList = array_slice($modelsInfoList, 0, 15);
             $buycarModelList = array_slice($buycarModelList, 0, 15);
 
+            $unread = 0;
+            $message_list = Message::column('use_id');
+
+            foreach ($message_list as $k => $v) {
+                if (strpos($v, ',' . $user_id . ',') === false) {
+                    $unread = 1;
+                    break;
+                }
+            }
+
         } catch (Exception $e) {
             $this->error($e->getMessage());
         }
+
 
         $this->success('请求成功', [
             'bannerList' => $bannerList,
@@ -129,7 +142,8 @@ class Index extends Base
             'default_image' => ConfigModel::get(['name' => 'default_picture'])->value,
             'share' => self::get_share(),
             'sell_car_condition' => $sell_info,
-            'buy_car_condition' =>$buy_info
+            'buy_car_condition' =>$buy_info,
+            'unread'=>$unread
         ]);
 
     }
