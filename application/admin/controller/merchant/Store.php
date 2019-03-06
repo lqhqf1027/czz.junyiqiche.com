@@ -10,7 +10,8 @@ use app\admin\model\ModelsInfo;
 use app\admin\model\BuycarModel;
 use think\Config;
 use think\Db;
-
+use GuzzleHttp\Client;
+use addons\cms\model\Config as ConfigModel;
 /**
  * 店铺
  *
@@ -25,7 +26,7 @@ class Store extends Backend
      */
     protected $model = null;
     protected $multiFields = ['recommend'];
-
+    
     public function _initialize()
     {
         parent::_initialize();
@@ -424,8 +425,9 @@ class Store extends Backend
                     ->limit($offset, $limit)
                     ->select();
 
-            foreach ($list as $row) {
+            foreach ($list as $k => $row) {
                 
+                $list[$k]['store_name'] = CompanyStore::where('user_id', $row['user_ids'])->value('store_name');
             }
             $list = collection($list)->toArray();
     
@@ -486,6 +488,93 @@ class Store extends Backend
         $models_name = BuycarModel::where('id', $ids)->value('models_name');
         $this->view->assign('models_name', $models_name);
         return $this->view->fetch();
+    }
+
+    /** 
+     * 确认交易
+     */
+    public function closedeal()
+    {
+        $this->model = model('QuotedPrice');
+        if ($this->request->isAjax()) {
+
+            $id = $this->request->post('id');
+        
+            $result = $this->model->save(['deal_status' => 'close_the_deal'], function ($query) use ($id) {
+                $query->where('id', $id);
+            });
+            
+            if ($result) {
+
+                $this->success();
+
+            } else {
+                $this->error();
+            }
+
+        }
+
+    }
+
+    /** 
+     * 发送验证码
+     */
+    public function sendCode()
+    {
+        //手机号
+        $mobile = ConfigModel::get(['name' => 'default_mobile'])->value;
+        // pr($mobile);
+        // die;
+        if ($this->request->isAjax()) {
+            //发送验证码
+            $result = message_send($mobile, '430761');
+            // pr($result);
+            // die;
+            $result[0] == 'success' ? $this->success($result['msg']) : $this->error($result['msg']);
+
+        }
+
+    }
+
+    /** 
+     * 验证验证码
+     */
+    public function checkCode()
+    {
+        //手机号
+        $mobile = ConfigModel::get(['name' => 'default_mobile'])->value;
+
+        if ($this->request->isAjax()) {
+            //店铺id
+            $id = input("id");
+            $id = json_decode($id, true);
+            //输入验证码
+            $code = input("text");
+
+            //验证验证码
+            $userInfo = Db::name('cms_login_info')
+                ->where(['login_phone' => $mobile])->find();
+            if (!$userInfo || $code != $userInfo['login_code']) {
+                $this->error('验证码输入错误');
+            }
+            else {
+
+                //通过审核并完成支付
+                $result = $this->model->save(['auditstatus' => 'paid_the_money'], function ($query) use ($id) {
+                    $query->where('id', $id);
+                });
+    
+                if ($result) {
+    
+                    $this->success();
+    
+                } else {
+                    $this->error();
+                }
+            }
+
+        }
+
     }
 
 }
