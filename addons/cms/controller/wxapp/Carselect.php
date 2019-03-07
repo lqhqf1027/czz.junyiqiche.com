@@ -40,11 +40,10 @@ class Carselect extends Base
         }
         $alls = Cache::get('CAR_LIST');
 
-        $carLists = $alls['carList'];
         $realCarList = [];
         $city = $city == '不限地区' ? false : $city;
         if ($city || $brand_id || $models_name) {
-            foreach ($carLists as $k => $v) {
+            foreach ($alls['carList'] as $k => $v) {
 
                 if ($models_name) {
                     if ($v['models_name'] == $models_name) {
@@ -68,7 +67,7 @@ class Carselect extends Base
                 }
             }
         } else {
-            $realCarList = $carLists;
+            $realCarList = $alls['carList'];
         }
 
         if ($realCarList && $screen) {

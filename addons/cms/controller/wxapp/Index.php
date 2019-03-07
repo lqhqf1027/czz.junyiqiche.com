@@ -51,7 +51,6 @@ class Index extends Base
     public function index()
     {
         $user_id = $this->request->post('user_id');
-
         $sell_info = [
             'msg' => '',
             'code'=>0,

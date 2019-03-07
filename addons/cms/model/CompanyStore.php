@@ -23,10 +23,10 @@ class CompanyStore extends Model
     protected $updateTime = 'updatetime';
 
     // // 定义全局的查询范围
-    // protected function base($query)
-    // {
-    //     $query->where('statuss', 'normal');
-    // }
+     protected function base($query)
+     {
+         $query->where('statuss', 'normal');
+     }
 
     public function distribution()
     {
