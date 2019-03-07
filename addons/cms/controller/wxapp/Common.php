@@ -5,6 +5,7 @@ namespace addons\cms\controller\wxapp;
 use addons\cms\model\Block;
 use addons\cms\model\Channel;
 use addons\cms\model\CompanyStore;
+use addons\cms\model\FormIds;
 use addons\cms\model\ModelsInfo;
 use addons\cms\model\BuycarModel;
 use addons\cms\model\Clue;
@@ -14,6 +15,7 @@ use addons\cms\model\Config as ConfigModel;
 use app\common\model\Addon;
 use think\Config;
 use addons\third\model\Third;
+use think\Db;
 use think\Exception;
 
 /**
@@ -140,7 +142,7 @@ class Common extends Base
                 $q->where('group', 'default_image')->field('name,value');
             }))->toArray();
 
-            $detail['factorytime'] = $detail['factorytime']?date('Y',$detail['factorytime']):'';
+            $detail['factorytime'] = $detail['factorytime'] ? date('Y', $detail['factorytime']) : '';
             $detail['emission_standard'] = $detail['emission_standard'] ? $detail['emission_standard'] . '次' : '';
             $detail['kilometres'] = $detail['kilometres'] ? round($detail['kilometres'] / 10000, 2) . '万公里' : null;
             $detail['guide_price'] = $detail['guide_price'] ? round($detail['guide_price'] / 10000, 2) . '万' : null;
@@ -157,6 +159,28 @@ class Common extends Base
             $this->error($e->getMessage());
         }
 
-        $this->success('请求成功', ['is_authentication'=>CompanyStore::get(['user_id'=>$user_id,'auditstatus'=>'paid_the_money'])?1:0,'detail' => $detail]);
+        $this->success('请求成功', ['is_authentication' => CompanyStore::get(['user_id' => $user_id, 'auditstatus' => 'paid_the_money']) ? 1 : 0, 'detail' => $detail]);
+    }
+
+    /**
+     * 创建formId
+     * @param $fomrId
+     * @return bool
+     */
+    public static function writeFormId($fomrId, $user_id)
+    {
+        try {
+            $data = FormIds::create(['form_id' => $fomrId, 'user_id' => $user_id]);
+
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+
+    }
+
+    public static function getFormId($user_id)
+    {
+
+        return collection(FormIds::all())->toArray();
     }
 }
