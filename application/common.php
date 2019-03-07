@@ -6,6 +6,7 @@ use think\Request;
 use think\Config;
 use think\Cache;
 use think\Env;
+use fast\Http;
 
 // 应用公共文件
 ///////////////////////////////////////////
@@ -343,6 +344,7 @@ if (!function_exists('getAccessToken')) {
      */
     function getAccessToken()
     {
+
         $config = get_addon_config('cms');
 
         $appid = $config['wxappid'];
@@ -358,83 +360,47 @@ if (!function_exists('getAccessToken')) {
             return $access_token_data['access_token'];
         } else {
             //重新获取access_token,并全局缓存
-            $curl = curl_init();
+            $result = Http::sendRequest("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$appid}&secret={$secret}", 'GET');
+            if ($result['ret']) {
+                $data = (array)json_decode($result['msg'], true);
+                //获取access_token
+                if ($data != null && $data['access_token']) {
+                    //设置access_token的过期时间,有效期是7200s
+                    $data['expires_in'] = $data['expires_in'] + time();
+                    //将access_token全局缓存，快速缓存到文件中.
+                    Cache::set('access_token', json_encode($data));
 
-            curl_setopt($curl, CURLOPT_URL, 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . $appid . '&secret=' . $secret);
-
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
-            //获取access_token
-            $data = json_decode(curl_exec($curl), true);
-            if ($data != null && $data['access_token']) {
-                //设置access_token的过期时间,有效期是7200s
-                $data['expires_in'] = $data['expires_in'] + time();
-
-                //将access_token全局缓存，快速缓存到文件中.
-                Cache::set('access_token', json_encode($data));
-
-                //返回access_token
-                return $data['access_token'];
+                    //返回access_token
+                    return $data['access_token'];
+                }
             } else {
                 exit('微信获取access_token失败');
             }
         }
     }
 }
+if (!function_exists('xmlstr_to_array')) {
 
-if (!function_exists('curl_post_send_information')) {
-    function curl_post_send_information($token, $vars, $second = 120, $aHeader = array())
-
+    /**
+     * xml转数组
+     * @param $xmlstr
+     * @return mixed
+     */
+    function xmlstr_to_array($xmlstr)
     {
-
-        $ch = curl_init();
-
-        //超时时间
-
-        curl_setopt($ch, CURLOPT_TIMEOUT, $second);
-
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        //这里设置代理，如果有的话
-
-        curl_setopt($ch, CURLOPT_URL, 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' . $token);
-
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-
-        if (count($aHeader) >= 1) {
-
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $aHeader);
-
-        }
-
-        curl_setopt($ch, CURLOPT_POST, 1);
-
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $vars);
-
-        $data = curl_exec($ch);
-
-        if ($data) {
-
-            curl_close($ch);
-
-            return $data;
-
-        } else {
-
-            $error = curl_errno($ch);
-
-            curl_close($ch);
-
-            return $error;
-
-        }
-
+        libxml_disable_entity_loader(true);
+        $values = json_decode(json_encode(simplexml_load_string($xmlstr, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+        return $values;
     }
-
 }
-///////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * fa function
  */
