@@ -10,12 +10,15 @@ namespace addons\cms\controller\wxapp;
 
 use addons\cms\model\CompanyStore;
 use addons\cms\model\EarningDetailed;
+use addons\cms\model\FormIds;
 use addons\cms\model\PayOrder;
+use addons\cms\model\Distribution;
+use addons\cms\model\StoreLevel;
 use think\Cache;
 use think\Config;
 use Think\Db;
 use app\common\library\Auth;
-
+use addons\cms\model\Config as ConfigModel;
 use think\Env;
 use think\Loader;
 use think\Exception;
@@ -28,8 +31,6 @@ class Wxpay extends Base
     protected $noNeedLogin = '*';
     protected $noNeedRight = '*';
     protected $model = '';
-    protected $user_id;
-    protected $store_id;
 
     public function _initialize()
     {
@@ -53,13 +54,16 @@ class Wxpay extends Base
     {
 
         if (!$this->request->isPost()) $this->error('非法请求');
-        $this->user_id = (int)$this->request->post('user_id');
+        $user_id = (int)$this->request->post('user_id');
+        $formId = $this->request->post('formId');
+        $f = Common::writeFormId($formId, $user_id);
         $out_trade_no = $this->request->post('out_trade_no');
         $money = $this->request->post('money') * 100;
-        $this->store_id = (int)$this->request->post('store_id');
-        if (!$this->user_id || !$out_trade_no || !$money || !$this->store_id) $this->error('缺少参数');
-        if (self::checkPay($this->store_id, $out_trade_no)) $this->error('该订单已存在支付！', 'error');
-        $openid = self::getOpenid($this->user_id);
+        $store_id = (int)$this->request->post('store_id');
+        if (!$user_id || !$out_trade_no || !$money || !$store_id) $this->error('缺少参数');
+        $checkOrder = end(explode('_', $out_trade_no));
+        if (self::checkPay($store_id, $checkOrder)) $this->error('该订单已存在支付！', 'error');
+        $openid = self::getOpenid($user_id);
         //     初始化值对象
         $input = new \WxPayUnifiedOrder();
         //     文档提及的参数规范：商家名称-销售商品类目
@@ -84,96 +88,185 @@ class Wxpay extends Base
 
     }
 
+    /**
+     * 支付回调
+     */
     public function certification_wxPay_noTify()
     {
-
         $res = file_get_contents("php://input");
         $getData = xmlstr_to_array($res);
         if (($getData['total_fee']) && ($getData['result_code'] == 'SUCCESS')) {  //支付回调通知成功
             //将回调通知里的订单号前缀user_id +store_id 分隔
-            $user_id = explode('_', $getData['out_trade_no'])[0];
-//            Db::name('user')->where('id', 20)->setField('username', $user_id);
-            $store_id = explode('_', $getData['out_trade_no'])[1];
-            $getData['out_trade_no'] = explode('_', $getData['out_trade_no'])[2];
-            $res = PayOrder::create(
-                ['out_trade_no' => $getData['out_trade_no'],
-                    'store_id' => $store_id,
-                    'user_id' => $user_id,
-                    'time_end' => $getData['time_end'],
-                    'total_fee' => $getData['total_fee'] / 100,
-                    'trade_type' => $getData['trade_type'],
-                    'bank_type' => $getData['bank_type'],
-                    'transaction_id' => $getData['transaction_id'],
-                    'pay_type' => 'certification'
-                ]
-            );
-            if ($res) {
-                //
-                if (CompanyStore::where(['id' => $store_id])->update(['auditstatus' => 'paid_the_money'])) {
-                    //新增到收益表
-                    $time = time();
-                    $level = self::getLevel($store_id);
-                    $tel = \addons\cms\model\Config::get(['name' => 'default_phone'])->value;
-                        $order_number = $getData['out_trade_no'];
-                        $money = $getData['out_trade_no'];
-                        $openid = self::getOpenid($user_id);
-                        if ($openid) {
-                            $keyword1 = "友车圈{$level}认证费,有效期为一年";
-                            $temp_msg = array(
-                                'touser' => "{$openid}",
-                                'template_id' => "dQRHk_MhaFwaYmeV_LSO6gfWz5TeTb4WIUO_9Y8WItM",
-                                'page' => "/pages/mine/mine",
-                                'form_id' => "{$formId}",
-                                'data' => array(
-                                    'keyword1' => array(
-                                        'value' => "{$keyword1}",
-                                    ),
-                                    'keyword2' => array(
-                                        'value' => "{$res->out_trade_no}",
-                                    ),
-                                    'keyword3' => array(
-                                        'value' => "{$res->total_fee}",
-                                    ),
-                                    'keyword4' => array(
-                                        'value' => date('Y-m-d H:i:s', time()),
-                                    ),
-                                    'keyword5' => array(
-                                        'value' => "{$tel}",
-                                    )
-                                ),
-                            );
-                            $res = $this->sendXcxTemplateMsg(json_encode($temp_msg));
-                            $res['errcode' == 0] ? $this->success('支付完成') : $this->error('支付完成，但模板消息推送失败');
-                        }
-                        $this->error('支付失败，获取用户openid失败');
+            $user_id = explode('_', $getData['out_trade_no'])[0]; //获取user_id
+            $store_id = explode('_', $getData['out_trade_no'])[1]; //获取门店id
+            $getData['out_trade_no'] = explode('_', $getData['out_trade_no'])[2]; //获取订单号
+            Db::startTrans();
+            try {
+                $res = PayOrder::create(
+                    ['out_trade_no' => $getData['out_trade_no'],
+                        'store_id' => $store_id,
+                        'user_id' => $user_id,
+                        'time_end' => $getData['time_end'],
+                        'total_fee' => $getData['total_fee'] / 100,
+                        'trade_type' => $getData['trade_type'],
+                        'bank_type' => $getData['bank_type'],
+                        'transaction_id' => $getData['transaction_id'],
+                        'pay_type' => 'certification'
+                    ]
+                );
+                Db::commit();
+            } catch (Exception $e) {
+                Db::rollback();
+                echo exit('<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[FAIL]]></return_msg></xml>');
 
-                    $this->error('支付失败，收益表新增失败');
-                }
-                $return['return_code'] = 'SUCCESS';
-                $return['return_msg'] = 'OK';
-                $xml_post = '<xml>
-                    <return_code>' . $return['return_code'] . '</return_code>
-                    <return_msg>' . $return['return_msg'] . '</return_msg>
-                    </xml>';
-                echo $xml_post;
-                exit;
             }
+            echo exit('<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>');
+
         } else {
-            Cache::set('order_number', 3);
+            echo exit('<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[FAIL]]></return_msg></xml>');
 
         }
 
-
-//
-//        return $notify->NotifyProcess();
-
     }
 
-    /*
- * 给微信发送确认订单金额和签名正确，SUCCESS信息 -xzz0521
- */
-    private function return_success()
+    /**
+     * 支付成功后接口
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function after_successful_payment()
     {
+        $user_id = $this->request->post('user_id');
+        $store_id = $this->request->post('store_id');
+        if (!$user_id || !$store_id) {
+            $this->error('缺少参数');
+        }
+
+        Db::startTrans();
+        try {
+            $formId = current(array_values(Common::getFormId($user_id)))['form_id']; //获取formId
+            $level = self::getLevel($store_id);
+            $tel = \addons\cms\model\Config::get(['name' => 'default_phone'])->value;
+            $o = self::getPayOrderNum($user_id, $store_id);
+            $order_number = $o->out_trade_no;
+            $money = $o->total_fee;
+            $openid = self::getOpenid($user_id);
+//            if ($openid) {
+//                $keyword1 = "友车圈{$level}认证费,有效期为一年";
+//                $temp_msg = array(
+//                    'touser' => "{$openid}",
+//                    'template_id' => "dQRHk_MhaFwaYmeV_LSO6gfWz5TeTb4WIUO_9Y8WItM",
+//                    'page' => "/pages/mine/mine",
+//                    'form_id' => "{$formId}",
+//                    'data' => array(
+//                        'keyword1' => array(
+//                            'value' => "{$keyword1}",
+//                        ),
+//                        'keyword2' => array(
+//                            'value' => "{$order_number}",
+//                        ),
+//                        'keyword3' => array(
+//                            'value' => "{$money}元",
+//                        ),
+//                        'keyword4' => array(
+//                            'value' => date('Y-m-d H:i:s', time()),
+//                        ),
+//                        'keyword5' => array(
+//                            'value' => "{$tel}",
+//                        )
+//                    ),
+//                );
+//                $res = $this->sendXcxTemplateMsg(json_encode($temp_msg));
+//            }
+
+            FormIds::where(['user_id' => $user_id, 'form_id' => $formId])->setField('status', 0);
+            CompanyStore::where(['user_id' => $user_id])->setField('auditstatus', 'paid_the_money');
+
+            $company_info = CompanyStore::field('id')
+                ->with(['belongsStoreLevel' => function ($q) {
+                    $q->withField('id,money');
+                }])->where([
+                    'user_id' => $user_id,
+                    'auditstatus' => 'paid_the_money'
+                ])->find();
+
+            if (!$company_info) {
+                throw new Exception('未知错误');
+            }
+
+            //查出收益率
+            $rate = ConfigModel::where('group', 'rate')->column('value');
+
+            $check_earning = EarningDetailed::get(['store_id' => $company_info['id']]);
+
+            //如果没有收益明细表，创建
+            if (!$check_earning) {
+                EarningDetailed::create(['store_id' => $company_info['id']]);
+            }
+
+            //能获取的1级收益
+            $first_income = $company_info['belongs_store_level']['money'] * floatval($rate[0]);
+            //能获取的2级收益
+            $second_income = $company_info['belongs_store_level']['money'] * floatval($rate[1]);
+
+            Distribution::where('level_store_id', $company_info['id'])->update([
+                'earnings' => $first_income,
+                'second_earnings' => $second_income
+            ]);
+
+            $up_id = Distribution::get(['level_store_id' => $company_info['id']])->store_id;
+            if ($up_id) {
+                //加锁查询上级的金额信息
+                $up_data = EarningDetailed::field('first_earnings,total_earnings')->where('store_id', $up_id)->lock(true)->select();
+                //如果有上级，将上级的收益加入上级收益明细表中
+                EarningDetailed::where('store_id', $up_id)
+                    ->update(['first_earnings' => $up_data['first_earnings'] + $first_income,
+                        'total_earnings' => $up_data['total_earnings'] + $first_income]);
+
+                $up_up_id = Distribution::get(['level_store_id' => $up_id])->store_id;
+
+                if ($up_up_id) {
+                    //加锁查询上上级的金额信息
+                    $up_up_data = EarningDetailed::field('second_earnings,total_earnings')->where('store_id', $up_id)->lock(true)->select();
+                    //如果有上上级，将上级的收益加入上上级收益明细表中
+                    EarningDetailed::where('store_id', $up_up_id)
+                        ->update(['second_earnings' => $up_up_data['second_earnings'] + $second_income,
+                            'total_earnings' => $up_up_data['total_earnings'] + $second_income]);
+                }
+            }
+            Db::commit();
+        } catch (Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+
+        $this->success('请求成功');
+    }
+
+    /**
+     * 获取订单号，from模板消息
+     * @param $user_id
+     * @return mixed
+     * @throws \think\exception\DbException
+     */
+    public static function getPayOrderNum($user_id, $store_id)
+    {
+        return PayOrder::get(['user_id' => $user_id, 'store_id' => $store_id]);
+    }
+
+    /**
+     * 发送给微信支付成功信息
+     * @param string $return_code
+     * @param string $return_msg
+     * @return string
+     */
+    public static function callPayNote($return_code = 'SUCCESS', $return_msg = 'OK')
+    {
+        return '<xml>
+                    <return_code>' . $return_code . '</return_code>
+                    <return_msg>' . $return_msg . '</return_msg>
+                    </xml>';
 
     }
 
@@ -213,68 +306,6 @@ class Wxpay extends Base
             }
         }
         return $token;
-    }
-
-    /**
-     * 支付成功回调
-     */
-    public function PaySuccessFulCb()
-    {
-        if (!$this->request->isPost()) $this->error('非法请求');
-        $user_id = (int)$this->request->post('user_id');
-        $order_number = (int)$this->request->post('order_number');
-        $money = $this->request->post('money');
-        $store_id = (int)$this->request->post('store_id');
-        $formId = $this->request->post('formId');
-        $pay_type = $this->request->post('pay_type');
-        $pay_time = $this->request->post('pay_time');
-        if (!$user_id || !$order_number || !$money || !$store_id || !$formId || !$pay_type || !$pay_time) $this->error('缺少参数');
-
-        $res = PayOrder::create(['order_number' => $order_number, 'store_id' => $store_id, 'user_id' => $user_id, 'money' => $money, 'pay_time' => $pay_time, 'pay_type' => $pay_type]);
-        if ($res) {
-            if (CompanyStore::where(['id' => $store_id])->update(['auditstatus' => 'paid_the_money'])) {
-                //新增到收益表
-                $time = time();
-                $level = self::getLevel($store_id);
-                $tel = \addons\cms\model\Config::get(['name' => 'default_phone'])->value;
-                if (EarningDetailed::create(['store_id' => $store_id])) {
-                    $openid = self::getOpenid($user_id);
-                    if ($openid) {
-                        $keyword1 = "友车圈{$level}认证费,有效期为一年";
-                        $temp_msg = array(
-                            'touser' => "{$openid}",
-                            'template_id' => "dQRHk_MhaFwaYmeV_LSO6gfWz5TeTb4WIUO_9Y8WItM",
-                            'page' => "/pages/mine/mine",
-                            'form_id' => "{$formId}",
-                            'data' => array(
-                                'keyword1' => array(
-                                    'value' => "{$keyword1}",
-                                ),
-                                'keyword2' => array(
-                                    'value' => "{$order_number}",
-                                ),
-                                'keyword3' => array(
-                                    'value' => "{$money}",
-                                ),
-                                'keyword4' => array(
-                                    'value' => date('Y-m-d H:i:s', time()),
-                                ),
-                                'keyword5' => array(
-                                    'value' => "{$tel}",
-                                )
-                            ),
-                        );
-                        $res = $this->sendXcxTemplateMsg(json_encode($temp_msg));
-                        $res['errcode' == 0] ? $this->success('支付完成') : $this->error('支付完成，但模板消息推送失败');
-                    }
-                    $this->error('支付失败，获取用户openid失败');
-                }
-                $this->error('支付失败，收益表新增失败');
-            }
-            $this->error('支付失败，更新门店支付字段失败');
-
-        }
-
     }
 
     /**
