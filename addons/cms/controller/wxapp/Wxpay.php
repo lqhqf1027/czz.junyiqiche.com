@@ -152,35 +152,34 @@ class Wxpay extends Base
             $order_number = $o->out_trade_no;
             $money = $o->total_fee;
             $openid = self::getOpenid($user_id);
-//            if ($openid) {
-//                $keyword1 = "友车圈{$level}认证费,有效期为一年";
-//                $temp_msg = array(
-//                    'touser' => "{$openid}",
-//                    'template_id' => "dQRHk_MhaFwaYmeV_LSO6gfWz5TeTb4WIUO_9Y8WItM",
-//                    'page' => "/pages/mine/mine",
-//                    'form_id' => "{$formId}",
-//                    'data' => array(
-//                        'keyword1' => array(
-//                            'value' => "{$keyword1}",
-//                        ),
-//                        'keyword2' => array(
-//                            'value' => "{$order_number}",
-//                        ),
-//                        'keyword3' => array(
-//                            'value' => "{$money}元",
-//                        ),
-//                        'keyword4' => array(
-//                            'value' => date('Y-m-d H:i:s', time()),
-//                        ),
-//                        'keyword5' => array(
-//                            'value' => "{$tel}",
-//                        )
-//                    ),
-//                );
-//                $res = $this->sendXcxTemplateMsg(json_encode($temp_msg));
-//            }
-
-            FormIds::where(['user_id' => $user_id, 'form_id' => $formId])->setField('status', 0);
+            if ($openid) {
+                $keyword1 = "友车圈{$level}认证费,有效期为一年";
+                $temp_msg = array(
+                    'touser' => "{$openid}",
+                    'template_id' => "dQRHk_MhaFwaYmeV_LSO6gfWz5TeTb4WIUO_9Y8WItM",
+                    'page' => "/pages/mine/mine",
+                    'form_id' => "{$formId}",
+                    'data' => array(
+                        'keyword1' => array(
+                            'value' => "{$keyword1}",
+                        ),
+                        'keyword2' => array(
+                            'value' => "{$order_number}",
+                        ),
+                        'keyword3' => array(
+                            'value' => "{$money}元",
+                        ),
+                        'keyword4' => array(
+                            'value' => date('Y-m-d H:i:s', time()),
+                        ),
+                        'keyword5' => array(
+                            'value' => "{$tel}",
+                        )
+                    ),
+                );
+                $res = $this->sendXcxTemplateMsg(json_encode($temp_msg));
+            }
+            Db::name('form_ids')->where(['user_id' => $user_id, 'form_id' => $formId])->setField('status', 0);
             CompanyStore::where(['user_id' => $user_id])->setField('auditstatus', 'paid_the_money');
 
             $company_info = CompanyStore::field('id')
