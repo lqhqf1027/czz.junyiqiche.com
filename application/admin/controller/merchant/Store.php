@@ -493,14 +493,14 @@ class Store extends Backend
     /** 
      * 确认交易
      */
-    public function closedeal()
+    public function startdeal()
     {
         $this->model = model('QuotedPrice');
         if ($this->request->isAjax()) {
 
             $id = $this->request->post('id');
         
-            $result = $this->model->save(['deal_status' => 'close_the_deal'], function ($query) use ($id) {
+            $result = $this->model->save(['deal_status' => 'click_the_deal'], function ($query) use ($id) {
                 $query->where('id', $id);
             });
             
@@ -571,6 +571,58 @@ class Store extends Backend
                 } else {
                     $this->error();
                 }
+            }
+
+        }
+
+    }
+
+    /** 
+     * 确认买家保证金到账
+     */
+    public function buyeraccount()
+    {
+        $this->model = model('QuotedPrice');
+        if ($this->request->isAjax()) {
+
+            $id = $this->request->post('id');
+        
+            $result = $this->model->save(['buyer_payment_status' => 'to_the_account'], function ($query) use ($id) {
+                $query->where('id', $id);
+            });
+            
+            if ($result) {
+
+                $this->success();
+
+            } else {
+                $this->error();
+            }
+
+        }
+
+    }
+
+    /** 
+     * 确认卖家保证金到账
+     */
+    public function selleraccount()
+    {
+        $this->model = model('QuotedPrice');
+        if ($this->request->isAjax()) {
+
+            $id = $this->request->post('id');
+        
+            $result = $this->model->save(['seller_payment_status' => 'to_the_account'], function ($query) use ($id) {
+                $query->where('id', $id);
+            });
+            
+            if ($result) {
+
+                $this->success();
+
+            } else {
+                $this->error();
             }
 
         }

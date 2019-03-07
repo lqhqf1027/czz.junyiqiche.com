@@ -696,25 +696,54 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'user.avatar', title: __('报价用户头像'), formatter: Table.api.formatter.images, operate:false},
                         {field: 'user.mobile', title: __('报价用户手机')},
 
+                        {field: 'seller_payment_status', title: __('卖家支付状态'), formatter: Controller.api.formatter.seller_payment, operate:false},
+                        {field: 'buyer_payment_status', title: __('买家（报价人）支付状态'), formatter: Controller.api.formatter.buyer_payment, operate:false},
+
                         {field: 'money', title: __('报价价格（元）')},
                         {field: 'quotationtime', title: __('报价时间'), operate:false, addclass:'datetimerange', formatter: Controller.api.formatter.datetime},
                         {field: 'operate', title: __('Operate'), table: table, 
                             buttons: [
                                 /**
-                                 * 确定交易
+                                 * 是否确定交易
                                  */
                                 {
-                                    name: 'click_the_deal',
+                                    name: 'start_the_deal',
                                     text: '确定交易',
                                     icon: 'fa fa-eye', 
                                     extend: 'data-toggle="tooltip"', 
                                     title: __('确定交易'), 
-                                    classname: 'btn btn-xs btn-success btn-click_deal',
+                                    classname: 'btn btn-xs btn-success btn-start_deal',
+                                    hidden: function (row, value, index) {
+                                        if (row.deal_status == 'start_the_deal') {
+                                            return false;
+                                        }
+                                        else if (row.deal_status == 'close_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'click_the_deal') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 可以交易，待支付保证金
+                                 */
+                                {
+                                    name: 'click_the_deal',
+                                    text: '可以交易，待支付保证金',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('可以交易，待支付保证金'), 
+                                    classname: 'btn btn-xs btn-primary',
                                     hidden: function (row, value, index) {
                                         if (row.deal_status == 'click_the_deal') {
                                             return false;
                                         }
                                         else if (row.deal_status == 'close_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'start_the_deal') {
                                             return true;
                                         }
                                     },
@@ -725,16 +754,112 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                  */
                                 {
                                     name: 'close_the_deal',
-                                    text: '可以交易',
+                                    text: '保证金已支付',
                                     icon: 'fa fa-eye', 
                                     extend: 'data-toggle="tooltip"', 
-                                    title: __('可以交易'), 
-                                    classname: 'btn btn-xs btn-primary',
+                                    title: __('保证金已支付'), 
+                                    classname: 'btn btn-xs btn-success',
                                     hidden: function (row, value, index) {
                                         if (row.deal_status == 'close_the_deal') {
                                             return false;
                                         }
                                         else if (row.deal_status == 'click_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'start_the_deal') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+
+                                /**
+                                 * 确认买家保证金到账
+                                 */
+                                {
+                                    name: 'buyer_payment_status',
+                                    text: '确认买家保证金到账',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('确认买家保证金到账'), 
+                                    classname: 'btn btn-xs btn-primary btn-buyer_account',
+                                    hidden: function (row, value, index) {
+                                        if (row.buyer_payment_status == 'already_paid') {
+                                            return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 买家保证金已经到账
+                                 */
+                                {
+                                    name: 'buyer_payment_status',
+                                    text: '买家保证金已经到账',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('买家保证金已经到账'), 
+                                    classname: 'btn btn-xs btn-success',
+                                    hidden: function (row, value, index) {
+                                        if (row.buyer_payment_status == 'to_the_account') {
+                                            return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 确认卖家保证金到账
+                                 */
+                                {
+                                    name: 'seller_payment_status',
+                                    text: '确认卖家保证金到账',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('确认卖家保证金到账'), 
+                                    classname: 'btn btn-xs btn-success btn-seller_account',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'already_paid') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 确认卖家保证金已经到账
+                                 */
+                                {
+                                    name: 'seller_payment_status',
+                                    text: '卖家保证金已经到账',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('卖家保证金已经到账'), 
+                                    classname: 'btn btn-xs btn-success',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'to_the_account') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'already_paid') {
                                             return true;
                                         }
                                     },
@@ -796,25 +921,55 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'user.avatar', title: __('报价用户头像'), formatter: Table.api.formatter.images, operate:false},
                         {field: 'user.mobile', title: __('报价用户手机')},
 
+                        {field: 'seller_payment_status', title: __('卖家支付状态'), formatter: Controller.api.formatter.seller_payment, operate:false},
+                        {field: 'buyer_payment_status', title: __('买家（报价人）支付状态'), formatter: Controller.api.formatter.buyer_payment, operate:false},
+
+
                         {field: 'money', title: __('报价价格（元）')},
                         {field: 'quotationtime', title: __('报价时间'), operate:false, addclass:'datetimerange', formatter: Controller.api.formatter.datetime},
                         {field: 'operate', title: __('Operate'), table: table, 
                             buttons: [
-                                /**
-                                 * 确定交易
+                                 /**
+                                 * 是否确定交易
                                  */
                                 {
-                                    name: 'click_the_deal',
+                                    name: 'start_the_deal',
                                     text: '确定交易',
                                     icon: 'fa fa-eye', 
                                     extend: 'data-toggle="tooltip"', 
                                     title: __('确定交易'), 
-                                    classname: 'btn btn-xs btn-success btn-click_deal',
+                                    classname: 'btn btn-xs btn-success btn-start_deal',
+                                    hidden: function (row, value, index) {
+                                        if (row.deal_status == 'start_the_deal') {
+                                            return false;
+                                        }
+                                        else if (row.deal_status == 'close_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'click_the_deal') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 可以交易，待支付保证金
+                                 */
+                                {
+                                    name: 'click_the_deal',
+                                    text: '可以交易，待支付保证金',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('可以交易，待支付保证金'), 
+                                    classname: 'btn btn-xs btn-primary',
                                     hidden: function (row, value, index) {
                                         if (row.deal_status == 'click_the_deal') {
                                             return false;
                                         }
                                         else if (row.deal_status == 'close_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'start_the_deal') {
                                             return true;
                                         }
                                     },
@@ -825,16 +980,19 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                  */
                                 {
                                     name: 'close_the_deal',
-                                    text: '可以交易',
+                                    text: '保证金已支付',
                                     icon: 'fa fa-eye', 
                                     extend: 'data-toggle="tooltip"', 
-                                    title: __('可以交易'), 
-                                    classname: 'btn btn-xs btn-primary',
+                                    title: __('保证金已支付'), 
+                                    classname: 'btn btn-xs btn-success',
                                     hidden: function (row, value, index) {
                                         if (row.deal_status == 'close_the_deal') {
                                             return false;
                                         }
                                         else if (row.deal_status == 'click_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'start_the_deal') {
                                             return true;
                                         }
                                     },
@@ -1058,7 +1216,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                      * @param row
                      * @param index
                      */
-                    'click .btn-click_deal': function (e, value, row, index) {
+                    'click .btn-start_deal': function (e, value, row, index) {
                         e.stopPropagation();
                         e.preventDefault();
                         var that = this;
@@ -1078,7 +1236,97 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                 var options = table.bootstrapTable('getOptions');
                                 Fast.api.ajax({
 
-                                    url: 'merchant/store/closedeal',
+                                    url: 'merchant/store/startdeal',
+                                    data: {id: row[options.pk]}
+ 
+                                }, function (data, ret) {
+
+                                    Toastr.success('操作成功');
+                                    Layer.close(index);
+                                    table.bootstrapTable('refresh');
+                                    return false;
+                                }, function (data, ret) {
+                                    //失败的回调
+                                    Toastr.success(ret.msg);
+
+                                    return false;
+                                });
+                            }
+                        );
+                    },
+                    /**
+                     * 确认买家保证金到账
+                     * @param e
+                     * @param value
+                     * @param row
+                     * @param index
+                     */
+                    'click .btn-buyer_account': function (e, value, row, index) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        var that = this;
+                        var top = $(that).offset().top - $(window).scrollTop();
+                        var left = $(that).offset().left - $(window).scrollLeft() - 260;
+                        if (top + 154 > $(window).height()) {
+                            top = top - 154;
+                        }
+                        if ($(window).width() < 480) {
+                            top = left = undefined;
+                        }
+                        Layer.confirm(
+                            __('是否确认买家保证金到账?'),
+                            { icon: 3, title: __('Warning'), offset: [top, left], shadeClose: true },
+                            function (index) {
+                                var table = $(that).closest('table');
+                                var options = table.bootstrapTable('getOptions');
+                                Fast.api.ajax({
+
+                                    url: 'merchant/store/buyeraccount',
+                                    data: {id: row[options.pk]}
+ 
+                                }, function (data, ret) {
+
+                                    Toastr.success('操作成功');
+                                    Layer.close(index);
+                                    table.bootstrapTable('refresh');
+                                    return false;
+                                }, function (data, ret) {
+                                    //失败的回调
+                                    Toastr.success(ret.msg);
+
+                                    return false;
+                                });
+                            }
+                        );
+                    },
+                    /**
+                     * 确认卖家保证金到账
+                     * @param e
+                     * @param value
+                     * @param row
+                     * @param index
+                     */
+                    'click .btn-seller_account': function (e, value, row, index) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        var that = this;
+                        var top = $(that).offset().top - $(window).scrollTop();
+                        var left = $(that).offset().left - $(window).scrollLeft() - 260;
+                        if (top + 154 > $(window).height()) {
+                            top = top - 154;
+                        }
+                        if ($(window).width() < 480) {
+                            top = left = undefined;
+                        }
+                        Layer.confirm(
+                            __('是否确认卖家保证金到账?'),
+                            { icon: 3, title: __('Warning'), offset: [top, left], shadeClose: true },
+                            function (index) {
+                                var table = $(that).closest('table');
+                                var options = table.bootstrapTable('getOptions');
+                                Fast.api.ajax({
+
+                                    url: 'merchant/store/selleraccount',
                                     data: {id: row[options.pk]}
  
                                 }, function (data, ret) {
@@ -1175,6 +1423,34 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         return value ? Moment(parseInt(value) * 1000).format(datetimeFormat) : __('None');
                     }
 
+                },
+                buyer_payment: function (value, row, index) {
+                        
+                    if (row.buyer_payment_status ==  'to_be_paid') {
+                        return "<strong class='text-danger'>待支付</strong>";
+                        
+                    }
+                    if (row.buyer_payment_status ==  'already_paid') {
+                        return "<strong class='text-success'>支付保证金成功</strong>";
+                    }
+                    if (row.buyer_payment_status ==  'to_the_account') {
+                        return "<strong class='text-success'>保证金已到账</strong>";
+                    }
+                        
+                },
+                seller_payment: function (value, row, index) {
+                        
+                    if (row.seller_payment_status ==  'to_be_paid') {
+                        return "<strong class='text-danger'>待支付</strong>";
+                        
+                    }
+                    if (row.seller_payment_status ==  'already_paid') {
+                        return "<strong class='text-success'>支付保证金成功</strong>";
+                    }
+                    if (row.seller_payment_status ==  'to_the_account') {
+                        return "<strong class='text-success'>保证金已到账</strong>";
+                    }
+                        
                 },
             },
         }
