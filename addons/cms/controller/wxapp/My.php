@@ -261,8 +261,12 @@ class My extends Base
             QuotedPrice::where('id', 'in', $quotedPriceId)->setField('is_see', 1);
         }
 
-        //收到报价
+        //收到报价---卖车
         $ModelsInfoList = $this->ModelsInfo('ModelsInfo', $user_id, ['type' => 'sell']);
+        //收到报价---买车
+        $BuycarModel = $this->ModelsInfo('BuycarModel', $user_id, ['type' => 'buy']);
+        //收到报价合并
+        $MyModelsInfoList = array_merge($ModelsInfoList, $BuycarModel);
 
         //我的报价----卖车
         $SellcarModelList = $this->ModelsInfo('ModelsInfo', null, ['user_ids' => $user_id]);
@@ -272,7 +276,7 @@ class My extends Base
         $MyBuycarModelList = array_merge($SellcarModelList, $BuycarModelList);
 
         //收到报价
-        $QuotedPriceList['sell'] = $ModelsInfoList;
+        $QuotedPriceList['sell'] = $MyModelsInfoList;
         //我的报价
         $QuotedPriceList['buy'] = $MyBuycarModelList;
 
@@ -290,20 +294,28 @@ class My extends Base
         //卖车默认---图片
         $default_image = ConfigModel::get(['name' => 'default_picture'])->value;
 
+        $field = $user_id == null ? null : ['user_id' => $user_id];
         $modelsimages = $models == 'ModelsInfo' ? ',modelsimages' : '';
-        $ModelsInfo = collection(QuotedPrice::field('id,user_ids,models_info_id,money,quotationtime,type,buy_car_id,bond,offeror_payment_status,offeree_payment_status' )
-            ->with([$models => function ($q) use ($user_id, $modelsimages) {
-                $field = $user_id == null ? null : ['user_id' => $user_id];
+        $ModelsInfo = collection(QuotedPrice::field('id,user_ids,models_info_id,money,quotationtime,type,buy_car_id,bond,seller_payment_status,buyer_payment_status,deal_status' )
+            ->with([$models => function ($q) use ($field, $modelsimages) {
 
                 $q->where($field)->withField('id,models_name,guide_price,user_id,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,brand_id' . $modelsimages);
 
             },
-                'user' => function ($q) {
-                    $q->withField('id,nickname,avatar,mobile');
-                }])
+            'user' => function ($query) {
+                    $query->withField('id,nickname,avatar,mobile');
+            }])
             ->where($where)->select())->toArray();
-
+        
+        
         foreach ($ModelsInfo as $k => $v) {
+
+            if ($models == 'BuycarModel') {
+                $ModelsInfo[$k]['models_info'] = $v['buycar_model'];
+                unset($ModelsInfo[$k]['buycar_model']);
+            }
+
+            $ModelsInfo[$k]['models_info']['modelsimages'] = $models == 'ModelsInfo' ? explode(',', $ModelsInfo[$k]['models_info']['modelsimages'])[0] : $default_image;
 
             $brand_info = Brand::where('id', $ModelsInfo[$k]['models_info']['brand_id'])->field('name,brand_default_images')->find();
             $ModelsInfo[$k]['models_info']['brand_name'] = $brand_info['name'];
@@ -316,25 +328,6 @@ class My extends Base
             $ModelsInfo[$k]['user']['mobile'] = $default_phone;
             $ModelsInfo[$k]['models_info']['car_licensetime'] = $ModelsInfo[$k]['models_info']['car_licensetime'] ? date('Y-m', $ModelsInfo[$k]['models_info']['car_licensetime']) : null;
             
-            //是否可以取消订单
-            $ModelsInfo[$k]['cancel_order'] = $ModelsInfo[$k]['offeror_payment_status'] == $ModelsInfo[$k]['offeree_payment_status'] ? '1' : '0';
-            
-        }
-
-        if ($models == 'ModelsInfo') {
-
-            foreach ($ModelsInfo as $k => $v) {
-                $ModelsInfo[$k]['models_info']['modelsimages'] = explode(',', $ModelsInfo[$k]['models_info']['modelsimages'])[0];
-            }
-        }
-
-        if ($models == 'BuycarModel') {
-
-            foreach ($ModelsInfo as $k => $v) {
-                $ModelsInfo[$k]['models_info'] = $v['buycar_model'];
-                $ModelsInfo[$k]['models_info']['modelsimages'] = $default_image;
-                unset($ModelsInfo[$k]['buycar_model']);
-            }
         }
 
         return $ModelsInfo;
