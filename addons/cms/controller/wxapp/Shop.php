@@ -320,7 +320,7 @@ class Shop extends Base
     /**
      * 取消订单
      */
-    public function cancellation_order()
+    public function  cancellation_order()
     {
         $store_id = $this->request->post('store_id');
 
