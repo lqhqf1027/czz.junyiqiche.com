@@ -170,7 +170,7 @@ class Common extends Base
     public static function writeFormId($fomrId, $user_id)
     {
         try {
-            $data = FormIds::create(['form_id' => $fomrId, 'user_id' => $user_id]);
+            $data = FormIds::create(['form_id' => $fomrId, 'user_id' => $user_id, 'status' => 1]);
 
         } catch (Exception $e) {
             return $e->getMessage();
