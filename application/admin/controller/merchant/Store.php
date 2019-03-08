@@ -12,6 +12,7 @@ use think\Config;
 use think\Db;
 use GuzzleHttp\Client;
 use addons\cms\model\Config as ConfigModel;
+use addons\cms\controller\wxapp\Wxpay;
 /**
  * 店铺
  *
@@ -150,11 +151,58 @@ class Store extends Backend
             } else {
                 $this->error();
             }
+            
+            //模板推送
+            //获取formId
+            $storeData = $this->model->where('id', $id)->find();
+            $formId = current(array_values(Common::getFormId($storeData['user_id'])))['form_id']; 
+            if ($formId) {
+                $keyword1 = $storeData['store_name'];
+                $openid = self::getOpenid($storeData['user_id']);
+                $temp_msg = array(
+                    'touser' => "{$openid}",
+                    'template_id' => "B-gukPlG-T-2ydDlkGqh73ArScwp90Nm4blPdJ7fXdw",
+                    'page' => "",
+                    'form_id' => "{$formId}",
+                    'data' => array(
+                        'keyword1' => array(
+                            'value' => "{$keyword1}",
+                        ),
+                        'keyword2' => array(
+                            'value' => "已通过审核",
+                        ),
+                        'keyword3' => array(
+                            'value' => "店铺实名认证",
+                        ),
+                        'keyword4' => array(
+                            'value' => date('Y-m-d H:i:s', time()),
+                        )
+                    ),
+                );
+                $res = Wxpay::sendXcxTemplateMsg(json_encode($temp_msg));
+
+                if ($res['error_code'] == 0) {
+
+                    Db::name('form_ids')->where(['user_id' => $storeData['user_id'], 'form_id' => $formId])->setField('status', 0);
+                }
+            }
 
         }
 
     }
 
+    /**
+     * 获取用户openid
+     * @param $user_id
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public static function getOpenid($user_id)
+    {
+        return Db::name('third')->where(['user_id' => $user_id])->find()['openid'];
+    }
 
     /** 
      * 审核店铺----未通过
@@ -578,7 +626,7 @@ class Store extends Backend
     }
 
     /** 
-     * 确认买家保证金到账
+     * 确认买家保证金是否到账
      */
     public function buyeraccount()
     {
@@ -604,7 +652,7 @@ class Store extends Backend
     }
 
     /** 
-     * 确认卖家保证金到账
+     * 确认卖家保证金是否到账
      */
     public function selleraccount()
     {

@@ -256,7 +256,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     icon: 'fa fa-eye', 
                                     extend: 'data-toggle="tooltip"', 
                                     title: __('查看店铺在售车型'), 
-                                    classname: 'btn btn-xs btn-primary btn-store_salemodels',
+                                    classname: 'btn btn-xs btn-primary btn-store_salemodels btn-addtabs',
+                                    url: 'merchant/store/salemodels',
                                     hidden: function (row, value, index) {
                                         if (row.salecount != 0) {
                                             return false;
@@ -271,12 +272,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                  * 查看店铺想买车型
                                  */
                                 {
-                                    name: 'store_salemodels',
+                                    name: 'store_buymodels',
                                     text: '查看店铺想买车型',
                                     icon: 'fa fa-eye', 
                                     extend: 'data-toggle="tooltip"', 
                                     title: __('查看店铺想买车型'), 
-                                    classname: 'btn btn-xs btn-info btn-store_buymodels',
+                                    classname: 'btn btn-xs btn-info btn-store_buymodels btn-addtabs',
+                                    url: 'merchant/store/buymodels',
                                     hidden: function (row, value, index) {
                                         if (row.buycount != 0) {
                                             return false;
@@ -509,7 +511,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     icon: 'fa fa-eye', 
                                     extend: 'data-toggle="tooltip"', 
                                     title: __('查看车型的报价'), 
-                                    classname: 'btn btn-xs btn-success btn-salemodels_price',
+                                    classname: 'btn btn-xs btn-success btn-salemodels_price btn-addtabs',
+                                    url: 'merchant/store/salemodelsprice',
                                     hidden: function (row, value, index) {
                                         if (row.count != 0) {
                                             return false;
@@ -611,7 +614,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     icon: 'fa fa-eye', 
                                     extend: 'data-toggle="tooltip"', 
                                     title: __('查看车型的报价'), 
-                                    classname: 'btn btn-xs btn-success btn-buymodels_price',
+                                    classname: 'btn btn-xs btn-success btn-buymodels_price btn-addtabs',
+                                    url: 'merchant/store/buymodelsprice',
                                     hidden: function (row, value, index) {
                                         if (row.count != 0) {
                                             return false;
@@ -696,7 +700,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'user.avatar', title: __('报价用户头像'), formatter: Table.api.formatter.images, operate:false},
                         {field: 'user.mobile', title: __('报价用户手机')},
 
-                        {field: 'seller_payment_status', title: __('卖家支付状态'), formatter: Controller.api.formatter.seller_payment, operate:false},
+                        {field: 'seller_payment_status', title: __('卖家（被报价人）支付状态'), formatter: Controller.api.formatter.seller_payment, operate:false},
                         {field: 'buyer_payment_status', title: __('买家（报价人）支付状态'), formatter: Controller.api.formatter.buyer_payment, operate:false},
 
                         {field: 'money', title: __('报价价格（元）')},
@@ -793,19 +797,22 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.buyer_payment_status == 'to_the_account') {
                                             return true;
                                         }
+                                        else if (row.buyer_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
                                     },
 
                                 },
                                 /**
-                                 * 买家保证金已经到账
+                                 * 买家保证金已经到账，等待收货
                                  */
                                 {
                                     name: 'buyer_payment_status',
-                                    text: '买家保证金已经到账',
+                                    text: '等待买家收货',
                                     icon: 'fa fa-eye', 
                                     extend: 'data-toggle="tooltip"', 
-                                    title: __('买家保证金已经到账'), 
-                                    classname: 'btn btn-xs btn-success',
+                                    title: __('等待买家收货'), 
+                                    classname: 'btn btn-xs btn-danger',
                                     hidden: function (row, value, index) {
                                         if (row.buyer_payment_status == 'to_the_account') {
                                             return false;
@@ -816,7 +823,38 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.buyer_payment_status == 'already_paid') {
                                             return true;
                                         }
+                                        else if (row.buyer_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
                                     },
+                                    
+
+                                },
+                                /**
+                                 * 买家已经收货
+                                 */
+                                {
+                                    name: 'buyer_payment_status',
+                                    text: '买家已经收货',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('买家已经收货'), 
+                                    classname: 'btn btn-xs btn-success',
+                                    hidden: function (row, value, index) {
+                                        if (row.buyer_payment_status == 'confirm_receipt') {
+                                            return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                    },
+                                    
 
                                 },
                                 /**
@@ -839,19 +877,22 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.seller_payment_status == 'to_the_account') {
                                             return true;
                                         }
+                                        else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
                                     },
 
                                 },
                                 /**
-                                 * 确认卖家保证金已经到账
+                                 * 卖家保证金已经到账，等待发货
                                  */
                                 {
                                     name: 'seller_payment_status',
-                                    text: '卖家保证金已经到账',
+                                    text: '等待卖家发货',
                                     icon: 'fa fa-eye', 
                                     extend: 'data-toggle="tooltip"', 
-                                    title: __('卖家保证金已经到账'), 
-                                    classname: 'btn btn-xs btn-success',
+                                    title: __('等待卖家发货'), 
+                                    classname: 'btn btn-xs btn-danger',
                                     hidden: function (row, value, index) {
                                         if (row.seller_payment_status == 'to_the_account') {
                                             return false;
@@ -860,6 +901,35 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.seller_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 卖家已经发货
+                                 */
+                                {
+                                    name: 'seller_payment_status',
+                                    text: '卖家已经发货',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('卖家已经发货'), 
+                                    classname: 'btn btn-xs btn-success',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'confirm_receipt') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_the_account') {
                                             return true;
                                         }
                                     },
@@ -921,9 +991,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'user.avatar', title: __('报价用户头像'), formatter: Table.api.formatter.images, operate:false},
                         {field: 'user.mobile', title: __('报价用户手机')},
 
-                        {field: 'seller_payment_status', title: __('卖家支付状态'), formatter: Controller.api.formatter.seller_payment, operate:false},
+                        {field: 'seller_payment_status', title: __('卖家（被报价人）支付状态'), formatter: Controller.api.formatter.seller_payment, operate:false},
                         {field: 'buyer_payment_status', title: __('买家（报价人）支付状态'), formatter: Controller.api.formatter.buyer_payment, operate:false},
-
 
                         {field: 'money', title: __('报价价格（元）')},
                         {field: 'quotationtime', title: __('报价时间'), operate:false, addclass:'datetimerange', formatter: Controller.api.formatter.datetime},
@@ -996,6 +1065,165 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                     },
+
+                                },
+
+                                /**
+                                 * 确认买家保证金到账
+                                 */
+                                {
+                                    name: 'buyer_payment_status',
+                                    text: '确认买家保证金到账',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('确认买家保证金到账'), 
+                                    classname: 'btn btn-xs btn-primary btn-buyer_account',
+                                    hidden: function (row, value, index) {
+                                        if (row.buyer_payment_status == 'already_paid') {
+                                            return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 买家保证金已经到账，等待发货
+                                 */
+                                {
+                                    name: 'buyer_payment_status',
+                                    text: '等待买家收货',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('等待买家收货'), 
+                                    classname: 'btn btn-xs btn-danger',
+                                    hidden: function (row, value, index) {
+                                        if (row.buyer_payment_status == 'to_the_account') {
+                                            return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 买家已经收货
+                                 */
+                                {
+                                    name: 'buyer_payment_status',
+                                    text: '买家已经收货',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('买家已经收货'), 
+                                    classname: 'btn btn-xs btn-success',
+                                    hidden: function (row, value, index) {
+                                        if (row.buyer_payment_status == 'confirm_receipt') {
+                                            return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                    },
+                                    
+
+                                },
+                                /**
+                                 * 确认卖家保证金到账
+                                 */
+                                {
+                                    name: 'seller_payment_status',
+                                    text: '确认卖家保证金到账',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('确认卖家保证金到账'), 
+                                    classname: 'btn btn-xs btn-success btn-seller_account',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'already_paid') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 卖家保证金已经到账，等待发货
+                                 */
+                                {
+                                    name: 'seller_payment_status',
+                                    text: '等待卖家发货',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('等待卖家发货'), 
+                                    classname: 'btn btn-xs btn-danger',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'to_the_account') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 卖家已经发货
+                                 */
+                                {
+                                    name: 'buyer_payment_status',
+                                    text: '卖家已经发货',
+                                    icon: 'fa fa-eye', 
+                                    extend: 'data-toggle="tooltip"', 
+                                    title: __('卖家已经发货'), 
+                                    classname: 'btn btn-xs btn-success',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'confirm_receipt') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                    },
+                                    
 
                                 },
                                 
@@ -1133,82 +1361,82 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         Fast.api.open(Table.api.replaceurl(url, row, table), __('查看店铺推广'), $(this).data() || {})
 
                     },
-                    /**
-                     * 查看店铺在售车型
-                     * @param e
-                     * @param value
-                     * @param row
-                     * @param index
-                     */
-                    'click .btn-store_salemodels': function (e, value, row, index) {
-                        $(".btn-store_salemodels").data("area", ["95%", "95%"]);
-                        e.stopPropagation();
-                        e.preventDefault();
-                        var table = $(this).closest('table');
-                        var options = table.bootstrapTable('getOptions');
-                        var ids = row[options.pk];
-                        row = $.extend({}, row ? row : {}, {ids: ids});
-                        var url = 'merchant/store/salemodels';
-                        Fast.api.open(Table.api.replaceurl(url, row, table), __('查看店铺在售车型'), $(this).data() || {})
+                    // /**
+                    //  * 查看店铺在售车型
+                    //  * @param e
+                    //  * @param value
+                    //  * @param row
+                    //  * @param index
+                    //  */
+                    // 'click .btn-store_salemodels': function (e, value, row, index) {
+                    //     $(".btn-store_salemodels").data("area", ["95%", "95%"]);
+                    //     e.stopPropagation();
+                    //     e.preventDefault();
+                    //     var table = $(this).closest('table');
+                    //     var options = table.bootstrapTable('getOptions');
+                    //     var ids = row[options.pk];
+                    //     row = $.extend({}, row ? row : {}, {ids: ids});
+                    //     var url = 'merchant/store/salemodels';
+                    //     Fast.api.open(Table.api.replaceurl(url, row, table), __('查看店铺在售车型'), $(this).data() || {})
 
-                    },
-                    /**
-                     * 查看店铺想买车型
-                     * @param e
-                     * @param value
-                     * @param row
-                     * @param index
-                     */
-                    'click .btn-store_buymodels': function (e, value, row, index) {
-                        $(".btn-store_buymodels").data("area", ["95%", "95%"]);
-                        e.stopPropagation();
-                        e.preventDefault();
-                        var table = $(this).closest('table');
-                        var options = table.bootstrapTable('getOptions');
-                        var ids = row[options.pk];
-                        row = $.extend({}, row ? row : {}, {ids: ids});
-                        var url = 'merchant/store/buymodels';
-                        Fast.api.open(Table.api.replaceurl(url, row, table), __('查看店铺想买车型'), $(this).data() || {})
+                    // },
+                    // /**
+                    //  * 查看店铺想买车型
+                    //  * @param e
+                    //  * @param value
+                    //  * @param row
+                    //  * @param index
+                    //  */
+                    // 'click .btn-store_buymodels': function (e, value, row, index) {
+                    //     $(".btn-store_buymodels").data("area", ["95%", "95%"]);
+                    //     e.stopPropagation();
+                    //     e.preventDefault();
+                    //     var table = $(this).closest('table');
+                    //     var options = table.bootstrapTable('getOptions');
+                    //     var ids = row[options.pk];
+                    //     row = $.extend({}, row ? row : {}, {ids: ids});
+                    //     var url = 'merchant/store/buymodels';
+                    //     Fast.api.open(Table.api.replaceurl(url, row, table), __('查看店铺想买车型'), $(this).data() || {})
 
-                    },
-                    /**
-                     * 查看店铺在售车型的报价
-                     * @param e
-                     * @param value
-                     * @param row
-                     * @param index
-                     */
-                    'click .btn-salemodels_price': function (e, value, row, index) {
-                        $(".btn-salemodels_price").data("area", ["95%", "95%"]);
-                        e.stopPropagation();
-                        e.preventDefault();
-                        var table = $(this).closest('table');
-                        var options = table.bootstrapTable('getOptions');
-                        var ids = row[options.pk];
-                        row = $.extend({}, row ? row : {}, {ids: ids});
-                        var url = 'merchant/store/salemodelsprice';
-                        Fast.api.open(Table.api.replaceurl(url, row, table), __('查看车型报价'), $(this).data() || {})
+                    // },
+                    // /**
+                    //  * 查看店铺在售车型的报价
+                    //  * @param e
+                    //  * @param value
+                    //  * @param row
+                    //  * @param index
+                    //  */
+                    // 'click .btn-salemodels_price': function (e, value, row, index) {
+                    //     $(".btn-salemodels_price").data("area", ["95%", "95%"]);
+                    //     e.stopPropagation();
+                    //     e.preventDefault();
+                    //     var table = $(this).closest('table');
+                    //     var options = table.bootstrapTable('getOptions');
+                    //     var ids = row[options.pk];
+                    //     row = $.extend({}, row ? row : {}, {ids: ids});
+                    //     var url = 'merchant/store/salemodelsprice';
+                    //     Fast.api.open(Table.api.replaceurl(url, row, table), __('查看车型报价'), $(this).data() || {})
 
-                    },
-                    /**
-                     * 查看店铺想买车型的报价
-                     * @param e
-                     * @param value
-                     * @param row
-                     * @param index
-                     */
-                    'click .btn-buymodels_price': function (e, value, row, index) {
-                        $(".btn-buymodels_price").data("area", ["95%", "95%"]);
-                        e.stopPropagation();
-                        e.preventDefault();
-                        var table = $(this).closest('table');
-                        var options = table.bootstrapTable('getOptions');
-                        var ids = row[options.pk];
-                        row = $.extend({}, row ? row : {}, {ids: ids});
-                        var url = 'merchant/store/buymodelsprice';
-                        Fast.api.open(Table.api.replaceurl(url, row, table), __('查看车型报价'), $(this).data() || {})
+                    // },
+                    // /**
+                    //  * 查看店铺想买车型的报价
+                    //  * @param e
+                    //  * @param value
+                    //  * @param row
+                    //  * @param index
+                    //  */
+                    // 'click .btn-buymodels_price': function (e, value, row, index) {
+                    //     $(".btn-buymodels_price").data("area", ["95%", "95%"]);
+                    //     e.stopPropagation();
+                    //     e.preventDefault();
+                    //     var table = $(this).closest('table');
+                    //     var options = table.bootstrapTable('getOptions');
+                    //     var ids = row[options.pk];
+                    //     row = $.extend({}, row ? row : {}, {ids: ids});
+                    //     var url = 'merchant/store/buymodelsprice';
+                    //     Fast.api.open(Table.api.replaceurl(url, row, table), __('查看车型报价'), $(this).data() || {})
 
-                    },
+                    // },
                     /**
                      * 确定交易
                      * @param e
@@ -1434,7 +1662,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         return "<strong class='text-success'>支付保证金成功</strong>";
                     }
                     if (row.buyer_payment_status ==  'to_the_account') {
-                        return "<strong class='text-success'>保证金已到账</strong>";
+                        return "<strong class='text-danger'>保证金已到账，待收货</strong>";
+                    }
+                    if (row.buyer_payment_status ==  'confirm_receipt') {
+                        return "<strong class='text-success'>买家已经收货</strong>";
                     }
                         
                 },
@@ -1448,7 +1679,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         return "<strong class='text-success'>支付保证金成功</strong>";
                     }
                     if (row.seller_payment_status ==  'to_the_account') {
-                        return "<strong class='text-success'>保证金已到账</strong>";
+                        return "<strong class='text-danger'>保证金已到账，待发货</strong>";
+                    }
+                    if (row.seller_payment_status ==  'confirm_receipt') {
+                        return "<strong class='text-success'>卖家已经发货</strong>";
                     }
                         
                 },
