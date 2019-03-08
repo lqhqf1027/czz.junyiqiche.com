@@ -27,6 +27,5 @@ return array(
     'GuzzleHttp\\Promise\\' => array($vendorDir . '/guzzlehttp/promises/src'),
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
     'Endroid\\QrCode\\' => array($vendorDir . '/endroid/qr-code/src'),
-    'EasyWeChat\\' => array($vendorDir . '/overtrue/wechat/src'),
     'Cron\\' => array($vendorDir . '/mtdowling/cron-expression/src/Cron'),
 );
