@@ -502,21 +502,19 @@ class My extends Base
         if (!QuotedPrice::get($quoted_id)) {
             $this->error('该订单已被取消');
         }
-        Db::startTrans();
         try {
-            // $check = QuotedPrice::where([
-            //     'id' => $quoted_id,
-            //     'offeror_payment_status|offeree_payment_status' => 'already_paid'
-            // ])->lock(true)->find();
 
-            // if ($check) {
-            //     throw new \Exception('已完成支付，订单不能取消');
-            // }
+//            $check = QuotedPrice::where([
+//                'id' => $quoted_id,
+//                'offeror_payment_status|offeree_payment_status' => 'already_paid'
+//            ])->lock(true)->find();
+//
+//            if ($check) {
+//                throw new \Exception('已完成支付，订单不能取消');
+//            }
 
             $res = QuotedPrice::destroy($quoted_id);
-            Db::commit();
         } catch (\Exception $e) {
-            Db::rollback();
             $this->error($e->getMessage());
         }
 

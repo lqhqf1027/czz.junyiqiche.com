@@ -39,25 +39,15 @@ class ModelsInfo  extends Model
         $query->where('shelfismenu','1');
     }
 
-//    public function setKilometresAttr($value)
-//    {
-//        return floatval(findNum($value))*10000;
-//    }
-//
-//    public function setGuidePriceAttr($value)
-//    {
-//        return floatval(findNum($value))*10000;
-//    }
+    public function setStoredescriptionAttr($value)
+    {
+        return emoji_encode($value);
+    }
 
-//    public function setFactoryTimeAttr($value)
-//    {
-//        return strtotime($value);
-//    }
-//
-//    public function setCarLicenseTimeAttr($value)
-//    {
-//        return strtotime($value);
-//    }
+    public function getStoredescriptionAttr($value)
+    {
+        return emoji_decode($value);
+    }
 
     /**
      * 关联店铺表

@@ -28,24 +28,15 @@ class BuycarModel extends Model
         return 'buy';
     }
 
-//    public function setKilometresAttr($value)
-//    {
-//        return !$value?'':floatval(findNum($value))*10000;
-//    }
-//    public function setGuidePriceAttr($value)
-//    {
-//        return floatval(findNum($value))*10000;
-//    }
+    public function setStoredescriptionAttr($value)
+    {
+        return emoji_encode($value);
+    }
 
-//    public function setFactoryTimeAttr($value)
-//    {
-//        return strtotime($value);
-//    }
-//
-//    public function setCarLicensetimeAttr($value)
-//    {
-//        return strtotime($value);
-//    }
+    public function getStoredescriptionAttr($value)
+    {
+        return emoji_decode($value);
+    }
 
     // 定义全局的查询范围
     protected function base($query)
