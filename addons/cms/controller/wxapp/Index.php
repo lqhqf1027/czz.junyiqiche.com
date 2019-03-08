@@ -432,7 +432,6 @@ class Index extends Base
 
         $carInfo = $this->request->post('carInfo/a');
         $user_id = $this->request->post('user_id');
-        $modelsimages = $this->request->post('modelsimages');
         if (!$user_id || !$carInfo) {
             $this->error('缺少参数，请求失败', 'error');
         }
@@ -441,6 +440,7 @@ class Index extends Base
             $carInfo['store_id'] = $store_id;
             $carInfo['user_id'] = $user_id;
             $carInfo['browse_volume'] = rand(500, 2000);
+//            $carInfo['store_description'] = emoji_encode($carInfo['store_description']);
             $modelsInfo = new ModelsInfo();
             $modelsInfo->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
         }catch (Exception $e){
@@ -560,6 +560,7 @@ class Index extends Base
 
             $carInfo['user_id'] = $user_id;
             $carInfo['browse_volume'] = rand(500, 2000);
+//            $carInfo['store_description'] = emoji_encode($carInfo['store_description']);
             $buyModels = new BuycarModel();
             $buyModels->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
         }catch (Exception $e){
