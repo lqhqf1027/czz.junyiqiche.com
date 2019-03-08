@@ -504,14 +504,14 @@ class My extends Base
         }
         Db::startTrans();
         try {
-            $check = QuotedPrice::where([
-                'id' => $quoted_id,
-                'offeror_payment_status|offeree_payment_status' => 'already_paid'
-            ])->lock(true)->find();
+            // $check = QuotedPrice::where([
+            //     'id' => $quoted_id,
+            //     'offeror_payment_status|offeree_payment_status' => 'already_paid'
+            // ])->lock(true)->find();
 
-            if ($check) {
-                throw new \Exception('已完成支付，订单不能取消');
-            }
+            // if ($check) {
+            //     throw new \Exception('已完成支付，订单不能取消');
+            // }
 
             $res = QuotedPrice::destroy($quoted_id);
             Db::commit();
