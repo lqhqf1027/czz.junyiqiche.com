@@ -335,14 +335,14 @@ if (!function_exists('is_json')) {
 
 }
 
-if (!function_exists('getAccessToken')) {
+if (!function_exists('getWxAccessToken')) {
     /**
      * 该公共方法获取和全局缓存js-sdk需要使用的access_token
      * @param $appid
      * @param $secret
      * @return mixed
      */
-    function getAccessToken()
+    function getWxAccessToken()
     {
 
         $config = get_addon_config('cms');
