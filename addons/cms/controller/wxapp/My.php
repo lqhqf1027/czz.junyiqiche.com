@@ -327,7 +327,16 @@ class My extends Base
             $ModelsInfo[$k]['models_info']['guide_price'] = $ModelsInfo[$k]['models_info']['guide_price'] ? round(($ModelsInfo[$k]['models_info']['guide_price'] / 10000), 2) : null;
             $ModelsInfo[$k]['user']['mobile'] = $default_phone;
             $ModelsInfo[$k]['models_info']['car_licensetime'] = $ModelsInfo[$k]['models_info']['car_licensetime'] ? date('Y-m', $ModelsInfo[$k]['models_info']['car_licensetime']) : null;
-            
+            //是否可以取消订单
+            if ($ModelsInfo[$k]['seller_payment_status'] == 'to_be_paid' && $ModelsInfo[$k]['buyer_payment_status'] == 'to_be_paid') {
+
+                $ModelsInfo[$k]['cancel_order'] = 1;
+            }
+            else {
+
+                $ModelsInfo[$k]['cancel_order'] = 0;
+            }
+
         }
 
         return $ModelsInfo;
