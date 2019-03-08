@@ -169,6 +169,7 @@ class Common extends Base
      */
     public static function writeFormId($fomrId, $user_id)
     {
+
         try {
             $data = FormIds::create(['form_id' => $fomrId, 'user_id' => $user_id, 'status' => 1]);
 
@@ -178,9 +179,93 @@ class Common extends Base
 
     }
 
+    /**
+     * 根据用户选择的level_id 查出当前等级名称
+     * @param $level_id
+     * @return mixed
+     * @throws \think\exception\DbException
+     */
+    public static function getLevelStoreName($level_id)
+    {
+        return StoreLevel::get($level_id);
+    }
+
+
+    /**
+     * 获取订单号，from模板消息
+     * @param $user_id
+     * @return mixed
+     * @throws \think\exception\DbException
+     */
+    public static function getPayOrderNum($user_id, $store_id)
+    {
+        return PayOrder::get(['user_id' => $user_id, 'store_id' => $store_id]);
+    }
+
+    /**
+     * 获取formId
+     * @param $user_id
+     * @return array
+     * @throws \think\exception\DbException
+     */
     public static function getFormId($user_id)
     {
 
         return collection(FormIds::all())->toArray();
+    }
+
+    /**
+     * 检测是否存在重复支付
+     * @param $store_id
+     * @param $order_number
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public static function checkPay($store_id, $out_trade_no)
+    {
+        return collection(PayOrder::with(['pay_status'])->where(['store_id' => $store_id, 'out_trade_no' => $out_trade_no])->select())->toArray();
+    }
+
+    /**
+     * 发送小程序模板消息
+     * @param $data
+     * @return array
+     */
+
+    public static function sendXcxTemplateMsg($data = '')
+    {
+        $access_token = getWxAccessToken();
+        $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={$access_token}";
+        return posts($url, $data);
+    }
+
+    /**
+     * 获取支付店铺等级
+     * @param $store_id
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public static function getLevel($store_id)
+    {
+        return collection(CompanyStore::with(['storelevel' => function ($q) {
+            $q->withField(['partner_rank', 'id']);
+        }])->where(['id' => $store_id])->field('id,level_id')->select())->toArray()[0]['storelevel']['partner_rank'];
+    }
+
+    /**
+     * 获取用户openid
+     * @param $user_id
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public static function getOpenid($user_id)
+    {
+        return Db::name('third')->where(['user_id' => $user_id])->find()['openid'];
     }
 }

@@ -26,7 +26,7 @@ use think\Exception;
 Loader::import('WxPay.WxPay', EXTEND_PATH, '.Api.php');
 Loader::import('WxPay.WxPay', EXTEND_PATH, '.Notify.php');
 
-class Wxpay extends Base
+class StoreCertificationPay extends Base
 {
     protected $noNeedLogin = '*';
     protected $noNeedRight = '*';
@@ -58,12 +58,13 @@ class Wxpay extends Base
         $formId = $this->request->post('formId');
         $f = Common::writeFormId($formId, $user_id);
         $out_trade_no = $this->request->post('out_trade_no');
+
         $money = $this->request->post('money') * 100;
         $store_id = (int)$this->request->post('store_id');
         if (!$user_id || !$out_trade_no || !$money || !$store_id) $this->error('缺少参数');
         $checkOrder = end(explode('_', $out_trade_no));
-        if (self::checkPay($store_id, $checkOrder)) $this->error('该订单已存在支付！', 'error');
-        $openid = self::getOpenid($user_id);
+        if (Common::checkPay($store_id, $checkOrder)) $this->error('该订单已存在支付！', 'error');
+        $openid = Common::getOpenid($user_id);
         //     初始化值对象
         $input = new \WxPayUnifiedOrder();
         //     文档提及的参数规范：商家名称-销售商品类目
@@ -72,7 +73,7 @@ class Wxpay extends Base
         $input->SetOut_trade_no("$out_trade_no");
         //     费用应该是由小程序端传给服务端的，在用户下单时告知服务端应付金额，demo中取值是1，即1分钱
         $input->SetTotal_fee("$money");
-        $input->SetNotify_url("https://czz.junyiqiche.com/addons/cms/wxapp.Wxpay/certification_wxPay_noTify");
+        $input->SetNotify_url($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/addons/cms/wxapp.Wxpay/certification_wxPay_noTify');
         $input->SetTrade_type("JSAPI");
         //     由小程序端传给服务端
         $input->SetOpenid($openid);
@@ -89,7 +90,7 @@ class Wxpay extends Base
     }
 
     /**
-     * 支付回调
+     * 店铺认证支付回调
      */
     public function certification_wxPay_noTify()
     {
@@ -130,7 +131,7 @@ class Wxpay extends Base
     }
 
     /**
-     * 支付成功后接口
+     * 店铺认证支付成功后接口
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
@@ -139,6 +140,7 @@ class Wxpay extends Base
     {
         $user_id = $this->request->post('user_id');
         $store_id = $this->request->post('store_id');
+        $formId = $this->request->post('formId');
         if (!$user_id || !$store_id) {
             $this->error('缺少参数');
         }
@@ -146,12 +148,12 @@ class Wxpay extends Base
         Db::startTrans();
         try {
             $formId = current(array_values(Common::getFormId($user_id)))['form_id']; //获取formId
-            $level = self::getLevel($store_id);
+            $level = Common::getLevel($store_id);
             $tel = \addons\cms\model\Config::get(['name' => 'default_phone'])->value;
-            $o = self::getPayOrderNum($user_id, $store_id);
+            $o = Common::getPayOrderNum($user_id, $store_id);
             $order_number = $o->out_trade_no;
             $money = $o->total_fee;
-            $openid = self::getOpenid($user_id);
+            $openid = Common::getOpenid($user_id);
             if ($openid) {
                 $keyword1 = "友车圈{$level}认证费,有效期为一年";
                 $temp_msg = array(
@@ -177,7 +179,11 @@ class Wxpay extends Base
                         )
                     ),
                 );
-                $res = $this->sendXcxTemplateMsg(json_encode($temp_msg));
+                $res = Common::sendXcxTemplateMsg(json_encode($temp_msg));
+                if ($res['errcode'] == 0) {
+                    FormIds::where(['user_id' => $user_id, 'form_id' => $formId])->delete();
+
+                }
             }
             Db::name('form_ids')->where(['user_id' => $user_id, 'form_id' => $formId])->setField('status', 0);
             CompanyStore::where(['user_id' => $user_id])->setField('auditstatus', 'paid_the_money');
@@ -241,111 +247,6 @@ class Wxpay extends Base
         }
 
         $this->success('请求成功');
-    }
-
-    /**
-     * 获取订单号，from模板消息
-     * @param $user_id
-     * @return mixed
-     * @throws \think\exception\DbException
-     */
-    public static function getPayOrderNum($user_id, $store_id)
-    {
-        return PayOrder::get(['user_id' => $user_id, 'store_id' => $store_id]);
-    }
-
-    /**
-     * 发送给微信支付成功信息
-     * @param string $return_code
-     * @param string $return_msg
-     * @return string
-     */
-    public static function callPayNote($return_code = 'SUCCESS', $return_msg = 'OK')
-    {
-        return '<xml>
-                    <return_code>' . $return_code . '</return_code>
-                    <return_msg>' . $return_msg . '</return_msg>
-                    </xml>';
-
-    }
-
-    /**
-     * 检测是否存在重复支付
-     * @param $store_id
-     * @param $order_number
-     * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     */
-    public static function checkPay($store_id, $out_trade_no)
-    {
-        return collection(PayOrder::with(['pay_status'])->where(['store_id' => $store_id, 'out_trade_no' => $out_trade_no])->select())->toArray();
-    }
-
-    /** 微信toke
-     * @return array|mixed  返回Token
-     */
-    public static function getWxtoken()
-    {
-        $config = get_addon_config('cms');
-        $appid = $config['wxappid'];
-        $secret = $config['wxappsecret'];
-        $token = cache('Token');
-        if (!$token['access_token'] || $token['expires_in'] <= time()) {
-            //            https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . $appid . '&secret=' . $secret
-            $rslt = gets("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" . $appid . '&secret=' . $secret);
-            if ($rslt) { //
-                $accessArr = array(
-                    'access_token' => $rslt['access_token'],
-                    'expires_in' => time() + $rslt['expires_in'] - 200
-                );
-                cache('Token', $accessArr);
-                $token = $accessArr;
-            }
-        }
-        return $token;
-    }
-
-    /**
-     * 发送小程序模板消息
-     * @param $data
-     * @return array
-     */
-
-    public function sendXcxTemplateMsg($data = '')
-    {
-        $access_token = self::getWxtoken()['access_token'];
-        $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={$access_token}";
-        return posts($url, $data);
-    }
-
-    /**
-     * 获取支付店铺等级
-     * @param $store_id
-     * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     */
-    public static function getLevel($store_id)
-    {
-        return collection(CompanyStore::with(['storelevel' => function ($q) {
-            $q->withField(['partner_rank', 'id']);
-        }])->where(['id' => $store_id])->field('id,level_id')->select())->toArray()[0]['storelevel']['partner_rank'];
-    }
-
-    /**
-     * 获取用户openid
-     * @param $user_id
-     * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     */
-    public static function getOpenid($user_id)
-    {
-        return Db::name('third')->where(['user_id' => $user_id])->find()['openid'];
     }
 
 
