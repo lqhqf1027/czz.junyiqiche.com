@@ -503,6 +503,7 @@ class My extends Base
             $this->error('该订单已被取消');
         }
         try {
+
 //            $check = QuotedPrice::where([
 //                'id' => $quoted_id,
 //                'offeror_payment_status|offeree_payment_status' => 'already_paid'
