@@ -440,15 +440,24 @@ class Shop extends Base
      */
     public function store_detail()
     {
-        $store_id = $this->request->post('store_id');
+        $user_id = $this->request->post('user_id');
 
-        if (!$store_id) {
+        if (!$user_id) {
             $this->error('缺少参数');
         }
 
-        $store_info = CompanyStore::get($store_id)->visible(['id', 'cities_name', 'store_name', 'store_address', 'phone', 'main_camp', 'store_img', 'store_description'])->toArray();
+        $store = CompanyStore::get([
+            'user_id'=>$user_id,
+            'auditstatus'=>'paid_the_money'
+        ]);
 
-        $car_list = Index::typeCar(1, 0, ['store_id' => $store_id]);
+        if(!$store){
+            $this->error('门店未找到或未完成认证');
+        }
+
+        $store_info = $store->visible(['id', 'cities_name', 'store_name', 'store_address', 'phone', 'main_camp', 'store_img', 'store_description'])->toArray();
+
+        $car_list = Index::typeCar(1, 0, ['store_id' => $store_info['id']]);
 
         $store_info['car_list'] = $car_list;
 
