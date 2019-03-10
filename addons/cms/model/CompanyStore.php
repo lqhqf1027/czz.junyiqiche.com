@@ -53,4 +53,14 @@ class CompanyStore extends Model
         return $this->belongsTo('StoreLevel', 'level_id', 'id')->setEagerlyType(0);
     }
 
+    public function setStoredescriptionAttr($value)
+    {
+        return emoji_encode($value);
+    }
+
+    public function getStoredescriptionAttr($value)
+    {
+        return emoji_decode($value);
+    }
+
 }
