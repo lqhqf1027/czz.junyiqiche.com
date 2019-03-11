@@ -296,18 +296,18 @@ class My extends Base
 
         $field = $user_id == null ? null : ['user_id' => $user_id];
         $modelsimages = $models == 'ModelsInfo' ? ',modelsimages' : '';
-        $ModelsInfo = collection(QuotedPrice::field('id,user_ids,models_info_id,money,quotationtime,type,buy_car_id,bond,seller_payment_status,buyer_payment_status,deal_status' )
+        $ModelsInfo = collection(QuotedPrice::field('id,user_ids,models_info_id,money,quotationtime,type,buy_car_id,bond,seller_payment_status,buyer_payment_status,deal_status')
             ->with([$models => function ($q) use ($field, $modelsimages) {
 
                 $q->where($field)->withField('id,models_name,guide_price,user_id,shelfismenu,car_licensetime,kilometres,parkingposition,browse_volume,createtime,brand_id' . $modelsimages);
 
             },
-            'user' => function ($query) {
+                'user' => function ($query) {
                     $query->withField('id,nickname,avatar,mobile');
-            }])
+                }])
             ->where($where)->select())->toArray();
-        
-        
+
+
         foreach ($ModelsInfo as $k => $v) {
 
             if ($models == 'BuycarModel') {
@@ -320,7 +320,7 @@ class My extends Base
             $brand_info = Brand::where('id', $ModelsInfo[$k]['models_info']['brand_id'])->field('name,brand_default_images')->find();
             $ModelsInfo[$k]['models_info']['brand_name'] = $brand_info['name'];
             $ModelsInfo[$k]['models_info']['brand_default_images'] = $brand_info['brand_default_images'];
-    
+
             $ModelsInfo[$k]['quotationtime'] = $ModelsInfo[$k]['quotationtime'] ? format_date($ModelsInfo[$k]['quotationtime']) : null;
             $ModelsInfo[$k]['money'] = $ModelsInfo[$k]['money'] ? round(($ModelsInfo[$k]['money'] / 10000), 2) : null;
             $ModelsInfo[$k]['models_info']['kilometres'] = $ModelsInfo[$k]['models_info']['kilometres'] ? round(($ModelsInfo[$k]['models_info']['kilometres'] / 10000), 2) . '万' : null;
@@ -331,8 +331,7 @@ class My extends Base
             if ($ModelsInfo[$k]['seller_payment_status'] == 'to_be_paid' && $ModelsInfo[$k]['buyer_payment_status'] == 'to_be_paid') {
 
                 $ModelsInfo[$k]['cancel_order'] = 1;
-            }
-            else {
+            } else {
 
                 $ModelsInfo[$k]['cancel_order'] = 0;
             }
@@ -431,32 +430,32 @@ class My extends Base
     }
 
 
-    /**
-     * 消息列表接口
-     * @throws \think\exception\DbException
-     */
-    public function message_list()
-    {
-        $user_id = $this->request->post('user_id');
-
-        if (!$user_id) {
-            $this->error('缺少参数,请求失败', 'error');
-        }
-        $message = Message::all(function ($q) {
-            $q->order('createtime desc')->field('id,title,createtime,use_id');
-        });
-
-        foreach ($message as $k => $v) {
-            $v['isRead'] = 0;
-
-            if (strpos($v['use_id'], ',' . $user_id . ',') !== false) {
-                $v['isRead'] = 1;
-            }
-            unset($v['use_id']);
-        }
-
-        $this->success('请求成功', ['message_list' => $message]);
-    }
+//    /**
+//     * 消息列表接口
+//     * @throws \think\exception\DbException
+//     */
+//    public function message_list()
+//    {
+//        $user_id = $this->request->post('user_id');
+//
+//        if (!$user_id) {
+//            $this->error('缺少参数,请求失败', 'error');
+//        }
+//        $message = Message::all(function ($q) {
+//            $q->order('createtime desc')->field('id,title,createtime,use_id');
+//        });
+//
+//        foreach ($message as $k => $v) {
+//            $v['isRead'] = 0;
+//
+//            if (strpos($v['use_id'], ',' . $user_id . ',') !== false) {
+//                $v['isRead'] = 1;
+//            }
+//            unset($v['use_id']);
+//        }
+//
+//        $this->success('请求成功', ['message_list' => $message]);
+//    }
 
 
     /**
@@ -466,14 +465,14 @@ class My extends Base
     public function message_details()
     {
         $user_id = $this->request->post('user_id');
-        $isRead = $this->request->post('isRead') ? 1 : 2;
-        if (!$user_id || !$isRead) {
+        $isRead = $this->request->post('unread');
+        if (!$user_id) {
             $this->error('缺少参数,请求失败', 'error');
         }
 
         $message = Message::field(['id', 'title', 'content', 'analysis', 'createtime', 'use_id'])->order('createtime desc')->select();
 
-        if ($isRead == 2) {
+        if ($isRead == 1) {
             foreach ($message as $k => $v) {
                 if (strpos($v['use_id'], ',' . $user_id . ',') === false) {
 
@@ -502,21 +501,8 @@ class My extends Base
         if (!QuotedPrice::get($quoted_id)) {
             $this->error('该订单已被取消');
         }
-        try {
 
-//            $check = QuotedPrice::where([
-//                'id' => $quoted_id,
-//                'offeror_payment_status|offeree_payment_status' => 'already_paid'
-//            ])->lock(true)->find();
-//
-//            if ($check) {
-//                throw new \Exception('已完成支付，订单不能取消');
-//            }
-
-            $res = QuotedPrice::destroy($quoted_id);
-        } catch (\Exception $e) {
-            $this->error($e->getMessage());
-        }
+        $res = QuotedPrice::destroy($quoted_id);
 
         !empty($res) ? $this->success('取消成功') : $this->error('取消失败');
     }
@@ -533,8 +519,7 @@ class My extends Base
             $this->error('缺少参数');
         }
 
-
-        $store_info = CompanyStore::get(['user_id' => $user_id])->visible(['id', 'cities_name', 'store_name', 'store_address', 'phone', 'business_life', 'main_camp', 'bank_card', 'store_img', 'id_card_images', 'business_licenseimages', 'level_id','store_description','real_name']);
+        $store_info = CompanyStore::get(['user_id' => $user_id])->visible(['id', 'cities_name', 'store_name', 'store_address', 'phone', 'business_life', 'main_camp', 'bank_card', 'store_img', 'id_card_images', 'business_licenseimages', 'level_id', 'store_description', 'real_name']);
 
         $this->success('请求成功', $store_info);
     }

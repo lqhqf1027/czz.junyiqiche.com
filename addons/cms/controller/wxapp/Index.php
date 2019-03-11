@@ -13,6 +13,8 @@ use addons\cms\model\Config as ConfigModel;
 use addons\cms\model\ModelsInfo;
 use addons\cms\model\User;
 use addons\cms\model\Message;
+use addons\cms\model\InformationCategories;
+use addons\cms\model\PayOrder;
 use app\common\model\Addon;
 use fast\Random;
 use GuzzleHttp\Client;
@@ -68,29 +70,54 @@ class Index extends Base
                 $bannerList[] = ['image' => cdnurl($item['image'], true), 'url' => '/', 'title' => $item['title']];
             }
 
-            $res = CompanyStore::field('id,level_id')
+            $res = CompanyStore::field('id,level_id,auditstatus')
                 ->with(['storelevel' => function ($q) {
                     $q->withField('id,max_release_number');
                 }])->where([
                     'user_id' => $user_id,
-                    'auditstatus' => 'paid_the_money'
                 ])->find();
 
             if (empty($res)) {
                 $sell_info['msg'] = $buy_info['msg'] = '您暂未认证！';
                 $sell_info['code']= $buy_info['code'] = 1;
             } else {
-                if ($res['storelevel']['max_release_number'] != -1) {
-                    $my_release_number = ModelsInfo::where([
-                        'user_id' => $user_id,
-                        'shelfismenu' => 1
-                    ])->count('id');
+                if($res['auditstatus']=='paid_the_money'){
+                    if ($res['storelevel']['max_release_number'] != -1) {
+                        $my_release_number = ModelsInfo::where([
+                            'user_id' => $user_id,
+                            'shelfismenu' => 1
+                        ])->count('id');
 
-                    if ($my_release_number >= $res['storelevel']['max_release_number']) {
-                        $sell_info['msg'] = '发布卖车已达到限制' . $res['storelevel']['max_release_number'] . '次，想要发布更多请升级店铺';
-                        $sell_info['code'] = 2;
+                        if ($my_release_number >= $res['storelevel']['max_release_number']) {
+                            $sell_info['msg'] = '发布卖车已达到限制' . $res['storelevel']['max_release_number'] . '次，想要发布更多请升级店铺';
+                            $sell_info['code'] = 2;
+                        }
                     }
+                }else{
+                    $msg =$code = '';
+                    switch ($res['auditstatus']){
+                        case 'wait_the_review':
+                            $msg = '您的店铺正在等待审核';
+                            $code = 3;
+                            break;
+                        case 'in_the_review':
+                            $msg = '您的店铺正在审核中';
+                            $code = 3;
+                            break;
+                        case 'pass_the_audit':
+                            $msg = '您的店铺等待付款，付款后即可发布';
+                            $code = 4;
+                            break;
+                        case 'audit_failed':
+                            $msg = '审核失败';
+                            $code = 5;
+                            break;
+                    }
+                    $sell_info['msg'] = $buy_info['msg'] = $msg;
+                    $sell_info['code']= $buy_info['code'] = $code;
+
                 }
+
             }
 
             //推荐店铺
@@ -668,11 +695,13 @@ class Index extends Base
      */
     public function information_list()
     {
-        $info = AutomotiveInformation::all(function ($q) {
-            $q->field('id,title,author,browse_volume');
-        });
+      $res = InformationCategories::field('id,categories_name')
 
-        $this->success('请求成功', ['info_list' => $info]);
+      ->with(['automotive'=>function ($q){
+          $q->field('id,title,categories_id,author,coverimage,browse_volume');
+      }])->select();
+
+        $this->success('请求成功', ['information' => $res]);
     }
 
     /**
