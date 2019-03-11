@@ -36,9 +36,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'store_address', title: __('Store_address'), operate:false},
                         {field: 'phone', title: __('Phone')},
                         {field: 'store_img', title: __('Store_img'), operate:false, formatter: Controller.api.formatter.images},
-                        {field: 'user.invitation_code_img', title: __('Store_qrcode'), operate:false, formatter: Controller.api.formatter.invitation_code_img},
+                        {field: 'user.invitation_code_img', title: __('Store_qrcode'), operate:false},
                         {field: 'count', title: __('邀请店铺数量'), operate:false, formatter: Controller.api.formatter.count},
-                        {field: 'user.invite_code', title: __('Invitation_code'), operate:false, formatter: Controller.api.formatter.invite_code},
+                        {field: 'user.invite_code', title: __('Invitation_code'), operate:false},
                         {field: 'main_camp', title: __('Main_camp')},
                         {field: 'salecount', title: __('店铺在售车型数量'), operate:false, formatter: Controller.api.formatter.count},
                         {field: 'buycount', title: __('店铺想买车型数量'), operate:false, formatter: Controller.api.formatter.count}, 
@@ -297,6 +297,24 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     ]
                 ]
             });
+
+            // // 绑定TAB事件
+            // $('.panel-heading a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            //     var field = $(this).closest("ul").data("field");
+            //     var value = $(this).data("value");
+            //     var options = table.bootstrapTable('getOptions');
+            //     options.pageNumber = 1;
+            //     options.queryParams = function (params) {
+            //         var filter = {};
+            //         if (value !== '') {
+            //             filter[field] = value;
+            //         }
+            //         params.filter = JSON.stringify(filter);
+            //         return params;
+            //     };
+            //     table.bootstrapTable('refresh', {});
+            //     return false;
+            // });
 
             // 为表格绑定事件
             Table.api.bindevent(table);
@@ -1629,18 +1647,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         html.push('<a href="https://czz.junyiqiche.com' + value + '" target="_blank"><img class="' + classname + '" src="https://czz.junyiqiche.com' + value + '" /></a>');
                     });
                     return html.join(' ');
-                },
-                invite_code: function (value, row, index) {
-                    if (row.auditstatus == 'paid_the_money') {
-                        return row.user.invite_code;
-                    }
-                },
-                invitation_code_img: function (value, row, index) {
-                    if (row.auditstatus == 'paid_the_money') {
-                        value = value ? value : '/assets/img/blank.gif';
-                        return '<a href="https://czz.junyiqiche.com' + value + '" target="_blank"><img class="img-sm img-center" src="https://czz.junyiqiche.com' + value + '" /></a>';
-                    
-                    }
                 },
                 datetime: function (value, row, index) {
 

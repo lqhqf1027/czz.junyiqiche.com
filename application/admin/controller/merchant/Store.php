@@ -8,8 +8,10 @@ use app\admin\model\Distribution;
 use app\admin\model\QuotedPrice;
 use app\admin\model\ModelsInfo;
 use app\admin\model\BuycarModel;
+use app\admin\model\StoreLevel;
 use think\Config;
 use think\Db;
+use think\Env;
 use GuzzleHttp\Client;
 use addons\cms\model\Config as ConfigModel;
 use addons\cms\controller\wxapp\Common;
@@ -77,7 +79,7 @@ class Store extends Backend
             foreach ($list as $k => $row) {
                 
                 $row->getRelation('storelevel')->visible(['partner_rank']);
-                $row->getRelation('user')->visible(['name']);
+                $row->getRelation('user')->visible(['invite_code','invitation_code_img']);
                 //邀请店铺数量
                 $list[$k]['count'] = Distribution::where('store_id', $row['id'])->count();
                 //店铺在售车型数量
@@ -90,6 +92,40 @@ class Store extends Backend
 
             return json($result);
         }
+        //总店铺
+        $store_count = $this->model->count();
+        //白银店铺
+        $silver_store = $this->model->where('level_id', 3)->count();
+        //黄金店铺
+        $gold_store = $this->model->where('level_id', 2)->count();
+        //铂金店铺
+        $platinum_store = $this->model->where('level_id', 1)->count();
+        //铂金店铺
+        $platinum_store = $this->model->where('level_id', 1)->count();
+
+        //待审核/审核中的店铺
+        $wait_store = $this->model->where('auditstatus', 'wait_the_review')->count();
+        //审核通过的店铺
+        $pass_store = $this->model->where('auditstatus', 'pass_the_audit')->count();
+        //认证成功的店铺
+        $money_store = $this->model->where('auditstatus', 'paid_the_money')->count();
+        //本周增加的店铺
+        $start_time = mktime(0,0,0,date('m'),date('d')-date('w')+1,date('Y'));
+        $end_time = mktime(23,59,59,date('m'),date('d')-date('w')+7,date('Y'));
+
+        $increase_store = $this->model->where('createtime', 'between', [$start_time, $end_time])->count();
+
+        $this->view->assign([
+            'store_count' => $store_count,
+            'silver_store' => $silver_store,
+            'gold_store' => $gold_store,
+            'platinum_store' => $platinum_store,
+            'wait_store' => $wait_store,
+            'pass_store' => $pass_store,
+            'money_store' => $money_store,
+            'increase_store' => $increase_store
+
+        ]);
         return $this->view->fetch();
     }
 
@@ -146,10 +182,32 @@ class Store extends Backend
             });
             
             if ($result) {
+                $storeData = $this->model->where('id', $id)->find();
+                $level_name = StoreLevel::where('id', $storeData['level_id'])->value('partner_rank');
+                //短信推送
+                $Ucpass = [
+                    'accountsid' => Env::get('sms.accountsid'),
+                    'token' => Env::get('sms.token'),
+                    'appid' => Env::get('sms.appid'),
+                    'templateid' => '441263',
+                ];
+                $param = '{' . $storeData['store_name'] . '(' . $level_name . ')}';
+            
+                $url = 'http://open.ucpaas.com/ol/sms/sendsms';
+                $client = new \GuzzleHttp\Client();
+                $response = $client->request('POST', $url, [
+                    'json' => [
+                        'sid' => $Ucpass['accountsid'],
+                        'token' => $Ucpass['token'],
+                        'appid' => $Ucpass['appid'],
+                        'templateid' => $Ucpass['templateid'],
+                        'param' => $param,
+                        'mobile' => $storeData['phone']
+                    ]
+                ]);
                 
                 //模板推送
                 //获取formId
-                $storeData = $this->model->where('id', $id)->find();
                 $formId = current(array_values(Common::getFormId($storeData['user_id'])))['form_id']; 
                 // pr($formId);
                 // pr($storeData['user_id']);
