@@ -36,7 +36,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'storelevel.partner_rank', title: __('店铺等级')},
                         // {field: 'user.name', title: __('店铺所有人姓名')},
                         // {field: 'store_address', title: __('Store_address'), operate:false},
-                        {field: 'phone', title: __('Phone')},
+                        {field: 'phone', title: __('Phone')}, 
                         {
                             field: 'store_img',
                             title: __('Store_img'),
@@ -60,7 +60,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             title: __('Invitation_code'),
                             operate: false,
                             formatter: Controller.api.formatter.invite_code
-                        },
+                        }, 
                         {field: 'main_camp', title: __('Main_camp')},
                         {
                             field: 'salecount',
@@ -351,6 +351,24 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     ]
                 ]
             });
+
+            // // 绑定TAB事件
+            // $('.panel-heading a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            //     var field = $(this).closest("ul").data("field");
+            //     var value = $(this).data("value");
+            //     var options = table.bootstrapTable('getOptions');
+            //     options.pageNumber = 1;
+            //     options.queryParams = function (params) {
+            //         var filter = {};
+            //         if (value !== '') {
+            //             filter[field] = value;
+            //         }
+            //         params.filter = JSON.stringify(filter);
+            //         return params;
+            //     };
+            //     table.bootstrapTable('refresh', {});
+            //     return false;
+            // });
 
             // 为表格绑定事件
             Table.api.bindevent(table);
@@ -1814,7 +1832,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         html.push('<a href="https://czz.junyiqiche.com' + value + '" target="_blank"><img class="' + classname + '" src="https://czz.junyiqiche.com' + value + '" /></a>');
                     });
                     return html.join(' ');
-                },
+                }, 
                 invite_code: function (value, row, index) {
                     if (row.auditstatus == 'paid_the_money') {
                         return row.user.invite_code;
@@ -1826,7 +1844,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         return '<a href="https://czz.junyiqiche.com' + value + '" target="_blank"><img class="img-sm img-center" src="https://czz.junyiqiche.com' + value + '" /></a>';
 
                     }
-                },
+                }, 
                 datetime: function (value, row, index) {
 
                     var datetimeFormat = typeof this.datetimeFormat === 'undefined' ? 'YYYY-MM-DD' : this.datetimeFormat;

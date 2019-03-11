@@ -31,7 +31,7 @@ class CompanyStore extends Model
 
     public function getAuditstatusList()
     {
-        return ['audit_failed' => __('Audit_failed'),'pass_the_audit' => __('Pass_the_audit'),'wait_the_review' => __('Wait_the_review')];
+        return ['audit_failed' => __('审核失败'),'pass_the_audit' => __('通过审核'),'wait_the_review' => __('等待审核'),'paid_the_money' => __('认证成功')];
     }     
 
 
