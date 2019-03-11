@@ -9,17 +9,19 @@ use addons\cms\model\FormIds;
 use addons\cms\model\ModelsInfo;
 use addons\cms\model\BuycarModel;
 use addons\cms\model\Clue;
+use addons\cms\model\PayOrder;
 use addons\cms\model\QuotedPrice;
 use addons\cms\model\User;
 use addons\cms\model\PayOrder;
 use addons\cms\model\StoreLevel;
 use addons\cms\model\Config as ConfigModel;
 use app\common\model\Addon;
+use think\Cache;
 use think\Config;
 use addons\third\model\Third;
 use think\Db;
 use think\Exception;
-
+use addons\cms\model\StoreLevel;
 /**
  * 公共
  */
@@ -38,31 +40,6 @@ class Common extends Base
      */
     public function init()
     {
-
-        //焦点图
-//        $bannerList = [];
-//        $list = Block::getBlockList(['name' => 'focus', 'row' => 5]);
-//        foreach ($list as $index => $item) {
-//            $bannerList[] = ['image' => cdnurl($item['image'], true), 'url' => '/', 'title' => $item['title']];
-//        }
-//
-//        //首页Tab列表
-//        $indexTabList = $newsTabList = $productTabList = [['id' => 0, 'title' => '全部']];
-//        $channelList = Channel::where('status', 'normal')
-//            ->where('type', 'in', ['list'])
-//            ->field('id,parent_id,model_id,name,diyname')
-//            ->order('weigh desc,id desc')
-//            ->select();
-//        foreach ($channelList as $index => $item) {
-//            $data = ['id' => $item['id'], 'title' => $item['name']];
-//            $indexTabList[] = $data;
-//            if ($item['model_id'] == 1) {
-//                $newsTabList[] = $data;
-//            }
-//            if ($item['model_id'] == 2) {
-//                $productTabList[] = $data;
-//            }
-//        }
 
         //配置信息
         $upload = Config::get('upload');
@@ -254,6 +231,7 @@ class Common extends Base
 
     public static function sendXcxTemplateMsg($data = '')
     {
+        Cache::rm('access_token');
         $access_token = getWxAccessToken();
         $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={$access_token}";
         return posts($url, $data);

@@ -51,13 +51,13 @@ class User extends Base
             $this->error("参数不正确");
         }
         $userInfo = (array)json_decode($rawData, true);
-        if($userInfo['nickName']){
+        if ($userInfo['nickName']) {
             $userInfo['nickName'] = emoji_encode($userInfo['nickName']);
         }
         $params = [
-            'appid'      => $config['wxappid'],
-            'secret'     => $config['wxappsecret'],
-            'js_code'    => $code,
+            'appid' => $config['wxappid'],
+            'secret' => $config['wxappsecret'],
+            'js_code' => $code,
             'grant_type' => 'authorization_code'
         ];
         $result = Http::sendRequest("https://api.weixin.qq.com/sns/jscode2session", $params, 'GET');
@@ -73,20 +73,20 @@ class User extends Base
                     if ($this->auth->isLogin()) {
                         $third = Third::where(['openid' => $json['openid'], 'platform' => 'wxapp'])->find();
                         if ($third && $third['user_id'] == $this->auth->id) {
-                            $this->success("登录成功", ['userInfo' => $this->auth->getUserinfo(),'openid' => $json['openid']]);
+                            $this->success("登录成功", ['userInfo' => $this->auth->getUserinfo(), 'openid' => $json['openid']]);
                         }
                     }
                 }
 
                 $platform = 'wxapp';
                 $result = [
-                    'openid'        => $json['openid'],
-                    'userinfo'      => [
+                    'openid' => $json['openid'],
+                    'userinfo' => [
                         'nickname' => $userInfo['nickName'],
                     ],
-                    'access_token'  => $json['session_key'],
+                    'access_token' => $json['session_key'],
                     'refresh_token' => '',
-                    'expires_in'    => isset($json['expires_in']) ? $json['expires_in'] : 0,
+                    'expires_in' => isset($json['expires_in']) ? $json['expires_in'] : 0,
                 ];
                 $extend = ['gender' => $userInfo['gender'], 'nickname' => $userInfo['nickName'], 'avatar' => $userInfo['avatarUrl']];
                 $ret = Service::connect($platform, $result, $extend);
@@ -94,7 +94,7 @@ class User extends Base
                     $auth = Auth::instance();
                     $users = $auth->getUserinfo();
                     $users['nickname'] = emoji_decode($users['nickname']);
-                    $this->success("登录成功", ['userInfo' => $users,'openid'=>$json['openid'],'session_key'=>$json['session_key']]);
+                    $this->success("登录成功", ['userInfo' => $users, 'openid' => $json['openid'], 'session_key' => $json['session_key']]);
                 } else {
                     $this->error("连接失败");
                 }
@@ -120,18 +120,18 @@ class User extends Base
         $account = $this->request->post('account');
         $password = $this->request->post('password');
         $rule = [
-            'account'  => 'require|length:3,50',
+            'account' => 'require|length:3,50',
             'password' => 'require|length:6,30',
         ];
 
         $msg = [
-            'account.require'  => 'Account can not be empty',
-            'account.length'   => 'Account must be 3 to 50 characters',
+            'account.require' => 'Account can not be empty',
+            'account.length' => 'Account must be 3 to 50 characters',
             'password.require' => 'Password can not be empty',
-            'password.length'  => 'Password must be 6 to 30 characters',
+            'password.length' => 'Password must be 6 to 30 characters',
         ];
         $data = [
-            'account'  => $account,
+            'account' => $account,
             'password' => $password,
         ];
         $validate = new Validate($rule, $msg);
