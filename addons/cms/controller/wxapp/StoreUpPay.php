@@ -7,6 +7,7 @@
  */
 
 namespace addons\cms\controller\wxapp;
+
 use addons\cms\model\CompanyStore;
 use addons\cms\model\EarningDetailed;
 use addons\cms\model\FormIds;
@@ -26,8 +27,14 @@ Loader::import('WxPay.WxPay', EXTEND_PATH, '.Api.php');
 Loader::import('WxPay.WxPay', EXTEND_PATH, '.Notify.php');
 
 
-class StoreUpPay
+class StoreUpPay extends Base
 {
+    protected $noNeedLogin = '*';
+
+    public function _initialize()
+    {
+        parent::_initialize();
+    }
 
     /**
      * 店铺升级支付
@@ -37,6 +44,7 @@ class StoreUpPay
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
+
     public function upShop()
     {
         $user_id = $this->request->post('user_id');
@@ -45,12 +53,12 @@ class StoreUpPay
         $formId = $this->request->post('formId');
         $out_trade_no = $this->request->post('out_trade_no');
         $base_level_id = $this->request->post('base_level_id');
-        if (!$user_id || !$store_id || !$up_level_id || !$formId || !$out_trade_no || !$base_level_id) $this->error('缺少参数');
+        $bas = Common::getLevelStoreName($base_level_id)->partner_rank;
         //写入formIds表
         Common::writeFormId($formId, $user_id);
         $openid = Common::getOpenid($user_id);
 //        $money = (floatval(self::getLevelStoreName($up_level_id)->money) - floatval(self::getLevelStoreName($base_level_id)->money)) * 100;
-        $money = 0.01*100;
+        $money = 0.01 * 100;
         //     初始化值对象
         $input = new \WxPayUnifiedOrder();
         //     文档提及的参数规范：商家名称-销售商品类目
@@ -59,7 +67,7 @@ class StoreUpPay
         $input->SetOut_trade_no("$out_trade_no");
         //     费用应该是由小程序端传给服务端的，在用户下单时告知服务端应付金额，demo中取值是1，即1分钱
         $input->SetTotal_fee("$money");
-        $input->SetNotify_url($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/addons/cms/wxapp.Wxpay/up_wxPay_noTify');
+        $input->SetNotify_url($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/addons/cms/wxapp.store_up_pay/up_wxPay_noTify');
         $input->SetTrade_type("JSAPI");
         //     由小程序端传给服务端
         $input->SetOpenid($openid);
@@ -113,6 +121,69 @@ class StoreUpPay
             echo exit('<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[FAIL]]></return_msg></xml>');
 
         }
+
+    }
+
+
+    /**
+     * 店铺升级支付成功后接口
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function after_successful_payment()
+    {
+        $user_id = $this->request->post('user_id');
+        $store_id = $this->request->post('store_id');
+        $up_level_id = $this->request->post('up_level_id');
+        $formId = $this->request->post('formId');
+        $out_trade_no = $this->request->post('out_trade_no');
+        $base_level_id = $this->request->post('base_level_id');
+        $store_name = $this->request->post('store_name');
+        if (!$user_id || !$store_id || !$up_level_id || !$formId || !$out_trade_no || !$base_level_id) $this->error('缺少参数');
+        //写入formIds表
+        $openid = Common::getOpenid($user_id);
+        Db::startTrans();
+        try {
+            $formId = current(array_values(Common::getFormId($user_id)))['form_id']; //获取formId
+            //修改店铺等级为 升级后的level
+            CompanyStore::where(['user_id' => $user_id, 'id' => $store_id])->update(['level_id' => $up_level_id]);
+            if ($openid) {
+                $o = Common::getLevelStoreName($base_level_id)->partner_rank;
+                $keyword2 = Common::getLevelStoreName($up_level_id)->partner_rank;
+                $newKey = $keyword2 . "（原{$o}）";
+                $temp_msg = array(
+                    'touser' => "{$openid}",
+                    'template_id' => "-pD8LYQSrGITNoQU45yHS-aXtwfFzcpOXuOaWf_2Jso",
+                    'page' => "/pages/mine/mine",
+                    'form_id' => "{$formId}",
+                    'data' => array(
+                        'keyword1' => array(
+                            'value' => "{$store_name}",
+                        ),
+                        'keyword2' => array(
+                            'value' => "{$newKey}",
+                        ),
+                        'keyword3' => array(
+                            'value' => "升级{$keyword2}成功",
+                        ),
+                        'keyword4' => array(
+                            'value' => date('Y-m-d H:i:s', time()),
+                        ),
+
+                    ),
+                );
+                $res = Common::sendXcxTemplateMsg(json_encode($temp_msg));
+                if ($res['errcode'] == 0) {
+                    FormIds::where(['user_id' => $user_id, 'form_id' => $formId])->delete();
+                }
+            }
+            Db::commit();
+        } catch (Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage(), '');
+        }
+        $this->success('升级成功！');
 
     }
 

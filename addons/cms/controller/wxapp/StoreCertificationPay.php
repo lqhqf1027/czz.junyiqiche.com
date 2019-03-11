@@ -58,7 +58,6 @@ class StoreCertificationPay extends Base
         $formId = $this->request->post('formId');
         $f = Common::writeFormId($formId, $user_id);
         $out_trade_no = $this->request->post('out_trade_no');
-
         $money = $this->request->post('money') * 100;
         $store_id = (int)$this->request->post('store_id');
         if (!$user_id || !$out_trade_no || !$money || !$store_id) $this->error('缺少参数');
@@ -73,7 +72,7 @@ class StoreCertificationPay extends Base
         $input->SetOut_trade_no("$out_trade_no");
         //     费用应该是由小程序端传给服务端的，在用户下单时告知服务端应付金额，demo中取值是1，即1分钱
         $input->SetTotal_fee("$money");
-        $input->SetNotify_url($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/addons/cms/wxapp.Wxpay/certification_wxPay_noTify');
+        $input->SetNotify_url($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/addons/cms/wxapp.store_certification_pay/certification_wxPay_noTify');
         $input->SetTrade_type("JSAPI");
         //     由小程序端传给服务端
         $input->SetOpenid($openid);
@@ -185,7 +184,7 @@ class StoreCertificationPay extends Base
 
                 }
             }
-            Db::name('form_ids')->where(['user_id' => $user_id, 'form_id' => $formId])->setField('status', 0);
+//            Db::name('form_ids')->where(['user_id' => $user_id, 'form_id' => $formId])->setField('status', 0);
             CompanyStore::where(['user_id' => $user_id])->setField('auditstatus', 'paid_the_money');
 
             $company_info = CompanyStore::field('id')
