@@ -4,17 +4,17 @@ namespace app\admin\model;
 
 use think\Model;
 
-class AutomotiveInformation extends Model
+class Categories extends Model
 {
     // 表名
-    protected $name = 'automotive_information';
+    protected $name = 'information_categories';
     
     // 自动写入时间戳字段
-    protected $autoWriteTimestamp = true;
+    protected $autoWriteTimestamp = 'int';
 
     // 定义时间戳字段名
     protected $createTime = 'createtime';
-    protected $updateTime = false;
+    protected $updateTime = 'updatetime';
     
     // 追加属性
     protected $append = [
@@ -34,12 +34,6 @@ class AutomotiveInformation extends Model
         $value = $value ? $value : (isset($data['status']) ? $data['status'] : '');
         $list = $this->getStatusList();
         return isset($list[$value]) ? $list[$value] : '';
-    }
-
-    //关联类别
-    public function categories()
-    {
-        return $this->belongsTo('Categories', 'categories_id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
 
 

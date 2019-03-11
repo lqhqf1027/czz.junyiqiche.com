@@ -25,6 +25,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {checkbox: true},
                         {field: 'id', title: __('Id')},
+                        {field: 'categories.categories_name', title: __('所属类别')},
                         {field: 'title', title: __('Title')},
                         {field: 'author', title: __('Author')},
                         {field: 'coverimage', title: __('Coverimage'), formatter: Table.api.formatter.image},
