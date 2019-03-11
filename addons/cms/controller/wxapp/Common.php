@@ -11,6 +11,8 @@ use addons\cms\model\BuycarModel;
 use addons\cms\model\Clue;
 use addons\cms\model\QuotedPrice;
 use addons\cms\model\User;
+use addons\cms\model\PayOrder;
+use addons\cms\model\StoreLevel;
 use addons\cms\model\Config as ConfigModel;
 use app\common\model\Addon;
 use think\Config;
@@ -98,7 +100,8 @@ class Common extends Base
         if (!$car_id || !$type || !$user_id) {
             $this->error('缺少参数', 'error');
         }
-
+        $msg = '';
+        $is_authentication = -1;
         $modelName = null;
         switch ($type) {
             case 'sell':
@@ -132,7 +135,6 @@ class Common extends Base
                     $q->withField('id,name,brand_default_images');
                 }])
                 ->find($car_id)->toArray();
-
             //访问详情随机1-100增加浏览量
             $modelName->where('id', $car_id)->setInc('browse_volume', rand(1, 100));
 
@@ -155,11 +157,27 @@ class Common extends Base
                 $default_image[1]['name'] => $default_image[1]['value'],
                 $default_image[2]['name'] => $default_image[2]['value'],
             ];
+
+            $company = CompanyStore::get(['user_id' => $user_id]);
+            if (!$company) {
+                $is_authentication = 1;
+                $msg = '您未认证店铺';
+            } else {
+                $status = $company->auditstatus;
+                if ($status == 'paid_the_money') {
+                    $is_authentication = 0;
+                } else {
+                    $is_authentication = 2;
+                    $msg = '您还未完成店铺认证';
+                }
+            };
+
+
         } catch (Exception $e) {
             $this->error($e->getMessage());
         }
 
-        $this->success('请求成功', ['is_authentication' => CompanyStore::get(['user_id' => $user_id, 'auditstatus' => 'paid_the_money']) ? 1 : 0, 'detail' => $detail]);
+        $this->success('请求成功', ['can_quote' => ['is_authentication' => $is_authentication, 'msg' => $msg], 'detail' => $detail]);
     }
 
     /**
