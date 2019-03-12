@@ -137,9 +137,9 @@ class Store extends Backend
         $row = Db::name('company_store')->alias('a')
             ->join('store_level b', 'b.id=a.level_id', 'LEFT')
             ->join('user c', 'c.id = a.user_id', 'LEFT')
-            ->field('a.id,a.cities_name,a.store_name,a.store_address,a.phone,a.store_img,a.store_description,a.main_camp,a.business_life,a.bank_card,a.id_card_images,a.business_licenseimages,
+            ->field('a.id,a.cities_name,a.real_name,a.store_name,a.store_address,a.phone,a.store_img,a.store_description,a.main_camp,a.business_life,a.bank_card,a.id_card_images,a.business_licenseimages,
                 b.partner_rank,
-                c.name as user_name,c.avatar')
+                c.avatar')
             ->where('a.id',$ids)
             ->find();
 
@@ -159,6 +159,7 @@ class Store extends Backend
                 'avatar' => $avatar,
                 'id_card_images' => $id_card_images,
                 'store_img' => $store_img,
+                'business_licenseimages' => $business_licenseimages
             ]
         );
 
@@ -595,7 +596,22 @@ class Store extends Backend
         if ($this->request->isAjax()) {
 
             $id = $this->request->post('id');
-        
+
+            $data = $this->model->where('id', $id)->field('models_info_id,buy_car_id')->find();
+
+            if ($data['models_info_id']) {
+
+                $this->model->save(['deal_status' => 'cannot_the_deal'], function ($query) use ($data) {
+                    $query->where('models_info_id', $data['models_info_id']);
+                });
+            }
+            if ($data['buy_car_id']) {
+
+                $this->model->save(['deal_status' => 'cannot_the_deal'], function ($query) use ($data) {
+                    $query->where('buy_car_id', $data['buy_car_id']);
+                });
+            }
+            
             $result = $this->model->save(['deal_status' => 'click_the_deal'], function ($query) use ($id) {
                 $query->where('id', $id);
             });
