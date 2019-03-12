@@ -12,7 +12,6 @@ use addons\cms\model\Clue;
 use addons\cms\model\PayOrder;
 use addons\cms\model\QuotedPrice;
 use addons\cms\model\User;
-use addons\cms\model\PayOrder;
 use addons\cms\model\StoreLevel;
 use addons\cms\model\Config as ConfigModel;
 use app\common\model\Addon;
@@ -21,7 +20,7 @@ use think\Config;
 use addons\third\model\Third;
 use think\Db;
 use think\Exception;
-use addons\cms\model\StoreLevel;
+
 /**
  * 公共
  */
@@ -110,8 +109,17 @@ class Common extends Base
             $detail = $modelName->field($condition)
                 ->with(['brand' => function ($q) {
                     $q->withField('id,name,brand_default_images');
+                }, 'publisherUser' => function ($q) {
+                    $q->withField('id,nickname,avatar');
                 }])
-                ->find($car_id)->toArray();
+                ->find($car_id);
+
+            if (!$detail) {
+                throw new Exception('未匹配到数据');
+            }
+
+            $detail = $detail->toArray();
+
             //访问详情随机1-100增加浏览量
             $modelName->where('id', $car_id)->setInc('browse_volume', rand(1, 100));
 
@@ -128,7 +136,7 @@ class Common extends Base
             $detail['car_licensetime'] = $detail['car_licensetime'] ? date('Y-m-d', intval($detail['car_licensetime'])) : null;
             $detail['isOffer'] = $isOffer ? 1 : 0;
             $detail['createtime'] = format_date($detail['createtime']);
-            $detail['user'] = User::get($user_id) ? User::get($user_id)->visible(['id', 'mobile', 'avatar', 'nickname'])->toArray() : ['id' => '', 'mobile' => '', 'avatar' => '', 'nickname' => ''];
+            $detail['user'] = User::get($user_id) ? User::get($user_id)->visible(['id', 'mobile', 'nickname'])->toArray() : ['id' => '', 'mobile' => '', 'nickname' => ''];
             $detail['default'] = [
                 $default_image[0]['name'] => $default_image[0]['value'],
                 $default_image[1]['name'] => $default_image[1]['value'],

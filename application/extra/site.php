@@ -4,7 +4,7 @@ return array (
   'name' => '友车圈TEST',
   'beian' => '',
   'cdnurl' => '',
-  'version' => '1.0.2',
+  'version' => '1.0.3',
   'timezone' => 'Asia/Shanghai',
   'forbiddenip' => '',
   'languages' => 
@@ -317,10 +317,12 @@ tab-stops:15.6pt"><!--[if !supportLists]--><span lang="EN-US">1.<span style="fon
   ),
   'invite_bg_img' => '/uploads/20190228/66eae0f50a801fd0294dfeebf419935f.png',
   'transmission' => 
-  array ( 
+  array (
     '手动变速' => '手动变速',
     '自动变速' => '自动变速',
     '无级变速' => '无级变速',
-    '双离合变速' => '双离合变速', 
+    '双离合变速' => '双离合变速',
   ),
+  'default_mobile' => '15343597232',
+  'presentation_rate' => '0.10',
 );
