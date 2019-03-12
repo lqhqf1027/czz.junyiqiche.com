@@ -46,8 +46,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {
                             field: 'user.invitation_code_img',
                             title: __('Store_qrcode'),
-                            operate: false,
-                            formatter: Controller.api.formatter.invitation_code_img
+                            operate: false
                         },
                         {
                             field: 'count',
@@ -58,21 +57,68 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {
                             field: 'user.invite_code',
                             title: __('Invitation_code'),
-                            operate: false,
-                            formatter: Controller.api.formatter.invite_code
+                            operate: false
                         }, 
                         {field: 'main_camp', title: __('Main_camp')},
                         {
                             field: 'salecount',
-                            title: __('店铺在售车型数量'),
+                            title: __('查看店铺在售车型'), table: table, buttons: [
+                                {
+                                    name: 'salecount', text: '查看店铺在售车型', title: '查看店铺在售车型', icon: 'fa fa-eye', classname: 'btn btn-xs btn-primary btn-addtabs',
+                                    url: 'merchant/store/salemodels',
+                                    hidden: function (row, value, index) {
+                                        if (row.salecount != 0) {
+                                            return false;
+                                        }
+                                        else if (row.salecount == 0) {
+                                            return true;
+                                        }
+                                    },
+                                },
+                                {
+                                    name: 'salecount', text: '暂无店铺在售车型', title: '暂无店铺在售车型', icon: 'fa fa-eye-slash', classname: 'btn btn-xs btn-danger',
+                                    hidden: function (row, value, index) {
+                                        if (row.salecount == 0) {
+                                            return false;
+                                        }
+                                        else if (row.salecount != 0) {
+                                            return true;
+                                        }
+                                    },
+                                }
+                            ],
                             operate: false,
-                            formatter: Controller.api.formatter.count
+                            formatter: Controller.api.formatter.buttons
                         },
                         {
                             field: 'buycount',
-                            title: __('店铺想买车型数量'),
+                            title: __('查看店铺想买车型'), table: table, buttons: [
+                                {
+                                    name: 'buycount', text: '查看店铺想买车型', title: '查看店铺想买车型', icon: 'fa fa-eye', classname: 'btn btn-xs btn-info btn-addtabs',
+                                    url: 'merchant/store/buymodels',
+                                    hidden: function (row, value, index) {
+                                        if (row.buycount != 0) {
+                                            return false;
+                                        }
+                                        else if (row.buycount == 0) {
+                                            return true;
+                                        }
+                                    },
+                                },
+                                {
+                                    name: 'buycount', text: '暂无店铺想买车型', title: '暂无店铺想买车型', icon: 'fa fa-eye-slash', classname: 'btn btn-xs btn-danger',
+                                    hidden: function (row, value, index) {
+                                        if (row.buycount == 0) {
+                                            return false;
+                                        }
+                                        else if (row.buycount != 0) {
+                                            return true;
+                                        }
+                                    },
+                                }
+                            ],
                             operate: false,
-                            formatter: Controller.api.formatter.count
+                            formatter: Controller.api.formatter.buttons
                         },
                         {
                             field: 'recommend',
@@ -301,48 +347,48 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     },
 
                                 },
-                                /**
-                                 * 查看店铺在售车型
-                                 */
-                                {
-                                    name: 'store_salemodels',
-                                    text: '查看店铺在售车型',
-                                    icon: 'fa fa-eye',
-                                    extend: 'data-toggle="tooltip"',
-                                    title: __('查看店铺在售车型'),
-                                    classname: 'btn btn-xs btn-primary btn-store_salemodels btn-addtabs',
-                                    url: 'merchant/store/salemodels',
-                                    hidden: function (row, value, index) {
-                                        if (row.salecount != 0) {
-                                            return false;
-                                        }
-                                        else if (row.salecount == 0) {
-                                            return true;
-                                        }
-                                    },
+                                // /**
+                                //  * 查看店铺在售车型
+                                //  */
+                                // {
+                                //     name: 'store_salemodels',
+                                //     text: '查看店铺在售车型',
+                                //     icon: 'fa fa-eye',
+                                //     extend: 'data-toggle="tooltip"',
+                                //     title: __('查看店铺在售车型'),
+                                //     classname: 'btn btn-xs btn-primary btn-store_salemodels btn-addtabs',
+                                //     url: 'merchant/store/salemodels',
+                                //     hidden: function (row, value, index) {
+                                //         if (row.salecount != 0) {
+                                //             return false;
+                                //         }
+                                //         else if (row.salecount == 0) {
+                                //             return true;
+                                //         }
+                                //     },
 
-                                },
-                                /**
-                                 * 查看店铺想买车型
-                                 */
-                                {
-                                    name: 'store_buymodels',
-                                    text: '查看店铺想买车型',
-                                    icon: 'fa fa-eye',
-                                    extend: 'data-toggle="tooltip"',
-                                    title: __('查看店铺想买车型'),
-                                    classname: 'btn btn-xs btn-info btn-store_buymodels btn-addtabs',
-                                    url: 'merchant/store/buymodels',
-                                    hidden: function (row, value, index) {
-                                        if (row.buycount != 0) {
-                                            return false;
-                                        }
-                                        else if (row.buycount == 0) {
-                                            return true;
-                                        }
-                                    },
+                                // },
+                                // /**
+                                //  * 查看店铺想买车型
+                                //  */
+                                // {
+                                //     name: 'store_buymodels',
+                                //     text: '查看店铺想买车型',
+                                //     icon: 'fa fa-eye',
+                                //     extend: 'data-toggle="tooltip"',
+                                //     title: __('查看店铺想买车型'),
+                                //     classname: 'btn btn-xs btn-info btn-store_buymodels btn-addtabs',
+                                //     url: 'merchant/store/buymodels',
+                                //     hidden: function (row, value, index) {
+                                //         if (row.buycount != 0) {
+                                //             return false;
+                                //         }
+                                //         else if (row.buycount == 0) {
+                                //             return true;
+                                //         }
+                                //     },
 
-                                },
+                                // },
 
                             ],
                             events: Controller.api.events.operate,
@@ -352,23 +398,23 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 ]
             });
 
-            // // 绑定TAB事件
-            // $('.panel-heading a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-            //     var field = $(this).closest("ul").data("field");
-            //     var value = $(this).data("value");
-            //     var options = table.bootstrapTable('getOptions');
-            //     options.pageNumber = 1;
-            //     options.queryParams = function (params) {
-            //         var filter = {};
-            //         if (value !== '') {
-            //             filter[field] = value;
-            //         }
-            //         params.filter = JSON.stringify(filter);
-            //         return params;
-            //     };
-            //     table.bootstrapTable('refresh', {});
-            //     return false;
-            // });
+            // 绑定TAB事件
+            $('.panel-heading a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var field = $(this).closest("ul").data("field");
+                var value = $(this).data("value");
+                var options = table.bootstrapTable('getOptions');
+                options.pageNumber = 1;
+                options.queryParams = function (params) {
+                    var filter = {};
+                    if (value !== '') {
+                        filter[field] = value;
+                    }
+                    params.filter = JSON.stringify(filter);
+                    return params;
+                };
+                table.bootstrapTable('refresh', {});
+                return false;
+            });
 
             // 为表格绑定事件
             Table.api.bindevent(table);
@@ -908,6 +954,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.deal_status == 'click_the_deal') {
                                             return true;
                                         }
+                                        else if (row.deal_status == 'cannot_the_deal') {
+                                            return true;
+                                        }
                                     },
 
                                 },
@@ -931,6 +980,35 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.deal_status == 'start_the_deal') {
                                             return true;
                                         }
+                                        else if (row.deal_status == 'cannot_the_deal') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 不可以交易
+                                 */
+                                {
+                                    name: 'cannot_the_deal',
+                                    text: '不可以交易',
+                                    icon: 'fa fa-window-close',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('不可以交易'),
+                                    classname: 'btn btn-xs btn-danger',
+                                    hidden: function (row, value, index) {
+                                        if (row.deal_status == 'cannot_the_deal') {
+                                            return false;
+                                        }
+                                        else if (row.deal_status == 'close_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'start_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'click_the_deal') {
+                                            return true;
+                                        }
                                     },
 
                                 },
@@ -952,6 +1030,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.deal_status == 'start_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'cannot_the_deal') {
                                             return true;
                                         }
                                     },
@@ -1221,6 +1302,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.deal_status == 'click_the_deal') {
                                             return true;
                                         }
+                                        else if (row.deal_status == 'cannot_the_deal') {
+                                            return true;
+                                        }
                                     },
 
                                 },
@@ -1244,6 +1328,35 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.deal_status == 'start_the_deal') {
                                             return true;
                                         }
+                                        else if (row.deal_status == 'cannot_the_deal') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 不可以交易
+                                 */
+                                {
+                                    name: 'cannot_the_deal',
+                                    text: '不可以交易',
+                                    icon: 'fa fa-window-close',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('不可以交易'),
+                                    classname: 'btn btn-xs btn-danger',
+                                    hidden: function (row, value, index) {
+                                        if (row.deal_status == 'cannot_the_deal') {
+                                            return false;
+                                        }
+                                        else if (row.deal_status == 'close_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'start_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'click_the_deal') {
+                                            return true;
+                                        }
                                     },
 
                                 },
@@ -1265,6 +1378,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.deal_status == 'start_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'cannot_the_deal') {
                                             return true;
                                         }
                                     },
@@ -1789,6 +1905,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                     return Table.api.buttonlink(this, buttons, value, row, index, 'operate');
                 },
+                buttons: function (value, row, index) {
+                    // 默认按钮组
+                    var buttons = $.extend([], this.buttons || []);
+                    return Controller.api.buttonlink(this, buttons, value, row, index, 'buttons');
+                },
+
                 /**
                  * 是否推荐
                  * @param value
@@ -1817,11 +1939,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     }
 
                 },
-                count: function (value, row, index) {
-
-                    return '<strong class="text-success">' + value + '</strong>';
-
-                },
                 images: function (value, row, index) {
                     value = value === null ? '' : value.toString();
                     var classname = typeof this.classname !== 'undefined' ? this.classname : 'img-sm img-center';
@@ -1832,19 +1949,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         html.push('<a href="https://czz.junyiqiche.com' + value + '" target="_blank"><img class="' + classname + '" src="https://czz.junyiqiche.com' + value + '" /></a>');
                     });
                     return html.join(' ');
-                }, 
-                invite_code: function (value, row, index) {
-                    if (row.auditstatus == 'paid_the_money') {
-                        return row.user.invite_code;
-                    }
                 },
-                invitation_code_img: function (value, row, index) {
-                    if (row.auditstatus == 'paid_the_money') {
-                        value = value ? value : '/assets/img/blank.gif';
-                        return '<a href="https://czz.junyiqiche.com' + value + '" target="_blank"><img class="img-sm img-center" src="https://czz.junyiqiche.com' + value + '" /></a>';
-
-                    }
-                }, 
+                count: function (value, row, index) {
+                    
+                    return '<strong class="text-success">' + value + '</strong>';
+                },
                 datetime: function (value, row, index) {
 
                     var datetimeFormat = typeof this.datetimeFormat === 'undefined' ? 'YYYY-MM-DD' : this.datetimeFormat;
@@ -1889,6 +1998,68 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     }
 
                 },
+            },
+            buttonlink: function (column, buttons, value, row, index, type) {
+                var table = column.table;
+                type = typeof type === 'undefined' ? 'buttons' : type;
+                var options = table ? table.bootstrapTable('getOptions') : {};
+                var html = [];
+                var hidden, visible, disable, url, classname, icon, text, title, refresh, confirm, extend, click, dropdown, link;
+                var fieldIndex = column.fieldIndex;
+                var dropdowns = {};
+
+                $.each(buttons, function (i, j) {
+                    if (type === 'operate') {
+                        if (j.name === 'dragsort' && typeof row[Table.config.dragsortfield] === 'undefined') {
+                            return true;
+                        }
+                        if (['add', 'edit', 'del', 'multi', 'dragsort'].indexOf(j.name) > -1 && !options.extend[j.name + "_url"]) {
+                            return true;
+                        }
+                    }
+                    var attr = table.data(type + "-" + j.name);
+                    if (typeof attr === 'undefined' || attr) {
+                        hidden = typeof j.hidden === 'function' ? j.hidden.call(table, row, j) : (j.hidden ? j.hidden : false);
+                        if (hidden) {
+                            return true;
+                        }
+                        visible = typeof j.visible === 'function' ? j.visible.call(table, row, j) : (j.visible ? j.visible : true);
+                        if (!visible) {
+                            return true;
+                        }
+                        dropdown = j.dropdown ? j.dropdown : '';
+                        url = j.url ? j.url : '';
+                        url = typeof url === 'function' ? url.call(table, row, j) : (url ? Fast.api.fixurl(Table.api.replaceurl(url, row, table)) : 'javascript:;');
+                        classname = j.classname ? j.classname : 'btn-primary btn-' + name + 'one';
+                        icon = j.icon ? j.icon : '';
+                        text = j.text ? j.text : '';
+                        title = row.store_name;
+                        refresh = j.refresh ? 'data-refresh="' + j.refresh + '"' : '';
+                        confirm = j.confirm ? 'data-confirm="' + j.confirm + '"' : '';
+                        extend = j.extend ? j.extend : '';
+                        disable = typeof j.disable === 'function' ? j.disable.call(table, row, j) : (j.disable ? j.disable : false);
+                        if (disable) {
+                            classname = classname + ' disabled';
+                        }
+                        link = '<a href="' + url + '" class="' + classname + '" ' + (confirm ? confirm + ' ' : '') + (refresh ? refresh + ' ' : '') + extend + ' title="' + title + '" data-table-id="' + (table ? table.attr("id") : '') + '" data-field-index="' + fieldIndex + '" data-row-index="' + index + '" data-button-index="' + i + '"><i class="' + icon + '"></i>' + (text ? ' ' + text : '') + '</a>';
+                        if (dropdown) {
+                            if (typeof dropdowns[dropdown] == 'undefined') {
+                                dropdowns[dropdown] = [];
+                            }
+                            dropdowns[dropdown].push(link);
+                        } else {
+                            html.push(link);
+                        }
+                    }
+                });
+                if (!$.isEmptyObject(dropdowns)) {
+                    var dropdownHtml = [];
+                    $.each(dropdowns, function (i, j) {
+                        dropdownHtml.push('<div class="btn-group"><button type="button" class="btn btn-primary dropdown-toggle btn-xs" data-toggle="dropdown">' + i + '</button><button type="button" class="btn btn-primary dropdown-toggle btn-xs" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right"><li>' + j.join('</li><li>') + '</li></ul></div>');
+                    });
+                    html.unshift(dropdownHtml);
+                }
+                return html.join(' ');
             },
         }
     };
