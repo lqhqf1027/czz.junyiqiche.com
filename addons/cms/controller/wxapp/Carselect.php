@@ -8,6 +8,7 @@
 
 namespace addons\cms\controller\wxapp;
 
+use addons\cms\model\ModelsInfo;
 use think\Cache;
 use think\Db;
 use addons\cms\model\User;
@@ -32,14 +33,7 @@ class Carselect extends Base
             $this->error('缺少参数');
         }
 
-        Cache::rm('CAR_LIST');
-
-        if (!Cache::get('CAR_LIST')) {
-
-            Cache::set('CAR_LIST', self::getCarCache());
-        }
-        $alls = Cache::get('CAR_LIST');
-
+        $alls = self::getCarCache();
         $realCarList = [];
         $city = $city == '不限地区' ? false : $city;
         if ($city || $brand_id || $models_name) {
@@ -112,14 +106,6 @@ class Carselect extends Base
         ]);
     }
 
-    /**
-     * 清除严选车源缓存
-     */
-    public function rmCacheCar_list()
-    {
-
-        Cache::rm('CAR_LIST');
-    }
 
     public static function getCarCache()
     {
@@ -166,12 +152,12 @@ class Carselect extends Base
         foreach ($cityList as $k => $v) {
             $cityList[$k] = ['name' => $v];
         }
-        
+
         array_unshift($cityList, ['name' => '不限地区']);
         array_unshift($brandList, [
             'zimu' => 'ALL',
             "brand_list" => [[
-                'name' => '不限品牌'        
+                'name' => '不限品牌'
             ]]
         ]);
 

@@ -320,7 +320,7 @@ class Shop extends Base
     /**
      * 取消订单
      */
-    public function  cancellation_order()
+    public function cancellation_order()
     {
         $store_id = $this->request->post('store_id');
 
@@ -368,7 +368,7 @@ class Shop extends Base
         Db::startTrans();
         try {
 
-            CompanyStore::where(['user_id'=>$user_id])->setField('auditstatus','paid_the_money');
+            CompanyStore::where(['user_id' => $user_id])->setField('auditstatus', 'paid_the_money');
 
             $company_info = CompanyStore::field('id')
                 ->with(['belongsStoreLevel' => function ($q) {
@@ -447,11 +447,11 @@ class Shop extends Base
         }
 
         $store = CompanyStore::get([
-            'user_id'=>$user_id,
-            'auditstatus'=>'paid_the_money'
+            'user_id' => $user_id,
+            'auditstatus' => 'paid_the_money'
         ]);
 
-        if(!$store){
+        if (!$store) {
             $this->error('门店未找到或未完成认证');
         }
 
@@ -471,7 +471,6 @@ class Shop extends Base
      */
     public function cash_withdrawal()
     {
-
         $user_id = $this->request->post('user_id');
 
         if (!$user_id) {
@@ -483,17 +482,56 @@ class Shop extends Base
 
             $all_money = EarningDetailed::get(['store_id' => $company_info['id']])->total_earnings;
 
-            $bank_info = BankInfo::get(['store_id' => $company_info['id']])->hidden(['store_id'])->toArray();
+            $bank_info = BankInfo::get(['store_id' => $company_info['id']]);
+
+            if (!$bank_info) {
+                throw new Exception('未查到银行卡信息');
+            }
+            $bank_info = $bank_info->hidden(['store_id'])->toArray();
 
             $bank_info['cardtype'] = $bank_info['cardtype'] == '借记卡' ? '储蓄卡' : '信用卡';
 
             $bank_info['last_number'] = substr($company_info['bank_card'], -4);
+
+            //服务费率
+            $presentation_rate = ConfigModel::get(['name' => 'presentation_rate'])->value;
         } catch (Exception $e) {
             $this->error($e->getMessage());
         }
 
-        $this->success('请求成功', ['total_money' => $all_money, 'bank_info' => $bank_info]);
+        $this->success('请求成功', ['total_money' => $all_money, 'presentation_rate' => $presentation_rate, 'bank_info' => $bank_info]);
 
+    }
+
+    /**
+     * 核对提现接口
+     */
+    public function check_money()
+    {
+        $money = $this->request->post('money');
+        $user_id = $this->request->post('user_id');
+
+        Db::startTrans();
+        try {
+            if (!is_numeric($money) || $money <= 0) {
+                throw new Exception('不合法的类型');
+            }
+
+            $store_id = CompanyStore::get(['user_id' => $user_id])->id;
+
+            $balance = EarningDetailed::where('store_id', $store_id)->lock(true)->value('total_earnings');
+
+            if ($money > $balance) {
+                throw new Exception('提现金额不能超过可用余额');
+            }
+
+            Db::commit();
+        } catch (Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+
+        $this->success('核对成功', 'success');
     }
 
 

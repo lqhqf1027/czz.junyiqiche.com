@@ -67,6 +67,10 @@ class ModelsInfo  extends Model
         return $this->belongsTo('Brand', 'brand_id', 'id')->setEagerlyType(0);
     }
 
+    public function publisherUser()
+    {
+        return $this->belongsTo('User', 'user_id', 'id')->setEagerlyType(0);
+    }
 
     /**
      * 关联品牌表
