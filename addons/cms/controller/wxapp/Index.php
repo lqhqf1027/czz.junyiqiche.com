@@ -244,7 +244,7 @@ class Index extends Base
                 $modelsInfoList[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y-m', $v['car_licensetime']) : null;
             }
 
-            $modelsInfoList[$k]['factorytime'] = $v['factorytime'] ? date('Y', $v['factorytime']) : '';
+//            $modelsInfoList[$k]['factorytime'] = $v['factorytime'] ? date('Y', $v['factorytime']) : '';
 
         }
 
