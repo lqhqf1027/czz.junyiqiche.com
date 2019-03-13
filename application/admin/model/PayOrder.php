@@ -26,7 +26,7 @@ class PayOrder extends Model
     
     public function getPayTypeList()
     {
-        return ['certification' => __('Certification'),'up' => __('Up')];
+        return ['certification' => __('店铺认证支付'),'up' => __('店铺升级支付'),'bond' => __('保证金支付')];
     }     
 
 

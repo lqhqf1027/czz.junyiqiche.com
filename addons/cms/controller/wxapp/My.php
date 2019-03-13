@@ -257,7 +257,7 @@ class My extends Base
         }
 
         $quotedPriceId = array_merge($this->getQuotedPriceId($user_id, 'buy'), $this->getQuotedPriceId($user_id, 'sell'));
-        $this->success($quotedPriceId);
+        // $this->success($quotedPriceId);
         if ($quotedPriceId) {
             QuotedPrice::where('id', 'in', $quotedPriceId)->setField('is_see', 1);
         }
@@ -496,14 +496,38 @@ class My extends Base
     {
         $quoted_id = $this->request->post('quoted_id');
 
-        if (!$quoted_id) {
-            $this->error('缺少参数');
-        }
-        if (!QuotedPrice::get($quoted_id)) {
-            $this->error('该订单已被取消');
-        }
+        Db::startTrans();
+        try {
 
-        $res = QuotedPrice::destroy($quoted_id);
+            if (!$quoted_id) {
+                $this->error('缺少参数');
+            }
+            if (!QuotedPrice::get($quoted_id)) {
+                $this->error('该订单已被取消');
+            }
+
+            $data = QuotedPrice::where('id', $quoted_id)->field('models_info_id,buy_car_id')->find();
+
+            if ($data['models_info_id']) {
+
+                $this->model->save(['deal_status' => 'start_the_deal'], function ($query) use ($data) {
+                    $query->where('models_info_id', $data['models_info_id']);
+                });
+            }
+            if ($data['buy_car_id']) {
+
+                $this->model->save(['deal_status' => 'start_the_deal'], function ($query) use ($data) {
+                    $query->where('buy_car_id', $data['buy_car_id']);
+                });
+            }
+
+            $res = QuotedPrice::destroy($quoted_id);
+            
+            Db::commit();
+        } catch (Exception $e) {
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
 
         !empty($res) ? $this->success('取消成功') : $this->error('取消失败');
     }

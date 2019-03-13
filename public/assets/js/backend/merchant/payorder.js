@@ -15,7 +15,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             });
 
             var table = $("#table");
-
+            $.fn.bootstrapTable.locales[Table.defaults.locale]['formatSearch'] = function(){return "快速搜索:商户订单号";};
             // 初始化表格
             table.bootstrapTable({
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
@@ -33,13 +33,31 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'user.nickname', title: __('User.nickname')},
                         {field: 'user.avatar', title: __('User.avatar'), formatter: Table.api.formatter.image},
                         {field: 'user.mobile', title: __('User.mobile')},
-                        {field: 'level.partner_rank', title: __('Level.partner_rank')},
-                        {field: 'pay_type', title: __('Pay_type'), formatter: Controller.api.formatter.normal},
+                        // {field: 'level.partner_rank', title: __('Level.partner_rank')},
+                        {field: 'pay_type', title: __('支付类型'), formatter: Controller.api.formatter.normal},
                         {field: 'time_end', title: __('支付完成时间'), formatter: Controller.api.formatter.datetime},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
                 ]
-            });z
+            });
+
+            // 绑定TAB事件
+            $('.panel-heading a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var field = $(this).closest("ul").data("field");
+                var value = $(this).data("value");
+                var options = table.bootstrapTable('getOptions');
+                options.pageNumber = 1;
+                options.queryParams = function (params) {
+                    var filter = {};
+                    if (value !== '') {
+                        filter[field] = value;
+                    }
+                    params.filter = JSON.stringify(filter);
+                    return params;
+                };
+                table.bootstrapTable('refresh', {});
+                return false;
+            });
 
             // 为表格绑定事件
             Table.api.bindevent(table);
@@ -79,20 +97,21 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 },
                 datetime: function (value, row, index) {
 
-                    var datetimeFormat = typeof this.datetimeFormat === 'undefined' ? 'YYYY-MM-DD' : this.datetimeFormat;
-                    if (isNaN(value)) {
-                        return value ? Moment(value).format(datetimeFormat) : __('None');
-                    } else {
-                        return value ? Moment(parseInt(value) * 1000).format(datetimeFormat) : __('None');
-                    }
+                    var date1 = value.slice(0,4);
+                    var date2 = value.slice(4,6);
+                    var date3 = value.slice(6,8);
+                    return date1 + '-' + date2 + '-' + date3;
 
                 },
                 normal: function (value, row, index) {
                     if (value == "certification") {
-                        return "<strong class='text-success'>认证成功</strong>"
+                        return "<strong class='text-success'>店铺认证支付</strong>"
                     }
                     if (value == "up") {
-                        return "<strong class='text-success'>升级</strong>"
+                        return "<strong class='text-success'>店铺升级支付</strong>"
+                    }
+                    if (value == "bond") {
+                        return "<strong class='text-success'>保证金支付</strong>"
                     }
                 }
     

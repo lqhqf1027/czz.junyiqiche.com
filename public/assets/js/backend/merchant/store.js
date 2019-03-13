@@ -118,7 +118,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                 }
                             ],
                             operate: false,
-                            formatter: Controller.api.formatter.buttons
+                            formatter: Controller.api.formatter.buttons1
                         },
                         {
                             field: 'recommend',
@@ -731,7 +731,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                             ],
                             events: Controller.api.events.operate,
-                            formatter: Controller.api.formatter.operate
+                            formatter: Controller.api.formatter.buttons2
                         }
 
                     ]
@@ -853,7 +853,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                             ],
                             events: Controller.api.events.operate,
-                            formatter: Controller.api.formatter.operate
+                            formatter: Controller.api.formatter.buttons3
                         }
 
                     ]
@@ -912,13 +912,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                         {
                             field: 'seller_payment_status',
-                            title: __('卖家（被报价人）支付状态'),
+                            title: __('卖家（被报价人）支付状态/商户订单号'),
                             formatter: Controller.api.formatter.seller_payment,
                             operate: false
                         },
                         {
                             field: 'buyer_payment_status',
-                            title: __('买家（报价人）支付状态'),
+                            title: __('买家（报价人）支付状态/商户订单号'),
                             formatter: Controller.api.formatter.buyer_payment,
                             operate: false
                         },
@@ -961,32 +961,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                                 },
                                 /**
-                                 * 可以交易，待支付保证金
-                                 */
-                                {
-                                    name: 'click_the_deal',
-                                    text: '可以交易，待支付保证金',
-                                    icon: 'fa fa-eye',
-                                    extend: 'data-toggle="tooltip"',
-                                    title: __('可以交易，待支付保证金'),
-                                    classname: 'btn btn-xs btn-primary',
-                                    hidden: function (row, value, index) {
-                                        if (row.deal_status == 'click_the_deal') {
-                                            return false;
-                                        }
-                                        else if (row.deal_status == 'close_the_deal') {
-                                            return true;
-                                        }
-                                        else if (row.deal_status == 'start_the_deal') {
-                                            return true;
-                                        }
-                                        else if (row.deal_status == 'cannot_the_deal') {
-                                            return true;
-                                        }
-                                    },
-
-                                },
-                                /**
                                  * 不可以交易
                                  */
                                 {
@@ -1013,32 +987,40 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                                 },
                                 /**
-                                 * 可以交易,支付保证金
+                                 * 等待买家支付保证金
                                  */
                                 {
-                                    name: 'close_the_deal',
-                                    text: '保证金已支付',
+                                    name: 'to_be_paid',
+                                    text: '等待买家支付保证金',
                                     icon: 'fa fa-eye',
                                     extend: 'data-toggle="tooltip"',
-                                    title: __('保证金已支付'),
-                                    classname: 'btn btn-xs btn-success',
+                                    title: __('等待买家支付保证金'),
+                                    classname: 'btn btn-xs btn-primary',
                                     hidden: function (row, value, index) {
-                                        if (row.deal_status == 'close_the_deal') {
+                                        if (row.buyer_payment_status == 'to_be_paid' && row.deal_status != 'cannot_the_deal' && row.deal_status != 'start_the_deal' && row.deal_status != 'close_the_deal') {
                                             return false;
                                         }
-                                        else if (row.deal_status == 'click_the_deal') {
+                                        else if (row.buyer_payment_status == 'to_be_paid' && row.deal_status == 'cannot_the_deal') {
                                             return true;
                                         }
-                                        else if (row.deal_status == 'start_the_deal') {
+                                        else if (row.buyer_payment_status == 'to_be_paid' && row.deal_status == 'start_the_deal') {
                                             return true;
                                         }
-                                        else if (row.deal_status == 'cannot_the_deal') {
+                                        else if (row.buyer_payment_status == 'to_be_paid' && row.deal_status == 'close_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'confirm_receipt') {
                                             return true;
                                         }
                                     },
 
                                 },
-
                                 /**
                                  * 确认买家保证金到账
                                  */
@@ -1120,6 +1102,44 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                                 },
                                 /**
+                                 * 等待卖家支付保证金
+                                 */
+                                {
+                                    name: 'to_be_paid',
+                                    text: '等待卖家支付保证金',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('等待卖家支付保证金'),
+                                    classname: 'btn btn-xs btn-primary',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'to_be_paid' && row.deal_status != 'cannot_the_deal'  && row.deal_status != 'start_the_deal' && row.deal_status != 'close_the_deal') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid' && row.deal_status == 'cannot_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid' && row.deal_status == 'start_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid' && row.deal_status == 'close_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'waiting_for_buyers') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
                                  * 确认卖家保证金到账
                                  */
                                 {
@@ -1140,6 +1160,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'waiting_for_buyers') {
                                             return true;
                                         }
                                     },
@@ -1168,6 +1191,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.seller_payment_status == 'confirm_receipt') {
                                             return true;
                                         }
+                                        else if (row.seller_payment_status == 'waiting_for_buyers') {
+                                            return true;
+                                        }
                                     },
 
                                 },
@@ -1192,6 +1218,77 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.seller_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'waiting_for_buyers') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 等待买家确认收货
+                                 */
+                                {
+                                    name: 'waiting_for_buyers',
+                                    text: '等待买家确认收货',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('等待买家确认收货'),
+                                    classname: 'btn btn-xs btn-success',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'waiting_for_buyers') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+
+                                /**
+                                 * 支付凭证
+                                 */
+                                {
+                                    name: ' pay_order ',
+                                    text: '支付凭证',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('支付凭证'),
+                                    classname: 'btn btn-xs btn-success btn-pay_order',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'already_paid') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_the_account') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'waiting_for_buyers') {
+                                            return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'already_paid') {
+                                            return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_the_account') {
+                                            return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'confirm_receipt') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid'  || row.buyer_payment_status == 'to_be_paid') {
                                             return true;
                                         }
                                     },
@@ -1260,13 +1357,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                         {
                             field: 'seller_payment_status',
-                            title: __('卖家（被报价人）支付状态'),
+                            title: __('卖家（被报价人）支付状态/商户订单号'),
                             formatter: Controller.api.formatter.seller_payment,
                             operate: false
                         },
                         {
                             field: 'buyer_payment_status',
-                            title: __('买家（报价人）支付状态'),
+                            title: __('买家（报价人）支付状态/商户订单号'),
                             formatter: Controller.api.formatter.buyer_payment,
                             operate: false
                         },
@@ -1309,32 +1406,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                                 },
                                 /**
-                                 * 可以交易，待支付保证金
-                                 */
-                                {
-                                    name: 'click_the_deal',
-                                    text: '可以交易，待支付保证金',
-                                    icon: 'fa fa-eye',
-                                    extend: 'data-toggle="tooltip"',
-                                    title: __('可以交易，待支付保证金'),
-                                    classname: 'btn btn-xs btn-primary',
-                                    hidden: function (row, value, index) {
-                                        if (row.deal_status == 'click_the_deal') {
-                                            return false;
-                                        }
-                                        else if (row.deal_status == 'close_the_deal') {
-                                            return true;
-                                        }
-                                        else if (row.deal_status == 'start_the_deal') {
-                                            return true;
-                                        }
-                                        else if (row.deal_status == 'cannot_the_deal') {
-                                            return true;
-                                        }
-                                    },
-
-                                },
-                                /**
                                  * 不可以交易
                                  */
                                 {
@@ -1361,32 +1432,40 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                                 },
                                 /**
-                                 * 可以交易,支付保证金
+                                 * 等待买家支付保证金
                                  */
                                 {
-                                    name: 'close_the_deal',
-                                    text: '保证金已支付',
+                                    name: 'to_be_paid',
+                                    text: '等待买家支付保证金',
                                     icon: 'fa fa-eye',
                                     extend: 'data-toggle="tooltip"',
-                                    title: __('保证金已支付'),
-                                    classname: 'btn btn-xs btn-success',
+                                    title: __('等待买家支付保证金'),
+                                    classname: 'btn btn-xs btn-primary',
                                     hidden: function (row, value, index) {
-                                        if (row.deal_status == 'close_the_deal') {
+                                        if (row.buyer_payment_status == 'to_be_paid' && row.deal_status != 'cannot_the_deal' && row.deal_status != 'start_the_deal' && row.deal_status != 'close_the_deal') {
                                             return false;
                                         }
-                                        else if (row.deal_status == 'click_the_deal') {
+                                        else if (row.buyer_payment_status == 'to_be_paid' && row.deal_status == 'cannot_the_deal') {
                                             return true;
                                         }
-                                        else if (row.deal_status == 'start_the_deal') {
+                                        else if (row.buyer_payment_status == 'to_be_paid' && row.deal_status == 'start_the_deal') {
                                             return true;
                                         }
-                                        else if (row.deal_status == 'cannot_the_deal') {
+                                        else if (row.buyer_payment_status == 'to_be_paid' && row.deal_status == 'close_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'confirm_receipt') {
                                             return true;
                                         }
                                     },
 
                                 },
-
                                 /**
                                  * 确认买家保证金到账
                                  */
@@ -1464,6 +1543,41 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         }
                                     },
 
+
+                                },
+                                /**
+                                 * 等待卖家支付保证金
+                                 */
+                                {
+                                    name: 'to_be_paid',
+                                    text: '等待卖家支付保证金',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('等待卖家支付保证金'),
+                                    classname: 'btn btn-xs btn-primary',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'to_be_paid' && row.deal_status != 'cannot_the_deal'  && row.deal_status != 'start_the_deal' && row.deal_status != 'close_the_deal') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid' && row.deal_status == 'cannot_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid' && row.deal_status == 'start_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid' && row.deal_status == 'close_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
 
                                 },
                                 /**
@@ -1892,7 +2006,39 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         );
                     },
 
+                    /**
+                     * 支付凭证
+                     * @param e
+                     * @param value
+                     * @param row
+                     * @param index
+                     */
+                    'click .btn-pay_order': function (e, value, row, index) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        var table = $(this).closest('table');
+                        var options = table.bootstrapTable('getOptions');
+                        var ids = row[options.pk];
+                        // alert(row[options.pk]);
+                        //第三方扩展皮肤
 
+                        layer.alert('请前往支付认证进行查看', {
+                            // icon: 1,
+                            skin: 'layer-ext-moon', //该皮肤由layer.seaning.com友情扩展。关于皮肤的扩展规则，去这里查阅
+                            // content: "<h4>请前往订单列表,选择对应的方案进行新增销售单</h4>",
+                            btn: ['前往'],
+                            btn1: function () {
+
+                                window.top.location.href = "/admin/merchant/payorder?ref=addtabs";
+
+                            }
+
+                        });
+                        $(".layui-layer-btn0").css({"margin-right": "20px"});
+                        $(".la").css({"margin-left": "10px"});
+
+
+                    }
                 },
             },
             formatter: {
@@ -1909,6 +2055,21 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     // 默认按钮组
                     var buttons = $.extend([], this.buttons || []);
                     return Controller.api.buttonlink(this, buttons, value, row, index, 'buttons');
+                },
+                buttons1: function (value, row, index) {
+                    // 默认按钮组
+                    var buttons = $.extend([], this.buttons || []);
+                    return Controller.api.buttonlink1(this, buttons, value, row, index, 'buttons');
+                },
+                buttons2: function (value, row, index) {
+                    // 默认按钮组
+                    var buttons = $.extend([], this.buttons || []);
+                    return Controller.api.buttonlink2(this, buttons, value, row, index, 'buttons');
+                },
+                buttons3: function (value, row, index) {
+                    // 默认按钮组
+                    var buttons = $.extend([], this.buttons || []);
+                    return Controller.api.buttonlink2(this, buttons, value, row, index, 'buttons');
                 },
 
                 /**
@@ -1971,13 +2132,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                     }
                     if (row.buyer_payment_status == 'already_paid') {
-                        return "<strong class='text-success'>支付保证金成功</strong>";
+                        return "<strong class='text-success'>支付保证金成功/" + row.buyers_out_trade_no +"</strong>";
                     }
                     if (row.buyer_payment_status == 'to_the_account') {
-                        return "<strong class='text-danger'>保证金已到账，待收货</strong>";
+                        return "<strong class='text-success'>保证金已到账，待收货/" + row.buyers_out_trade_no +"</strong>";
                     }
                     if (row.buyer_payment_status == 'confirm_receipt') {
-                        return "<strong class='text-success'>买家已经收货</strong>";
+                        return "<strong class='text-success'>买家已经收货/" + row.buyers_out_trade_no +"</strong>";
                     }
 
                 },
@@ -1988,13 +2149,16 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                     }
                     if (row.seller_payment_status == 'already_paid') {
-                        return "<strong class='text-success'>支付保证金成功</strong>";
+                        return "<strong class='text-success'>支付保证金成功/" + row.seller_out_trade_no +"</strong>";
                     }
                     if (row.seller_payment_status == 'to_the_account') {
-                        return "<strong class='text-danger'>保证金已到账，待发货</strong>";
+                        return "<strong class='text-success'>保证金已到账，待发货/" + row.seller_out_trade_no +"</strong>";
                     }
                     if (row.seller_payment_status == 'confirm_receipt') {
-                        return "<strong class='text-success'>卖家已经发货</strong>";
+                        return "<strong class='text-success'>卖家已经发货/" + row.seller_out_trade_no +"</strong>";
+                    }
+                    if (row.seller_payment_status == 'waiting_for_buyers') {
+                        return "<strong class='text-success'>等待买家确认收货/" + row.seller_out_trade_no +"</strong>";
                     }
 
                 },
@@ -2033,7 +2197,193 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         classname = j.classname ? j.classname : 'btn-primary btn-' + name + 'one';
                         icon = j.icon ? j.icon : '';
                         text = j.text ? j.text : '';
-                        title = row.store_name;
+                        title = '(' + row.store_name + ')的在售车型';
+                        refresh = j.refresh ? 'data-refresh="' + j.refresh + '"' : '';
+                        confirm = j.confirm ? 'data-confirm="' + j.confirm + '"' : '';
+                        extend = j.extend ? j.extend : '';
+                        disable = typeof j.disable === 'function' ? j.disable.call(table, row, j) : (j.disable ? j.disable : false);
+                        if (disable) {
+                            classname = classname + ' disabled';
+                        }
+                        link = '<a href="' + url + '" class="' + classname + '" ' + (confirm ? confirm + ' ' : '') + (refresh ? refresh + ' ' : '') + extend + ' title="' + title + '" data-table-id="' + (table ? table.attr("id") : '') + '" data-field-index="' + fieldIndex + '" data-row-index="' + index + '" data-button-index="' + i + '"><i class="' + icon + '"></i>' + (text ? ' ' + text : '') + '</a>';
+                        if (dropdown) {
+                            if (typeof dropdowns[dropdown] == 'undefined') {
+                                dropdowns[dropdown] = [];
+                            }
+                            dropdowns[dropdown].push(link);
+                        } else {
+                            html.push(link);
+                        }
+                    }
+                });
+                if (!$.isEmptyObject(dropdowns)) {
+                    var dropdownHtml = [];
+                    $.each(dropdowns, function (i, j) {
+                        dropdownHtml.push('<div class="btn-group"><button type="button" class="btn btn-primary dropdown-toggle btn-xs" data-toggle="dropdown">' + i + '</button><button type="button" class="btn btn-primary dropdown-toggle btn-xs" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right"><li>' + j.join('</li><li>') + '</li></ul></div>');
+                    });
+                    html.unshift(dropdownHtml);
+                }
+                return html.join(' ');
+            },
+            buttonlink1: function (column, buttons, value, row, index, type) {
+                var table = column.table;
+                type = typeof type === 'undefined' ? 'buttons' : type;
+                var options = table ? table.bootstrapTable('getOptions') : {};
+                var html = [];
+                var hidden, visible, disable, url, classname, icon, text, title, refresh, confirm, extend, click, dropdown, link;
+                var fieldIndex = column.fieldIndex;
+                var dropdowns = {};
+
+                $.each(buttons, function (i, j) {
+                    if (type === 'operate') {
+                        if (j.name === 'dragsort' && typeof row[Table.config.dragsortfield] === 'undefined') {
+                            return true;
+                        }
+                        if (['add', 'edit', 'del', 'multi', 'dragsort'].indexOf(j.name) > -1 && !options.extend[j.name + "_url"]) {
+                            return true;
+                        }
+                    }
+                    var attr = table.data(type + "-" + j.name);
+                    if (typeof attr === 'undefined' || attr) {
+                        hidden = typeof j.hidden === 'function' ? j.hidden.call(table, row, j) : (j.hidden ? j.hidden : false);
+                        if (hidden) {
+                            return true;
+                        }
+                        visible = typeof j.visible === 'function' ? j.visible.call(table, row, j) : (j.visible ? j.visible : true);
+                        if (!visible) {
+                            return true;
+                        }
+                        dropdown = j.dropdown ? j.dropdown : '';
+                        url = j.url ? j.url : '';
+                        url = typeof url === 'function' ? url.call(table, row, j) : (url ? Fast.api.fixurl(Table.api.replaceurl(url, row, table)) : 'javascript:;');
+                        classname = j.classname ? j.classname : 'btn-primary btn-' + name + 'one';
+                        icon = j.icon ? j.icon : '';
+                        text = j.text ? j.text : '';
+                        title = '(' + row.store_name + ')的想买车型';
+                        refresh = j.refresh ? 'data-refresh="' + j.refresh + '"' : '';
+                        confirm = j.confirm ? 'data-confirm="' + j.confirm + '"' : '';
+                        extend = j.extend ? j.extend : '';
+                        disable = typeof j.disable === 'function' ? j.disable.call(table, row, j) : (j.disable ? j.disable : false);
+                        if (disable) {
+                            classname = classname + ' disabled';
+                        }
+                        link = '<a href="' + url + '" class="' + classname + '" ' + (confirm ? confirm + ' ' : '') + (refresh ? refresh + ' ' : '') + extend + ' title="' + title + '" data-table-id="' + (table ? table.attr("id") : '') + '" data-field-index="' + fieldIndex + '" data-row-index="' + index + '" data-button-index="' + i + '"><i class="' + icon + '"></i>' + (text ? ' ' + text : '') + '</a>';
+                        if (dropdown) {
+                            if (typeof dropdowns[dropdown] == 'undefined') {
+                                dropdowns[dropdown] = [];
+                            }
+                            dropdowns[dropdown].push(link);
+                        } else {
+                            html.push(link);
+                        }
+                    }
+                });
+                if (!$.isEmptyObject(dropdowns)) {
+                    var dropdownHtml = [];
+                    $.each(dropdowns, function (i, j) {
+                        dropdownHtml.push('<div class="btn-group"><button type="button" class="btn btn-primary dropdown-toggle btn-xs" data-toggle="dropdown">' + i + '</button><button type="button" class="btn btn-primary dropdown-toggle btn-xs" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right"><li>' + j.join('</li><li>') + '</li></ul></div>');
+                    });
+                    html.unshift(dropdownHtml);
+                }
+                return html.join(' ');
+            },
+            buttonlink2: function (column, buttons, value, row, index, type) {
+                var table = column.table;
+                type = typeof type === 'undefined' ? 'buttons' : type;
+                var options = table ? table.bootstrapTable('getOptions') : {};
+                var html = [];
+                var hidden, visible, disable, url, classname, icon, text, title, refresh, confirm, extend, click, dropdown, link;
+                var fieldIndex = column.fieldIndex;
+                var dropdowns = {};
+
+                $.each(buttons, function (i, j) {
+                    if (type === 'operate') {
+                        if (j.name === 'dragsort' && typeof row[Table.config.dragsortfield] === 'undefined') {
+                            return true;
+                        }
+                        if (['add', 'edit', 'del', 'multi', 'dragsort'].indexOf(j.name) > -1 && !options.extend[j.name + "_url"]) {
+                            return true;
+                        }
+                    }
+                    var attr = table.data(type + "-" + j.name);
+                    if (typeof attr === 'undefined' || attr) {
+                        hidden = typeof j.hidden === 'function' ? j.hidden.call(table, row, j) : (j.hidden ? j.hidden : false);
+                        if (hidden) {
+                            return true;
+                        }
+                        visible = typeof j.visible === 'function' ? j.visible.call(table, row, j) : (j.visible ? j.visible : true);
+                        if (!visible) {
+                            return true;
+                        }
+                        dropdown = j.dropdown ? j.dropdown : '';
+                        url = j.url ? j.url : '';
+                        url = typeof url === 'function' ? url.call(table, row, j) : (url ? Fast.api.fixurl(Table.api.replaceurl(url, row, table)) : 'javascript:;');
+                        classname = j.classname ? j.classname : 'btn-primary btn-' + name + 'one';
+                        icon = j.icon ? j.icon : '';
+                        text = j.text ? j.text : '';
+                        title = '(' + row.store_name + '店铺)' + Controller.cutString(row.models_name,15) + '车型的报价';
+                        refresh = j.refresh ? 'data-refresh="' + j.refresh + '"' : '';
+                        confirm = j.confirm ? 'data-confirm="' + j.confirm + '"' : '';
+                        extend = j.extend ? j.extend : '';
+                        disable = typeof j.disable === 'function' ? j.disable.call(table, row, j) : (j.disable ? j.disable : false);
+                        if (disable) {
+                            classname = classname + ' disabled';
+                        }
+                        link = '<a href="' + url + '" class="' + classname + '" ' + (confirm ? confirm + ' ' : '') + (refresh ? refresh + ' ' : '') + extend + ' title="' + title + '" data-table-id="' + (table ? table.attr("id") : '') + '" data-field-index="' + fieldIndex + '" data-row-index="' + index + '" data-button-index="' + i + '"><i class="' + icon + '"></i>' + (text ? ' ' + text : '') + '</a>';
+                        if (dropdown) {
+                            if (typeof dropdowns[dropdown] == 'undefined') {
+                                dropdowns[dropdown] = [];
+                            }
+                            dropdowns[dropdown].push(link);
+                        } else {
+                            html.push(link);
+                        }
+                    }
+                });
+                if (!$.isEmptyObject(dropdowns)) {
+                    var dropdownHtml = [];
+                    $.each(dropdowns, function (i, j) {
+                        dropdownHtml.push('<div class="btn-group"><button type="button" class="btn btn-primary dropdown-toggle btn-xs" data-toggle="dropdown">' + i + '</button><button type="button" class="btn btn-primary dropdown-toggle btn-xs" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right"><li>' + j.join('</li><li>') + '</li></ul></div>');
+                    });
+                    html.unshift(dropdownHtml);
+                }
+                return html.join(' ');
+            },
+            buttonlink3: function (column, buttons, value, row, index, type) {
+                var table = column.table;
+                type = typeof type === 'undefined' ? 'buttons' : type;
+                var options = table ? table.bootstrapTable('getOptions') : {};
+                var html = [];
+                var hidden, visible, disable, url, classname, icon, text, title, refresh, confirm, extend, click, dropdown, link;
+                var fieldIndex = column.fieldIndex;
+                var dropdowns = {};
+
+                $.each(buttons, function (i, j) {
+                    if (type === 'operate') {
+                        if (j.name === 'dragsort' && typeof row[Table.config.dragsortfield] === 'undefined') {
+                            return true;
+                        }
+                        if (['add', 'edit', 'del', 'multi', 'dragsort'].indexOf(j.name) > -1 && !options.extend[j.name + "_url"]) {
+                            return true;
+                        }
+                    }
+                    var attr = table.data(type + "-" + j.name);
+                    if (typeof attr === 'undefined' || attr) {
+                        hidden = typeof j.hidden === 'function' ? j.hidden.call(table, row, j) : (j.hidden ? j.hidden : false);
+                        if (hidden) {
+                            return true;
+                        }
+                        visible = typeof j.visible === 'function' ? j.visible.call(table, row, j) : (j.visible ? j.visible : true);
+                        if (!visible) {
+                            return true;
+                        }
+                        dropdown = j.dropdown ? j.dropdown : '';
+                        url = j.url ? j.url : '';
+                        url = typeof url === 'function' ? url.call(table, row, j) : (url ? Fast.api.fixurl(Table.api.replaceurl(url, row, table)) : 'javascript:;');
+                        classname = j.classname ? j.classname : 'btn-primary btn-' + name + 'one';
+                        icon = j.icon ? j.icon : '';
+                        text = j.text ? j.text : '';
+                        title = '(' + row.store_name + '店铺)' + Controller.cutString(row.models_name,15) + '车型的报价';
                         refresh = j.refresh ? 'data-refresh="' + j.refresh + '"' : '';
                         confirm = j.confirm ? 'data-confirm="' + j.confirm + '"' : '';
                         extend = j.extend ? j.extend : '';
