@@ -10,15 +10,19 @@ namespace addons\cms\controller\wxapp;
 
 use addons\cms\model\Brand;
 use addons\cms\model\CompanyStore;
+use addons\cms\model\ModelsInfo;
+use addons\cms\model\PayOrder;
 use addons\cms\model\User;
 use addons\cms\model\Distribution;
 use addons\cms\model\StoreLevel;
 use addons\cms\model\Config as ConfigModel;
 use addons\cms\model\EarningDetailed;
 use addons\cms\model\BankInfo;
+use addons\cms\model\WithdrawalsRecord;
 use think\Cache;
 use think\Db;
 use think\Exception;
+use think\exception\PDOException;
 
 class Shop extends Base
 {
@@ -56,9 +60,11 @@ class Shop extends Base
             $data = [
                 'submit_type' => 'insert',
                 'inviter_code' => $inviter_code,
-                'store_level_list' => $this->getVisibleStoreList(empty($inviter_level_id) ? null : $inviter_level_id),
-                'brand_list' => $brand
+                'store_level_list' => self::getVisibleStoreList(empty($inviter_level_id) ? null : $inviter_level_id),
+                'brand_list' => $brand,
+
             ];
+
 
             //是否已经有店铺，并且未通过审核
             $no_pass = CompanyStore::get([
@@ -110,7 +116,7 @@ class Shop extends Base
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    protected function getVisibleStoreList($inviter_level_id = null)
+    public static function getVisibleStoreList($inviter_level_id = null, $upgrade = 0)
     {
         if (!Cache::get('LEVEL')) {
             $store_level = collection(StoreLevel::field('id,partner_rank,money,explain')->select())->toArray();
@@ -121,6 +127,14 @@ class Shop extends Base
         if ($inviter_level_id) {
 
             foreach ($store_level_list as $k => $v) {
+
+                if ($upgrade) {
+                    if ($v['id'] >= $inviter_level_id) {
+                        $store_level_list[$k]['condition'] = 'disabled';
+                    }
+
+                    continue;
+                }
 
                 if ($v['id'] < $inviter_level_id) {
                     $store_level_list[$k]['condition'] = 'disabled';
@@ -199,20 +213,20 @@ class Shop extends Base
                 ->find();
 
             if (!$check_phone) {
-                $this->error('手机验证码输入错误');
+                throw new Exception('手机验证码输入错误');
             }
 
             if (!empty($infos['code'])) {
                 $inviter = User::get(['invite_code' => $infos['code']])->id;
 
                 if (!$inviter) {
-                    $this->error('输入了错误的邀请码');
+                    throw new Exception('输入了错误的邀请码');
                 }
 
                 $check_code = CompanyStore::get(['user_id' => $inviter, 'auditstatus' => 'paid_the_money']);
 
                 if (!$check_code) {
-                    $this->error('该店铺未实名认证,无效的邀请码');
+                    throw new Exception('该店铺未实名认证,无效的邀请码');
                 }
 
             }
@@ -241,6 +255,8 @@ class Shop extends Base
                         $bank->allowField(true)->save($result['result']);
                     }
 
+                } else {
+                    throw new Exception('获取银行卡信息失败');
                 }
 
                 if ($submit_type == 'insert') {
@@ -255,7 +271,7 @@ class Shop extends Base
                 }
 
             } else {
-                $this->error('添加失败', 'error');
+                throw new Exception('添加失败');
             }
             Db::commit();
         } catch (Exception $e) {
@@ -266,7 +282,6 @@ class Shop extends Base
         $this->success('请求成功', 'success');
 
     }
-
 
     /**
      * 我的订单接口
@@ -300,6 +315,11 @@ class Shop extends Base
             $to_be_paid[] = $info;
         }
 
+        $to_be_paid = User::field('id,nickname,avatar')
+            ->with(['companystoreone' => function ($q) {
+                $q->where('auditstatus', 'neq', 'paid_the_money')->withField('id,store_name,level_id,auditstatus');
+            }])->select($user_id);
+
         if ($to_be_paid) {
             //根据门店状态判断能否支付
             $can_pay = $to_be_paid[0]['companystoreone']['auditstatus'] == 'pass_the_audit' ? 1 : 0;
@@ -307,11 +327,29 @@ class Shop extends Base
             $to_be_paid[0]['can_pay'] = $can_pay;
         }
 
-        if ($paid) {
-            //根据门店等级判断能否升级
-            $can_upgrade = $paid[0]['companystoreone']['level_id'] == 1 ? 0 : 1;
-            $paid[0]['can_upgrade'] = $can_upgrade;
-        }
+        $paid = PayOrder::field('id,time_end')
+            ->with([
+                'user' => function ($q) {
+                    $q->withField('id,nickname,avatar');
+                },
+                'companyStore' => function ($q) {
+                    $q->withField('id,store_name,auditstatus');
+                },
+                'level' => function ($q) {
+                    $q->withField('id,partner_rank,money');
+                }
+            ])
+            ->where([
+                'pay_order.user_id' => $user_id,
+                'pay_type' => ['neq', 'bond']
+            ])->order('id desc')->select();
+//        if ($paid) {
+//            //根据门店等级判断能否升级
+//            $can_upgrade = $paid[0]['companystoreone']['level_id'] == 1 ? 0 : 1;
+//            $paid[0]['can_upgrade'] = $can_upgrade;
+//            $pay_order = PayOrder::get(['user_id' => $user_id, 'pay_type' => '']);
+//            $paid[0]['payment_time'] = $pay_order ? date('Y-m-d H:i:s', strtotime($pay_order->time_end)) : '';
+//        }
 
         $this->success('请求成功', ['to_be_paid' => $to_be_paid, 'paid_the_money' => $paid]);
 
@@ -405,21 +443,28 @@ class Shop extends Base
             $up_id = Distribution::get(['level_store_id' => $company_info['id']])->store_id;
             if ($up_id) {
                 //加锁查询上级的金额信息
-                $up_data = EarningDetailed::field('first_earnings,total_earnings')->where('store_id', $up_id)->lock(true)->select();
+                $up_data = EarningDetailed::field('first_earnings,total_earnings,available_balance')->where('store_id', $up_id)->lock(true)->find();
+
                 //如果有上级，将上级的收益加入上级收益明细表中
                 EarningDetailed::where('store_id', $up_id)
-                    ->update(['first_earnings' => $up_data['first_earnings'] + $first_income,
-                        'total_earnings' => $up_data['total_earnings'] + $first_income]);
+                    ->update([
+                        'first_earnings' => EarningDetailed::raw('first_earnings+' . $first_income),
+                        'total_earnings' => EarningDetailed::raw('total_earnings+' . $first_income),
+                        'available_balance' => EarningDetailed::raw('available_balance+' . $first_income)
+                    ]);
 
                 $up_up_id = Distribution::get(['level_store_id' => $up_id])->store_id;
 
                 if ($up_up_id) {
                     //加锁查询上上级的金额信息
-                    $up_up_data = EarningDetailed::field('second_earnings,total_earnings')->where('store_id', $up_id)->lock(true)->select();
+                    $up_up_data = EarningDetailed::field('second_earnings,total_earnings,available_balance')->where('store_id', $up_up_id)->find();
                     //如果有上上级，将上级的收益加入上上级收益明细表中
                     EarningDetailed::where('store_id', $up_up_id)
-                        ->update(['second_earnings' => $up_up_data['second_earnings'] + $second_income,
-                            'total_earnings' => $up_up_data['total_earnings'] + $second_income]);
+                        ->update([
+                            'second_earnings' => EarningDetailed::raw('second_earnings+' . $second_income),
+                            'total_earnings' => EarningDetailed::raw('total_earnings+' . $second_income),
+                            'available_balance' => EarningDetailed::raw('available_balance+' . $second_income)
+                        ]);
                 }
             }
             Db::commit();
@@ -451,13 +496,38 @@ class Shop extends Base
             'auditstatus' => 'paid_the_money'
         ]);
 
+        $store_info = CompanyStore::field(['id', 'cities_name', 'store_name', 'store_address', 'phone', 'main_camp', 'store_img', 'store_description', 'auditstatus', 'level_id'])
+            ->with(['storelevel' => function ($q) {
+                $q->withField('id,partner_rank');
+            }])
+            ->where('user_id', $user_id)->find();
+
         if (!$store) {
             $this->error('门店未找到或未完成认证');
         }
 
-        $store_info = $store->visible(['id', 'cities_name', 'store_name', 'store_address', 'phone', 'main_camp', 'store_img', 'store_description'])->toArray();
+        $car_list = ModelsInfo::useGlobalScope(false)->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime,store_description,factorytime,modelsimages,shelfismenu')
+            ->with(['brand' => function ($q) {
+                $q->withField('id,name,brand_initials,brand_default_images');
+            }])
+            ->where('store_id', $store_info['id'])->select();
 
-        $car_list = Index::typeCar(1, 0, ['store_id' => $store_info['id']]);
+        if ($car_list) {
+            $car_list = collection($car_list)->toArray();
+            $default_image = self::$default_image;
+            foreach ($car_list as $k => $v) {
+
+                $car_list[$k]['kilometres'] = $v['kilometres'] ? floatval(round($v['kilometres'] / 10000, 2)) . '万公里' : null;
+                $car_list[$k]['guide_price'] = $v['guide_price'] ? floatval(round($v['guide_price'] / 10000, 2)) . '万' : null;
+
+                $car_list[$k]['modelsimages'] = !empty($v['modelsimages']) ? explode(',', $v['modelsimages'])[0] : $default_image;
+
+                $car_list[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y-m', $v['car_licensetime']) : null;
+
+//                $car_list[$k]['factorytime'] = $v['factorytime'] ? date('Y', $v['factorytime']) : '';
+
+            }
+        }
 
         $store_info['car_list'] = $car_list;
 
@@ -480,7 +550,7 @@ class Shop extends Base
         try {
             $company_info = CompanyStore::get(['user_id' => $user_id])->visible(['id', 'bank_card']);
 
-            $all_money = EarningDetailed::get(['store_id' => $company_info['id']])->total_earnings;
+            $all_money = EarningDetailed::get(['store_id' => $company_info['id']])->available_balance;
 
             $bank_info = BankInfo::get(['store_id' => $company_info['id']]);
 
@@ -504,12 +574,16 @@ class Shop extends Base
     }
 
     /**
-     * 核对提现接口
+     * 点击确认提现接口
      */
     public function check_money()
     {
         $money = $this->request->post('money');
         $user_id = $this->request->post('user_id');
+
+        if (!$user_id || !$money) {
+            $this->error('缺少参数');
+        }
 
         Db::startTrans();
         try {
@@ -517,12 +591,25 @@ class Shop extends Base
                 throw new Exception('不合法的类型');
             }
 
+            $money = floatval($money);
+
             $store_id = CompanyStore::get(['user_id' => $user_id])->id;
 
-            $balance = EarningDetailed::where('store_id', $store_id)->lock(true)->value('total_earnings');
+            $balance = EarningDetailed::where('store_id', $store_id)->lock(true)->value('available_balance');
 
             if ($money > $balance) {
                 throw new Exception('提现金额不能超过可用余额');
+            }
+
+            $res = EarningDetailed::where('store_id', $store_id)->setDec('available_balance', $money);
+
+            if ($res) {
+                WithdrawalsRecord::create([
+                    'withdrawal_amount' => $money,
+                    'store_id' => $store_id
+                ]);
+            } else {
+                throw new Exception('提现失败');
             }
 
             Db::commit();
@@ -531,7 +618,7 @@ class Shop extends Base
             $this->error($e->getMessage());
         }
 
-        $this->success('核对成功', 'success');
+        $this->success('申请提现成功', 'success');
     }
 
 

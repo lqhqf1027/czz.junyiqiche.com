@@ -257,7 +257,7 @@ class My extends Base
         }
 
         $quotedPriceId = array_merge($this->getQuotedPriceId($user_id, 'buy'), $this->getQuotedPriceId($user_id, 'sell'));
-        // $this->success($quotedPriceId);
+
         if ($quotedPriceId) {
             QuotedPrice::where('id', 'in', $quotedPriceId)->setField('is_see', 1);
         }
@@ -363,6 +363,8 @@ class My extends Base
     {
         $id = $this->request->post('id');
 
+        $car_type = $this->request->post('car_type');
+
         $shelfismenu = $this->request->post('shelfismenu');
 
         $shelfismenu = $shelfismenu == 0 ? 2 : 1;
@@ -370,21 +372,22 @@ class My extends Base
         if (!$id || !$shelfismenu) {
             $this->error('缺少参数');
         }
+
+        $models_name = $car_type == 'sell' ? new ModelsInfo() : new BuycarModel();
         //上架
         if ($shelfismenu == 1) {
 
-            BuycarModel::update(['id' => $id, 'shelfismenu' => $shelfismenu]) ? $this->success('上架成功', 'success') : $this->error('上架失败', 'error');
+            $models_name->update(['id' => $id, 'shelfismenu' => $shelfismenu]) ? $this->success('上架成功', 'success') : $this->error('上架失败', 'error');
 
         }
         //下架
         if ($shelfismenu == 2) {
 
-            BuycarModel::update(['id' => $id, 'shelfismenu' => $shelfismenu]) ? $this->success('下架成功', 'success') : $this->error('下架失败', 'error');
+            $models_name->update(['id' => $id, 'shelfismenu' => $shelfismenu]) ? $this->success('下架成功', 'success') : $this->error('下架失败', 'error');
 
         }
 
     }
-
 
     /**
      * 我的页面---我的钱包
@@ -401,7 +404,7 @@ class My extends Base
 
             $store_id = CompanyStore::where('user_id', $user_id)->value('id');
 
-            $mymoney = EarningDetailed::field('first_earnings,second_earnings,total_earnings')->where('store_id', $store_id)->find();
+            $mymoney = EarningDetailed::field('first_earnings,second_earnings,total_earnings,available_balance')->where('store_id', $store_id)->find();
 
             $first_store = Collection(Distribution::field('level_store_id,second_earnings')->with(['store' => function ($q) {
 
@@ -546,7 +549,9 @@ class My extends Base
 
         $store_info = CompanyStore::get(['user_id' => $user_id])->visible(['id', 'cities_name', 'store_name', 'store_address', 'phone', 'business_life', 'main_camp', 'bank_card', 'store_img', 'id_card_images', 'business_licenseimages', 'level_id', 'store_description', 'real_name']);
 
-        $this->success('请求成功', $store_info);
+        $store_level_list = Shop::getVisibleStoreList($store_info['level_id'], 1);
+
+        $this->success('请求成功', ['store_info' => $store_info, 'store_level_list' => $store_level_list]);
     }
 
 }
