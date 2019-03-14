@@ -712,7 +712,13 @@ class Index extends Base
     {
         $information_id = $this->request->post('information_id');
 
+        if (!$information_id) {
+            $this->error('缺少参数，请求失败', 'error');
+        }
+
         $info = AutomotiveInformation::get($information_id)->hidden(['status']);
+
+        AutomotiveInformation::where('id',$information_id)->setInc('browse_volume',rand(1,10));
 
         $this->success('请求成功', ['detail' => $info]);
     }
