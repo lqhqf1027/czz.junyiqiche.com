@@ -48,7 +48,7 @@ class Payorder extends Backend
             {
                 return $this->selectpage();
             }
-            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams('out_trade_no');
             $total = $this->model
                     ->with(['store','user','level'])
                     ->where($where)

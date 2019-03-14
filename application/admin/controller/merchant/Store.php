@@ -9,6 +9,7 @@ use app\admin\model\QuotedPrice;
 use app\admin\model\ModelsInfo;
 use app\admin\model\BuycarModel;
 use app\admin\model\StoreLevel;
+use app\admin\model\PayOrder;
 use think\Config;
 use think\Db;
 use think\Env;
@@ -209,13 +210,13 @@ class Store extends Backend
                 
                 //模板推送
                 //获取formId
-                $formId = current(array_values(Common::getFormId($storeData['user_id'])))['form_id']; 
+                $formId = Common::getFormId($storeData['user_id']); 
+                $openid = Common::getOpenid($storeData['user_id']);
                 // pr($formId);
                 // pr($storeData['user_id']);
                 // die;
-                if ($formId) {
+                if ($formId && $openid) {
                     $keyword1 = $storeData['store_name'];
-                    $openid = Common::getOpenid($storeData['user_id']);
                     $temp_msg = array(
                         'touser' => "{$openid}",
                         'template_id' => "B-gukPlG-T-2ydDlkGqh73ArScwp90Nm4blPdJ7fXdw",
@@ -265,7 +266,7 @@ class Store extends Backend
 
             $id = json_decode($id, true);
 
-            $result = $this->model->save(['auditstatus' => 'audit_failed', 'text' => $text], function ($query) use ($id) {
+            $result = $this->model->save(['auditstatus' => 'audit_failed', 'reasons_failure' => $text], function ($query) use ($id) {
                 $query->where('id', $id);
             });
 
@@ -426,6 +427,9 @@ class Store extends Backend
                 $row->getRelation('brand')->visible(['name']);
                 //收到报价次数
                 $list[$key]['count'] = QuotedPrice::where(['models_info_id' => $row['id']])->count();
+                //店铺名
+                $list[$key]['store_name'] = CompanyStore::where('id', $row['store_id'])->value('store_name');
+
             }
             $list = collection($list)->toArray();
     
@@ -475,6 +479,8 @@ class Store extends Backend
                 $row->getRelation('brand')->visible(['name']);
                 //收到报价次数
                 $list[$key]['count'] = QuotedPrice::where(['buy_car_id' => $row['id']])->count();
+                //店铺名
+                $list[$key]['store_name'] = CompanyStore::where('id', $row['store_id'])->value('store_name');
             }
             $list = collection($list)->toArray();
             $result = array("total" => $total, "rows" => $list);
@@ -525,6 +531,17 @@ class Store extends Backend
             foreach ($list as $k => $row) {
                 
                 $list[$k]['store_name'] = CompanyStore::where('user_id', $row['user_ids'])->value('store_name');
+
+                $payorder = PayOrder::where(['trading_models_id' => $row['models_info_id'], 'pay_type' => 'bond'])->select();
+                foreach ($payorder as $key => $value) {
+                    if ($value['seller_id']) {
+                        $list[$k]['seller_out_trade_no'] = $value['out_trade_no'];
+                    }
+                    if ($value['buyers_id']) {
+                        $list[$k]['buyers_out_trade_no'] = $value['out_trade_no'];
+                    }
+                }
+                
             }
             $list = collection($list)->toArray();
     
