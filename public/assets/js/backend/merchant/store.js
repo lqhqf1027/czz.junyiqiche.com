@@ -931,6 +931,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             addclass: 'datetimerange',
                             formatter: Controller.api.formatter.datetime
                         },
+                        {field: 'id', title: __('是否可查看支付凭证'), operate: false, formatter: Controller.api.formatter.pay_order},
                         {
                             field: 'operate', title: __('Operate'), table: table,
                             buttons: [
@@ -1075,18 +1076,21 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                                 },
                                 /**
-                                 * 买家已经收货
+                                 * 买家已经收货，交易完成
                                  */
                                 {
                                     name: 'buyer_payment_status',
-                                    text: '买家已经收货',
+                                    text: '买家已经收货，交易完成',
                                     icon: 'fa fa-eye',
                                     extend: 'data-toggle="tooltip"',
-                                    title: __('买家已经收货'),
+                                    title: __('买家已经收货，双方交易完成'),
                                     classname: 'btn btn-xs btn-success',
                                     hidden: function (row, value, index) {
-                                        if (row.buyer_payment_status == 'confirm_receipt') {
+                                        if (row.buyer_payment_status == 'confirm_receipt' && row.seller_payment_status == 'confirm_receipt') {
                                             return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'confirm_receipt' && row.seller_payment_status != 'confirm_receipt') {
+                                            return true;
                                         }
                                         else if (row.buyer_payment_status == 'to_be_paid') {
                                             return true;
@@ -1197,44 +1201,44 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     },
 
                                 },
-                                /**
-                                 * 卖家已经发货
-                                 */
-                                {
-                                    name: 'seller_payment_status',
-                                    text: '卖家已经发货',
-                                    icon: 'fa fa-eye',
-                                    extend: 'data-toggle="tooltip"',
-                                    title: __('卖家已经发货'),
-                                    classname: 'btn btn-xs btn-success',
-                                    hidden: function (row, value, index) {
-                                        if (row.seller_payment_status == 'confirm_receipt') {
-                                            return false;
-                                        }
-                                        else if (row.seller_payment_status == 'to_be_paid') {
-                                            return true;
-                                        }
-                                        else if (row.seller_payment_status == 'already_paid') {
-                                            return true;
-                                        }
-                                        else if (row.seller_payment_status == 'to_the_account') {
-                                            return true;
-                                        }
-                                        else if (row.seller_payment_status == 'waiting_for_buyers') {
-                                            return true;
-                                        }
-                                    },
+                                // /**
+                                //  * 卖家已经发货
+                                //  */
+                                // {
+                                //     name: 'seller_payment_status',
+                                //     text: '卖家已经发货',
+                                //     icon: 'fa fa-eye',
+                                //     extend: 'data-toggle="tooltip"',
+                                //     title: __('卖家已经发货'),
+                                //     classname: 'btn btn-xs btn-success',
+                                //     hidden: function (row, value, index) {
+                                //         if (row.seller_payment_status == 'confirm_receipt') {
+                                //             return false;
+                                //         }
+                                //         else if (row.seller_payment_status == 'to_be_paid') {
+                                //             return true;
+                                //         }
+                                //         else if (row.seller_payment_status == 'already_paid') {
+                                //             return true;
+                                //         }
+                                //         else if (row.seller_payment_status == 'to_the_account') {
+                                //             return true;
+                                //         }
+                                //         else if (row.seller_payment_status == 'waiting_for_buyers') {
+                                //             return true;
+                                //         }
+                                //     },
 
-                                },
+                                // },
                                 /**
-                                 * 等待买家确认收货
+                                 * 卖家等待买家确认收货
                                  */
                                 {
                                     name: 'waiting_for_buyers',
-                                    text: '等待买家确认收货',
+                                    text: '卖家等待买家确认收货',
                                     icon: 'fa fa-eye',
                                     extend: 'data-toggle="tooltip"',
-                                    title: __('等待买家确认收货'),
+                                    title: __('卖家等待买家确认收货'),
                                     classname: 'btn btn-xs btn-success',
                                     hidden: function (row, value, index) {
                                         if (row.seller_payment_status == 'waiting_for_buyers') {
@@ -1250,45 +1254,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.seller_payment_status == 'confirm_receipt') {
-                                            return true;
-                                        }
-                                    },
-
-                                },
-
-                                /**
-                                 * 支付凭证
-                                 */
-                                {
-                                    name: ' pay_order ',
-                                    text: '支付凭证',
-                                    icon: 'fa fa-eye',
-                                    extend: 'data-toggle="tooltip"',
-                                    title: __('支付凭证'),
-                                    classname: 'btn btn-xs btn-success btn-pay_order',
-                                    hidden: function (row, value, index) {
-                                        if (row.seller_payment_status == 'already_paid') {
-                                            return false;
-                                        }
-                                        else if (row.seller_payment_status == 'to_the_account') {
-                                            return false;
-                                        }
-                                        else if (row.seller_payment_status == 'confirm_receipt') {
-                                            return false;
-                                        }
-                                        else if (row.seller_payment_status == 'waiting_for_buyers') {
-                                            return false;
-                                        }
-                                        else if (row.buyer_payment_status == 'already_paid') {
-                                            return false;
-                                        }
-                                        else if (row.buyer_payment_status == 'to_the_account') {
-                                            return false;
-                                        }
-                                        else if (row.buyer_payment_status == 'confirm_receipt') {
-                                            return false;
-                                        }
-                                        else if (row.seller_payment_status == 'to_be_paid'  || row.buyer_payment_status == 'to_be_paid') {
                                             return true;
                                         }
                                     },
@@ -2006,39 +1971,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         );
                     },
 
-                    /**
-                     * 支付凭证
-                     * @param e
-                     * @param value
-                     * @param row
-                     * @param index
-                     */
-                    'click .btn-pay_order': function (e, value, row, index) {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        var table = $(this).closest('table');
-                        var options = table.bootstrapTable('getOptions');
-                        var ids = row[options.pk];
-                        // alert(row[options.pk]);
-                        //第三方扩展皮肤
-
-                        layer.alert('请前往支付认证进行查看', {
-                            // icon: 1,
-                            skin: 'layer-ext-moon', //该皮肤由layer.seaning.com友情扩展。关于皮肤的扩展规则，去这里查阅
-                            // content: "<h4>请前往订单列表,选择对应的方案进行新增销售单</h4>",
-                            btn: ['前往'],
-                            btn1: function () {
-
-                                window.top.location.href = "/admin/merchant/payorder?ref=addtabs";
-
-                            }
-
-                        });
-                        $(".layui-layer-btn0").css({"margin-right": "20px"});
-                        $(".la").css({"margin-left": "10px"});
-
-
-                    }
                 },
             },
             formatter: {
@@ -2070,6 +2002,21 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     // 默认按钮组
                     var buttons = $.extend([], this.buttons || []);
                     return Controller.api.buttonlink2(this, buttons, value, row, index, 'buttons');
+                },
+                pay_order: function (value, row, index) {
+                    //这里手动构造URL
+                    url = "merchant/payorder?ref=addtabs";
+
+                    if (row.seller_payment_status == 'to_be_paid'  || row.buyer_payment_status == 'to_be_paid') {
+
+                        return "<strong class='label label-danger fa fa-eye-slash'>暂无支付凭证可查看</strong>"
+                    }
+                    else {
+                        //方式一,直接返回class带有addtabsit的链接,这可以方便自定义显示内容
+                        return '<a href="' + url + '" class="label label-success addtabsit fa fa-eye" title="' + __("查看支付凭证") + '">' + __('查看支付凭证') + '</a>';
+
+                    }
+
                 },
 
                 /**

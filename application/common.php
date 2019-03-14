@@ -891,11 +891,11 @@ if (!function_exists('var_export_short')) {
      */
     if (!function_exists('sendOffers')) {
 
-        function sendOffers($user_id, $phone, $money, $models_id, $type, $templateid, $param)
+        function sendOffers($user_id, $by_user_id, $phone, $money, $models_id, $type, $templateid, $param)
         {
 
             $typeModels = $type == 'buy' ? new \addons\cms\model\BuycarModel : new \addons\cms\model\ModelsInfo; //转换表名
-            if (!(int)$user_id || !(float)$money || !(string)$type || !(int)$models_id || !(string)$param || !checkPhoneNumberValidate($phone)) {
+            if (!(int)$user_id || !(int)$by_user_id|| !(float)$money || !(string)$type || !(int)$models_id || !(string)$param || !checkPhoneNumberValidate($phone)) {
 //            $this->error('缺少参数或参数格式错误');
                 return ['error', 'msg' => '缺少参数或参数格式错误'];
             }
@@ -927,7 +927,7 @@ if (!function_exists('var_export_short')) {
                     if ($result['code'] == '000000') { //发送成功
                         $field = $type == 'buy' ? 'buy_car_id' : 'models_info_id';
                         return \addons\cms\model\QuotedPrice::create(
-                            ['user_ids' => $user_id, 'money' => $money, $field => $models_id, 'type' => $type, 'quotationtime' => time(), 'is_see' => 2]
+                            ['user_ids' => $user_id, 'by_user_ids' => $by_user_id, 'money' => $money, $field => $models_id, 'type' => $type, 'quotationtime' => time(), 'is_see' => 2]
                         ) ? ['success', 'msg' => '报价成功'] : ['error', 'msg' => '报价失败'];
                     }
                     return ['error', 'msg' => $result['msg']];
