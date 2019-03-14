@@ -297,52 +297,59 @@ class Shop extends Base
             $this->error('缺少参数');
         }
 
-        $info = User::field('id,nickname,avatar')
-            ->with(['companystoreone' => function ($q) {
-                $q->withField('id,store_name,level_id,auditstatus');
-            }])->find($user_id);
+        try {
+            $info = User::field('id,nickname,avatar')
+                ->with(['companystoreone' => function ($q) {
+                    $q->withField('id,store_name,level_id,auditstatus');
+                }])->find($user_id);
 
-        if ($info) {
-            $info['certification_fee'] = Db::name('store_level')->where('id', $info['companystoreone']['level_id'])->value('money');
+            if ($info) {
+                $info['certification_fee'] = Db::name('store_level')->where('id', $info['companystoreone']['level_id'])->value('money');
+            }
+
+            //待支付        已支付
+            $to_be_paid = $paid = [];
+
+            if ($info['companystoreone']['auditstatus'] == 'paid_the_money') {
+                $paid[] = $info;
+            } else if ($info['companystoreone']['auditstatus']) {
+                $to_be_paid[] = $info;
+            }
+
+            $to_be_paid = User::field('id,nickname,avatar')
+                ->with(['companystoreone' => function ($q) {
+                    $q->where('auditstatus', 'neq', 'paid_the_money')->withField('id,store_name,level_id,auditstatus');
+                }])->select($user_id);
+
+            if ($to_be_paid) {
+                //根据门店状态判断能否支付
+                $can_pay = $to_be_paid[0]['companystoreone']['auditstatus'] == 'pass_the_audit' ? 1 : 0;
+
+                $to_be_paid[0]['can_pay'] = $can_pay;
+            }
+
+            $paid = PayOrder::field('id,time_end')
+                ->with([
+                    'user' => function ($q) {
+                        $q->withField('id,nickname,avatar');
+                    },
+                    'companyStore' => function ($q) {
+                        $q->withField('id,store_name,auditstatus');
+                    },
+                    'level' => function ($q) {
+                        $q->withField('id,partner_rank,money');
+                    }
+                ])
+                ->where([
+                    'pay_order.user_id' => $user_id,
+                    'pay_type' => ['neq', 'bond']
+                ])->order('id desc')->select();
+
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
         }
 
-        //待支付        已支付
-        $to_be_paid = $paid = [];
 
-        if ($info['companystoreone']['auditstatus'] == 'paid_the_money') {
-            $paid[] = $info;
-        } else if ($info['companystoreone']['auditstatus']) {
-            $to_be_paid[] = $info;
-        }
-
-        $to_be_paid = User::field('id,nickname,avatar')
-            ->with(['companystoreone' => function ($q) {
-                $q->where('auditstatus', 'neq', 'paid_the_money')->withField('id,store_name,level_id,auditstatus');
-            }])->select($user_id);
-
-        if ($to_be_paid) {
-            //根据门店状态判断能否支付
-            $can_pay = $to_be_paid[0]['companystoreone']['auditstatus'] == 'pass_the_audit' ? 1 : 0;
-
-            $to_be_paid[0]['can_pay'] = $can_pay;
-        }
-
-        $paid = PayOrder::field('id,time_end')
-            ->with([
-                'user' => function ($q) {
-                    $q->withField('id,nickname,avatar');
-                },
-                'companyStore' => function ($q) {
-                    $q->withField('id,store_name,auditstatus');
-                },
-                'level' => function ($q) {
-                    $q->withField('id,partner_rank,money');
-                }
-            ])
-            ->where([
-                'pay_order.user_id' => $user_id,
-                'pay_type' => ['neq', 'bond']
-            ])->order('id desc')->select();
 //        if ($paid) {
 //            //根据门店等级判断能否升级
 //            $can_upgrade = $paid[0]['companystoreone']['level_id'] == 1 ? 0 : 1;
@@ -367,7 +374,7 @@ class Shop extends Base
         }
         Db::startTrans();
         try {
-            $bank_info_id = Db::name('bank_info')->where('store_id', $store_id)->value('id');
+            $bank_info_id = Db::name('bank_info')->where('store_id', $store_id)->lock(true)->value('id');
 
             $distribution_id = Distribution::get(['level_store_id' => $store_id])->id;
 
@@ -510,7 +517,7 @@ class Shop extends Base
             ->with(['brand' => function ($q) {
                 $q->withField('id,name,brand_initials,brand_default_images');
             }])
-            ->where('store_id', $store_info['id'])->select();
+            ->where('store_id', $store_info['id'])->order('createtime desc')->select();
 
         if ($car_list) {
             $car_list = collection($car_list)->toArray();

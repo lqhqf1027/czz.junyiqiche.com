@@ -210,9 +210,9 @@ class StoreCertificationPay extends Base
             }
 
             //能获取的1级收益
-            $first_income = $company_info['belongs_store_level']['money'] * floatval($rate[0]);
+            $first_income = round($company_info['belongs_store_level']['money'] * floatval($rate[0]),2);
             //能获取的2级收益
-            $second_income = $company_info['belongs_store_level']['money'] * floatval($rate[1]);
+            $second_income = round($company_info['belongs_store_level']['money'] * floatval($rate[1]),2);
 
             Distribution::where('level_store_id', $company_info['id'])->update([
                 'earnings' => $first_income,
@@ -234,7 +234,9 @@ class StoreCertificationPay extends Base
 
                 if ($up_up_id) {
                     //加锁查询上上级的金额信息
+
                     $up_up_data = EarningDetailed::field('second_earnings,total_earnings,available_balance')->where('store_id', $up_up_id)->lock(true)->select();
+
                     //如果有上上级，将上级的收益加入上上级收益明细表中
                     EarningDetailed::where('store_id', $up_up_id)
                         ->update(['second_earnings' => $up_up_data['second_earnings'] + $second_income,

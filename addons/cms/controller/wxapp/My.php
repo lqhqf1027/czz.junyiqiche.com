@@ -508,20 +508,20 @@ class My extends Base
                 $this->error('该订单已被取消');
             }
 
-            $data = QuotedPrice::where('id', $quoted_id)->field('models_info_id,buy_car_id')->find();
+            $data = QuotedPrice::where('id', $quoted_id)->field('models_info_id,buy_car_id')->lock(true)->find();
 
             if ($data['models_info_id']) {
 
-                $this->model->save(['deal_status' => 'start_the_deal'], function ($query) use ($data) {
-                    $query->where('models_info_id', $data['models_info_id']);
+                QuotedPrice::save(['deal_status' => 'start_the_deal'], function ($query) use ($data) {
+                    $query->where(['models_info_id'=>$data['models_info_id']]);
                 });
             }
-            if ($data['buy_car_id']) {
-
-                $this->model->save(['deal_status' => 'start_the_deal'], function ($query) use ($data) {
-                    $query->where('buy_car_id', $data['buy_car_id']);
-                });
-            }
+//            if ($data['buy_car_id']) {
+//
+//                $this->model->save(['deal_status' => 'start_the_deal'], function ($query) use ($data) {
+//                    $query->where('buy_car_id', $data['buy_car_id']);
+//                });
+//            }
 
             $res = QuotedPrice::destroy($quoted_id);
             
