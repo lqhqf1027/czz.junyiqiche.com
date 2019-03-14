@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'Withdrawal_amount'  =>  '提现金额（元）',
+    'Createtime'  =>  '提现时间',
+    'Status'  =>  '体现状态:cash_in="体现中";has_been_presented="提现成功"',
+    'Store_id'  =>  '门店ID',
+    'Store.id'  =>  '店铺ID',
+    'Store.cities_name'  =>  '店铺所在城市',
+    'Store.store_name'  =>  '店铺名称',
+    'Store.store_address'  =>  '店铺具体地址',
+    'Store.phone'  =>  '联系电话',
+    'Store.createtime'  =>  '创建时间',
+    'Store.updatetime'  =>  '更新时间',
+    'Store.statuss'  =>  '状态',
+    'Store.store_img'  =>  '店铺展示图',
+    'Store.store_cover'  =>  '店铺展示图',
+    'Store.longitude'  =>  '经度',
+    'Store.latitude'  =>  '纬度',
+    'Store.level_id'  =>  '等级id',
+    'Store.store_description'  =>  '店铺描述',
+    'Store.user_id'  =>  '店铺关联用户id',
+    'Store.recommend'  =>  '是否推荐',
+    'Store.main_camp'  =>  '主营品牌',
+    'Store.business_life'  =>  '经营年限',
+    'Store.reasons_failure'  =>  '审核未通过原因',
+    'Store.bank_card'  =>  '银行卡号',
+    'Store.id_card_images'  =>  '身份证正反面图片',
+    'Store.business_licenseimages'  =>  '营业执照（多图）',
+    'Store.real_name'  =>  '真实名称',
+    'Store.overdue_status'  =>  '是否过期:not_expired=未过期;expired=已过期',
+    'Store.expirationtime'  =>  '店铺过期时间/年'
+];

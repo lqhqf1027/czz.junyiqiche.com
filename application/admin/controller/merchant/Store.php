@@ -622,12 +622,6 @@ class Store extends Backend
                     $query->where('models_info_id', $data['models_info_id']);
                 });
             }
-            if ($data['buy_car_id']) {
-
-                $this->model->save(['deal_status' => 'cannot_the_deal'], function ($query) use ($data) {
-                    $query->where('buy_car_id', $data['buy_car_id']);
-                });
-            }
             
             $result = $this->model->save(['deal_status' => 'click_the_deal'], function ($query) use ($id) {
                 $query->where('id', $id);
@@ -722,6 +716,31 @@ class Store extends Backend
             
             if ($result) {
 
+                $quotedprice = $this->model->where('id', $id)->find();
+                $ModelsInfo = ModelsInfo::where('id', $quotedprice['models_info_id'])->find();
+                $store_name = CompanyStore::where('user_id', $quotedprice['user_ids'])->find();
+                //短信推送
+                $Ucpass = [
+                    'accountsid' => Env::get('sms.accountsid'),
+                    'token' => Env::get('sms.token'),
+                    'appid' => Env::get('sms.appid'),
+                    'templateid' => '442701',
+                ];
+                $param = $store_name['store_name'] . ',' . $ModelsInfo['models_name'] . ',' . $quotedprice['bond'];
+            
+                $url = 'http://open.ucpaas.com/ol/sms/sendsms';
+                $client = new \GuzzleHttp\Client();
+                $response = $client->request('POST', $url, [
+                    'json' => [
+                        'sid' => $Ucpass['accountsid'],
+                        'token' => $Ucpass['token'],
+                        'appid' => $Ucpass['appid'],
+                        'templateid' => $Ucpass['templateid'],
+                        'param' => $param,
+                        'mobile' => $store_name['phone']
+                    ]
+                ]);
+
                 $this->success();
 
             } else {
@@ -747,6 +766,31 @@ class Store extends Backend
             });
             
             if ($result) {
+
+                $quotedprice = $this->model->where('id', $id)->find();
+                $ModelsInfo = ModelsInfo::where('id', $quotedprice['models_info_id'])->find();
+                $store_name = CompanyStore::where('user_id', $quotedprice['by_user_ids'])->value('store_name');
+                //短信推送
+                $Ucpass = [
+                    'accountsid' => Env::get('sms.accountsid'),
+                    'token' => Env::get('sms.token'),
+                    'appid' => Env::get('sms.appid'),
+                    'templateid' => '442701',
+                ];
+                $param = $store_name . ',' . $ModelsInfo['models_name'] . ',' . $quotedprice['bond'];
+            
+                $url = 'http://open.ucpaas.com/ol/sms/sendsms';
+                $client = new \GuzzleHttp\Client();
+                $response = $client->request('POST', $url, [
+                    'json' => [
+                        'sid' => $Ucpass['accountsid'],
+                        'token' => $Ucpass['token'],
+                        'appid' => $Ucpass['appid'],
+                        'templateid' => $Ucpass['templateid'],
+                        'param' => $param,
+                        'mobile' => $ModelsInfo['phone']
+                    ]
+                ]);
 
                 $this->success();
 

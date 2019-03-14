@@ -48,12 +48,13 @@ class Wechat extends Base
         $type = $this->request->post('type');
 
         $typeModels = $type == 'buy' ? new \addons\cms\model\BuycarModel : new \addons\cms\model\ModelsInfo; //转换表名
+        $by_user_id = $typeModels->where('id', $models_id)->value('user_id');
         $modelsInfo = collection($typeModels->with(['brand'])->select(['id' => $models_id]))->toArray();
         $modelsInfo = $modelsInfo[0]['brand']['name'] . ' ' . $modelsInfo[0]['models_name'];  //拼接品牌、车型
         $newPone = substr($phone, 7);//手机尾号4位数
         $param = "{$modelsInfo},{$newPone}";
 
-        $result = sendOffers($user_id, $phone, $money, $models_id, $type, '432305',$param);
+        $result = sendOffers($user_id, $by_user_id, $phone, $money, $models_id, $type, '432305',$param);
 
         return $result[0]=='success'?$this->success($result['msg']):$this->error($result['msg']);
 //        if (!$user_id || !$money || !$type || !$models_id || !checkPhoneNumberValidate($phone)) {
