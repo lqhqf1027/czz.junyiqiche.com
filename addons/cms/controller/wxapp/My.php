@@ -256,8 +256,7 @@ class My extends Base
             $this->error('缺少参数');
         }
 
-        $quotedPriceId = array_merge($this->getQuotedPriceId($user_id, 'buy'), $this->getQuotedPriceId($user_id, 'sell'));
-
+        $quotedPriceId = array_merge($this->getQuotedPriceId($user_id, 'buy'), $this->getQuotedPriceId($user_id, 'sell')); 
         if ($quotedPriceId) {
             QuotedPrice::where('id', 'in', $quotedPriceId)->setField('is_see', 1);
         }
