@@ -214,7 +214,7 @@ class Common extends Base
     public static function getFormId($user_id)
     {
 
-        return collection(FormIds::all())->toArray();
+        return FormIds::get(['user_id' => $user_id])->form_id;
     }
 
     /**
@@ -271,5 +271,16 @@ class Common extends Base
     public static function getOpenid($user_id)
     {
         return Db::name('third')->where(['user_id' => $user_id])->find()['openid'];
+    }
+
+    /**
+     * 根据用户id 获取门店
+     * @param $user_id
+     * @return CompanyStore|null
+     * @throws \think\exception\DbException
+     */
+    public static function getStoreInfo($user_id)
+    {
+        return CompanyStore::get(['user_id' => $user_id]);
     }
 }

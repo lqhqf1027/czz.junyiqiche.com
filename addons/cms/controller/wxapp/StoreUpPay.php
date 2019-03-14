@@ -145,10 +145,10 @@ class StoreUpPay extends Base
         $openid = Common::getOpenid($user_id);
         Db::startTrans();
         try {
-            $formId = current(array_values(Common::getFormId($user_id)))['form_id']; //获取formId
+            $formId = Common::getFormId($user_id); //获取formId
             //修改店铺等级为 升级后的level
             CompanyStore::where(['user_id' => $user_id, 'id' => $store_id])->update(['level_id' => $up_level_id]);
-            if ($openid) {
+            if ($openid && $formId) {
                 $o = Common::getLevelStoreName($base_level_id)->partner_rank;
                 $keyword2 = Common::getLevelStoreName($up_level_id)->partner_rank;
                 $newKey = $keyword2 . "（原{$o}）";

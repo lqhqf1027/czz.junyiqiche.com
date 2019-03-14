@@ -257,7 +257,7 @@ class My extends Base
         }
 
         $quotedPriceId = array_merge($this->getQuotedPriceId($user_id, 'buy'), $this->getQuotedPriceId($user_id, 'sell'));
-        $this->success($quotedPriceId);
+//        $this->success($quotedPriceId);
         if ($quotedPriceId) {
             QuotedPrice::where('id', 'in', $quotedPriceId)->setField('is_see', 1);
         }
