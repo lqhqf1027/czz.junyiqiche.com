@@ -146,14 +146,14 @@ class StoreCertificationPay extends Base
 
         Db::startTrans();
         try {
-            $formId = current(array_values(Common::getFormId($user_id)))['form_id']; //获取formId
+            $formId = Common::getFormId($user_id); //获取formId
             $level = Common::getLevel($store_id);
             $tel = \addons\cms\model\Config::get(['name' => 'default_phone'])->value;
             $o = Common::getPayOrderNum($user_id, $store_id);
             $order_number = $o->out_trade_no;
             $money = $o->total_fee;
             $openid = Common::getOpenid($user_id);
-            if ($openid) {
+            if ($formId && $openid) {
                 $keyword1 = "友车圈{$level}认证费,有效期为一年";
                 $temp_msg = array(
                     'touser' => "{$openid}",
@@ -222,21 +222,25 @@ class StoreCertificationPay extends Base
             $up_id = Distribution::get(['level_store_id' => $company_info['id']])->store_id;
             if ($up_id) {
                 //加锁查询上级的金额信息
-                $up_data = EarningDetailed::field('first_earnings,total_earnings')->where('store_id', $up_id)->lock(true)->select();
+                $up_data = EarningDetailed::field('first_earnings,total_earnings,available_balance')->where('store_id', $up_id)->lock(true)->select();
                 //如果有上级，将上级的收益加入上级收益明细表中
                 EarningDetailed::where('store_id', $up_id)
                     ->update(['first_earnings' => $up_data['first_earnings'] + $first_income,
-                        'total_earnings' => $up_data['total_earnings'] + $first_income]);
+                        'total_earnings' => $up_data['total_earnings'] + $first_income,
+                        'available_balance' => $up_data['available_balance'] + $first_income
+                    ]);
 
                 $up_up_id = Distribution::get(['level_store_id' => $up_id])->store_id;
 
                 if ($up_up_id) {
                     //加锁查询上上级的金额信息
-                    $up_up_data = EarningDetailed::field('second_earnings,total_earnings')->where('store_id', $up_id)->lock(true)->select();
+                    $up_up_data = EarningDetailed::field('second_earnings,total_earnings,available_balance')->where('store_id', $up_up_id)->lock(true)->select();
                     //如果有上上级，将上级的收益加入上上级收益明细表中
                     EarningDetailed::where('store_id', $up_up_id)
                         ->update(['second_earnings' => $up_up_data['second_earnings'] + $second_income,
-                            'total_earnings' => $up_up_data['total_earnings'] + $second_income]);
+                            'total_earnings' => $up_up_data['total_earnings'] + $second_income,
+                            'available_balance' => $up_up_data['available_balance'] + $second_income
+                        ]);
                 }
             }
             Db::commit();
@@ -245,7 +249,7 @@ class StoreCertificationPay extends Base
             $this->error($e->getMessage());
         }
 
-        $this->success('请求成功');
+        $this->success('认证成功');
     }
 
 
