@@ -202,15 +202,42 @@ class StoreMarginPay extends Base
         $trading_models_id = $this->request->post('trading_models_id');//车辆交易Id
         $seller_payment_status = $this->request->post('seller_payment_status');
         $user_ids = $this->request->post('user_ids');//报价人的user_ids
-
-        if (!$user_id || !$formId || !$trading_models_id || !$seller_payment_status) $this->error('缺少参数');
+        $quotationtime = $this->request->post('quotationtime');//报价时间
+        if (!$user_id || !$formId || !$trading_models_id || !$seller_payment_status || !$quotationtime) $this->error('缺少参数');
         //写入formIds表
         Common::writeFormId($formId, $user_id);
         //查询买家是否已确认收货
-        $buy_user = QuotedPrice::get(['buyer_payment_status' => 'confirm_receipt', 'models_info_id' => $trading_models_id, 'user_ids' => $user_ids]);
+        $buy_user = QuotedPrice::get(['buyer_payment_status' => 'confirm_receipt', 'quotationtime' => $quotationtime, 'models_info_id' => $trading_models_id, 'user_ids' => $user_ids]);
         //更新卖家字段
-        $q = QuotedPrice::where(['by_user_ids' => $user_id, 'seller_payment_status' => 'to_the_account'])
+        $q = QuotedPrice::where(['by_user_ids' => $user_id, 'quotationtime' => $quotationtime, 'seller_payment_status' => 'to_the_account'])
             ->update(['seller_payment_status' => $buy_user ? 'confirm_receipt' : 'waiting_for_buyers'])
+            ? $this->success('操作成功') : $this->error('操作失败');
+
+    }
+
+    /**
+     * 买家收货交易流程
+     * @throws \think\exception\DbException
+     */
+    public function buyersConfirmTheDelivery()
+    {
+        $user_id = $this->request->post('user_id');
+        $formId = $this->request->post('formId');
+        $trading_models_id = $this->request->post('trading_models_id');//车辆交易Id
+        $buyers_payment_status = $this->request->post('buyers_payment_status');
+        $user_ids = $this->request->post('user_ids');//报价人的user_ids
+        $by_user_ids = $this->request->post('by_user_ids');//卖家的id
+        $quotationtime = $this->request->post('quotationtime');//报价时间
+        if (!$user_id || !$formId || !$trading_models_id || !$buyers_payment_status || !$by_user_ids || !$quotationtime) $this->error('缺少参数');
+        //写入formIds表
+        Common::writeFormId($formId, $user_id);
+        //查询卖家是否正在等待买家确认收货
+        $buy_user = QuotedPrice::get(['seller_payment_status' => 'waiting_for_buyers', 'quotationtime' => $quotationtime, 'models_info_id' => $trading_models_id, 'by_user_ids' => $by_user_ids]);
+
+
+        //更新买家字段
+        $q = QuotedPrice::where(['user_ids' => $user_id, 'quotationtime' => $quotationtime, 'buyer_payment_status' => 'to_the_account', 'models_info_id' => $trading_models_id])
+            ->update(['buyer_payment_status' => 'confirm_receipt', 'seller_payment_status' => $buy_user ? 'confirm_receipt' : 'waiting_for_buyers'])
             ? $this->success('操作成功') : $this->error('操作失败');
 
     }

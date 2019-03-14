@@ -256,7 +256,7 @@ class My extends Base
             $this->error('缺少参数');
         }
 
-        $quotedPriceId = array_merge($this->getQuotedPriceId($user_id, 'buy'), $this->getQuotedPriceId($user_id, 'sell')); 
+        $quotedPriceId = array_merge($this->getQuotedPriceId($user_id, 'buy'), $this->getQuotedPriceId($user_id, 'sell'));
         if ($quotedPriceId) {
             QuotedPrice::where('id', 'in', $quotedPriceId)->setField('is_see', 1);
         }
@@ -321,7 +321,8 @@ class My extends Base
             $ModelsInfo[$k]['models_info']['brand_name'] = $brand_info['name'];
             $ModelsInfo[$k]['models_info']['brand_default_images'] = $brand_info['brand_default_images'];
 
-            $ModelsInfo[$k]['quotationtime'] = $ModelsInfo[$k]['quotationtime'] ? format_date($ModelsInfo[$k]['quotationtime']) : null;
+            $ModelsInfo[$k]['quotationtime_format'] = $ModelsInfo[$k]['quotationtime'] ? format_date($ModelsInfo[$k]['quotationtime']) : null;
+
             $ModelsInfo[$k]['money'] = $ModelsInfo[$k]['money'] ? round(($ModelsInfo[$k]['money'] / 10000), 2) : null;
             $ModelsInfo[$k]['models_info']['kilometres'] = $ModelsInfo[$k]['models_info']['kilometres'] ? round(($ModelsInfo[$k]['models_info']['kilometres'] / 10000), 2) . '万' : null;
             $ModelsInfo[$k]['models_info']['guide_price'] = $ModelsInfo[$k]['models_info']['guide_price'] ? round(($ModelsInfo[$k]['models_info']['guide_price'] / 10000), 2) : null;
@@ -524,7 +525,7 @@ class My extends Base
             }
 
             $res = QuotedPrice::destroy($quoted_id);
-            
+
             Db::commit();
         } catch (Exception $e) {
             Db::rollback();
