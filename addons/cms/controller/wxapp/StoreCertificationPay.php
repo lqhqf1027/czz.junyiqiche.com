@@ -100,6 +100,7 @@ class StoreCertificationPay extends Base
             $user_id = explode('_', $getData['out_trade_no'])[0]; //获取user_id
             $store_id = explode('_', $getData['out_trade_no'])[1]; //获取门店id
             $getData['out_trade_no'] = explode('_', $getData['out_trade_no'])[2]; //获取订单号
+            $level_id = Common::getStoreInfo($user_id)->level_id;
             Db::startTrans();
             try {
                 $res = PayOrder::create(
@@ -110,6 +111,7 @@ class StoreCertificationPay extends Base
                         'total_fee' => $getData['total_fee'] / 100,
                         'trade_type' => $getData['trade_type'],
                         'bank_type' => $getData['bank_type'],
+                        'level_id' => $level_id,
                         'transaction_id' => $getData['transaction_id'],
                         'pay_type' => 'certification'
                     ]
@@ -153,8 +155,9 @@ class StoreCertificationPay extends Base
             $order_number = $o->out_trade_no;
             $money = $o->total_fee;
             $openid = Common::getOpenid($user_id);
+
             if ($formId && $openid) {
-                $keyword1 = "友车圈{$level}认证费,有效期为一年";
+                $keyword1 = "友车圈{$level}认证费,有效期为一年，认证有效日期截止到";
                 $temp_msg = array(
                     'touser' => "{$openid}",
                     'template_id' => "dQRHk_MhaFwaYmeV_LSO6gfWz5TeTb4WIUO_9Y8WItM",
@@ -185,7 +188,7 @@ class StoreCertificationPay extends Base
                 }
             }
 //            Db::name('form_ids')->where(['user_id' => $user_id, 'form_id' => $formId])->setField('status', 0);
-            CompanyStore::where(['user_id' => $user_id])->setField('auditstatus', 'paid_the_money');
+            CompanyStore::where(['user_id' => $user_id])->update(['auditstatus' => 'paid_the_money', 'expirationtime' => strtotime('+1 year')]);
 
             $company_info = CompanyStore::field('id')
                 ->with(['belongsStoreLevel' => function ($q) {

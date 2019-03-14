@@ -94,7 +94,9 @@ class StoreUpPay extends Base
             //将回调通知里的订单号前缀user_id +store_id 分隔
             $user_id = explode('_', $getData['out_trade_no'])[0]; //获取user_id
             $store_id = explode('_', $getData['out_trade_no'])[1]; //获取门店id
-            $getData['out_trade_no'] = explode('_', $getData['out_trade_no'])[2]; //获取订单号
+            $level_id = explode('_', $getData['out_trade_no'])[2]; //获取需要升级的id
+            $getData['out_trade_no'] = explode('_', $getData['out_trade_no'])[3]; //获取订单号
+
             Db::startTrans();
             try {
                 $res = PayOrder::create(
@@ -106,7 +108,8 @@ class StoreUpPay extends Base
                         'trade_type' => $getData['trade_type'],
                         'bank_type' => $getData['bank_type'],
                         'transaction_id' => $getData['transaction_id'],
-                        'pay_type' => 'up'
+                        'pay_type' => 'up',
+                        'level_id' => $level_id
                     ]
                 );
                 Db::commit();
@@ -148,6 +151,8 @@ class StoreUpPay extends Base
             $formId = Common::getFormId($user_id); //获取formId
             //修改店铺等级为 升级后的level
             CompanyStore::where(['user_id' => $user_id, 'id' => $store_id])->update(['level_id' => $up_level_id]);
+
+            PayOrder::where(['store_id' => $store_id, 'user_id' => $user_id, 'out_trade_no' => explode('_', $out_trade_no)[2]])->update(['level_id' => $up_level_id]);
             if ($openid && $formId) {
                 $o = Common::getLevelStoreName($base_level_id)->partner_rank;
                 $keyword2 = Common::getLevelStoreName($up_level_id)->partner_rank;
