@@ -25,9 +25,9 @@ class Refund extends Backend
     
 
     /**
-     * 查看
+     * 保证金退款中
      */
-    public function index()
+    public function refundBond()
     {
         $this->model = new \app\admin\model\QuotedPrice;
         //当前是否为关联查询
@@ -50,6 +50,8 @@ class Refund extends Backend
                     }])
                     ->where($where)
                     ->where(['buyer_payment_status' => 'confirm_receipt', 'seller_payment_status' => 'confirm_receipt'])
+                    ->whereOr(['buyer_payment_status' => 'refund_bond'])
+                    ->whereOr(['seller_payment_status' => 'refund_bond'])
                     ->order($sort, $order)
                     ->count();
 
@@ -61,6 +63,8 @@ class Refund extends Backend
                     }])
                     ->where($where)
                     ->where(['buyer_payment_status' => 'confirm_receipt', 'seller_payment_status' => 'confirm_receipt'])
+                    ->whereOr(['buyer_payment_status' => 'refund_bond'])
+                    ->whereOr(['seller_payment_status' => 'refund_bond'])
                     ->order($sort, $order)
                     ->limit($offset, $limit)
                     ->select();
@@ -106,5 +110,142 @@ class Refund extends Backend
             return json($result);
         }
         return $this->view->fetch();
+    }
+
+    /**
+     * 保证金已退回
+     */
+    public function refundSuccess()
+    {
+        $this->model = new \app\admin\model\QuotedPrice;
+        //当前是否为关联查询
+        $this->relationSearch = true;
+        //设置过滤方法
+        $this->request->filter(['strip_tags']);
+        if ($this->request->isAjax())
+        {
+            //如果发送的来源是Selectpage，则转发到Selectpage
+            if ($this->request->request('keyField'))
+            {
+                return $this->selectpage();
+            }
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams('out_trade_no');
+            $total = $this->model
+                    ->with(['user' => function ($q) {
+                        $q->withField('id,nickname,avatar,mobile');
+                    },'ModelsInfo' => function ($query) {
+                        $query->withField('models_name');
+                    }])
+                    ->where($where)
+                    ->where(['buyer_payment_status' => 'refund_bond', 'seller_payment_status' => 'refund_bond'])
+                    ->order($sort, $order)
+                    ->count();
+
+            $list = $this->model
+                    ->with(['user' => function ($q) {
+                        $q->withField('id,nickname,avatar,mobile');
+                    },'ModelsInfo' => function ($query) {
+                        $query->withField('models_name');
+                    }])
+                    ->where($where)
+                    ->where(['buyer_payment_status' => 'refund_bond', 'seller_payment_status' => 'refund_bond'])
+                    ->order($sort, $order)
+                    ->limit($offset, $limit)
+                    ->select();
+
+            foreach ($list as $k => $row) {
+
+                $data = PayOrder::with(['store' => function ($q) {
+                    
+                    $q->withField(['store_name','bank_card','real_name','phone']);
+
+                }])->where(['trading_models_id' => $row['models_info_id'], 'pay_type' => 'bond'])->select();
+                
+                foreach ($data as $key => $value) {
+
+                    if ($value['seller_id']) {
+                        $list[$k]['sell'] = [
+                            'out_trade_no' => $value['out_trade_no'],
+                            'total_fee' => $value['total_fee'],
+                            'time_end' => $value['time_end'],
+                            'bank_card' => $value['store']['bank_card'],
+                            'real_name' => $value['store']['real_name'],
+                            'phone' => $value['store']['phone'],
+                        ];
+                    }
+                    if ($value['buyers_id']) {
+                        $list[$k]['buy'] = [
+                            'out_trade_no' => $value['out_trade_no'],
+                            'total_fee' => $value['total_fee'],
+                            'time_end' => $value['time_end'],
+                            'bank_card' => $value['store']['bank_card'],
+                            'real_name' => $value['store']['real_name'],
+                            'phone' => $value['store']['phone'],
+                        ];
+                    }
+                    
+                }   
+                
+            }
+            $list = collection($list)->toArray();
+           
+            $result = array("total" => $total, "rows" => $list);
+
+            return json($result);
+        }
+        return $this->view->fetch();
+    }
+
+    /** 
+     * 是否确定买家的保证金已退回
+     */
+    public function buyrefund()
+    {
+        $this->model = model('QuotedPrice');
+        if ($this->request->isAjax()) {
+
+            $id = $this->request->post('id');
+            
+            $result = $this->model->save(['buyer_payment_status' => 'refund_bond'], function ($query) use ($id) {
+                $query->where('id', $id);
+            });
+            
+            if ($result) {
+
+                $this->success();
+
+            } else {
+                $this->error();
+            }
+
+        }
+
+    }
+
+
+    /** 
+     * 是否确定卖家的保证金已退回
+     */
+    public function sellrefund()
+    {
+        $this->model = model('QuotedPrice');
+        if ($this->request->isAjax()) {
+
+            $id = $this->request->post('id');
+            
+            $result = $this->model->save(['seller_payment_status' => 'refund_bond'], function ($query) use ($id) {
+                $query->where('id', $id);
+            });
+            
+            if ($result) {
+
+                $this->success();
+
+            } else {
+                $this->error();
+            }
+
+        }
+
     }
 }

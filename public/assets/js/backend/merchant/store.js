@@ -46,7 +46,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {
                             field: 'user.invitation_code_img',
                             title: __('Store_qrcode'),
-                            operate: false
+                            operate: false,
+                            formatter: Controller.api.formatter.images
                         },
                         {
                             field: 'count',
@@ -900,7 +901,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {field: 'id', title: __('报价id'), operate: false},
 
-                        {field: 'store_name', title: __('报价店铺名')},
+                        // {field: 'store_name', title: __('报价店铺名')},
                         {field: 'user.nickname', title: __('报价用户昵称')},
                         {
                             field: 'user.avatar',
@@ -1019,6 +1020,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.buyer_payment_status == 'confirm_receipt') {
                                             return true;
                                         }
+                                        else if (row.buyer_payment_status == 'refund_bond') {
+                                            return true;
+                                        }
                                     },
 
                                 },
@@ -1045,6 +1049,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.buyer_payment_status == 'confirm_receipt') {
                                             return true;
                                         }
+                                        else if (row.buyer_payment_status == 'refund_bond') {
+                                            return true;
+                                        }
                                     },
 
                                 },
@@ -1069,6 +1076,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.buyer_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'refund_bond') {
                                             return true;
                                         }
                                     },
@@ -1101,8 +1111,43 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.buyer_payment_status == 'to_the_account') {
                                             return true;
                                         }
+                                        else if (row.buyer_payment_status == 'refund_bond') {
+                                            return true;
+                                        }
                                     },
 
+
+                                },
+                                /**
+                                 * 买家的保证金已打款退回
+                                 */
+                                {
+                                    name: 'refund_bond',
+                                    text: '买家的保证金已打款退回',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('买家的保证金已打款退回'),
+                                    classname: 'btn btn-xs btn-success',
+                                    hidden: function (row, value, index) {
+                                        if (row.buyer_payment_status == 'refund_bond') {
+                                            return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'waiting_for_buyers') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
 
                                 },
                                 /**
@@ -1140,6 +1185,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.seller_payment_status == 'waiting_for_buyers') {
                                             return true;
                                         }
+                                        else if (row.seller_payment_status == 'refund_bond') {
+                                            return true;
+                                        }
                                     },
 
                                 },
@@ -1167,6 +1215,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.seller_payment_status == 'waiting_for_buyers') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'refund_bond') {
                                             return true;
                                         }
                                     },
@@ -1198,38 +1249,44 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.seller_payment_status == 'waiting_for_buyers') {
                                             return true;
                                         }
+                                        else if (row.seller_payment_status == 'refund_bond') {
+                                            return true;
+                                        }
                                     },
 
                                 },
-                                // /**
-                                //  * 卖家已经发货
-                                //  */
-                                // {
-                                //     name: 'seller_payment_status',
-                                //     text: '卖家已经发货',
-                                //     icon: 'fa fa-eye',
-                                //     extend: 'data-toggle="tooltip"',
-                                //     title: __('卖家已经发货'),
-                                //     classname: 'btn btn-xs btn-success',
-                                //     hidden: function (row, value, index) {
-                                //         if (row.seller_payment_status == 'confirm_receipt') {
-                                //             return false;
-                                //         }
-                                //         else if (row.seller_payment_status == 'to_be_paid') {
-                                //             return true;
-                                //         }
-                                //         else if (row.seller_payment_status == 'already_paid') {
-                                //             return true;
-                                //         }
-                                //         else if (row.seller_payment_status == 'to_the_account') {
-                                //             return true;
-                                //         }
-                                //         else if (row.seller_payment_status == 'waiting_for_buyers') {
-                                //             return true;
-                                //         }
-                                //     },
+                                /**
+                                 * 卖家的保证金已打款退回
+                                 */
+                                {
+                                    name: 'refund_bond',
+                                    text: '卖家的保证金已打款退回',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('卖家的保证金已打款退回'),
+                                    classname: 'btn btn-xs btn-success',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'refund_bond') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'waiting_for_buyers') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
 
-                                // },
+                                },
                                 /**
                                  * 卖家等待买家确认收货
                                  */
@@ -1254,6 +1311,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'refund_bond') {
                                             return true;
                                         }
                                     },
@@ -1310,7 +1370,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {field: 'id', title: __('报价id'), operate: false},
 
-                        {field: 'store_name', title: __('报价店铺名')},
+                        // {field: 'store_name', title: __('报价店铺名')},
                         {field: 'user.nickname', title: __('报价用户昵称')},
                         {
                             field: 'user.avatar',

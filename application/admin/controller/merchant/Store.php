@@ -530,7 +530,7 @@ class Store extends Backend
 
             foreach ($list as $k => $row) {
                 
-                $list[$k]['store_name'] = CompanyStore::where('user_id', $row['user_ids'])->value('store_name');
+                // $list[$k]['store_name'] = CompanyStore::where('user_id', $row['user_ids'])->value('store_name');
 
                 $payorder = PayOrder::where(['trading_models_id' => $row['models_info_id'], 'pay_type' => 'bond'])->select();
                 foreach ($payorder as $key => $value) {

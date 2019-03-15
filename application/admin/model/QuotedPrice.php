@@ -22,7 +22,6 @@ class QuotedPrice extends Model
         'type_text'
     ];
     
-
     
     public function getTypeList()
     {
