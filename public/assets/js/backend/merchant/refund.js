@@ -2,130 +2,390 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
     var Controller = {
         index: function () {
+
             // 初始化表格参数配置
-            Table.api.init({
-                extend: {
-                    index_url: 'merchant/refund/index',
+            Table.api.init({});
+
+            //绑定事件
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var panel = $($(this).attr("href"));
+                if (panel.size() > 0) {
+                    Controller.table[panel.attr("id")].call(this);
+                    $(this).on('click', function (e) {
+                        $($(this).attr("href")).find(".btn-refresh").trigger("click");
+                    });
                 }
+                //移除绑定的事件
+                $(this).unbind('shown.bs.tab');
             });
 
-            var table = $("#table");
-            $.fn.bootstrapTable.locales[Table.defaults.locale]['formatSearch'] = function(){return "快速搜索:商户订单号";};
-            // 初始化表格
-            table.bootstrapTable({
-                url: $.fn.bootstrapTable.defaults.extend.index_url,
-                pk: 'id',
-                sortName: 'id',
-                columns: [
-                    [
-                        {checkbox: true},
+            //必须默认触发shown.bs.tab事件
+            $('ul.nav-tabs li.active a[data-toggle="tab"]').trigger("shown.bs.tab");
 
-                        {field: 'id', title: __('Id')},
-                        {field: 'models_info.models_name', title: __('交易车型名称')},
-                        {field: 'bond', title: __('保证金'), operate:'BETWEEN'},
-                        
-                        {field: 'sell.bank_card', title: __('卖家银行卡')},
-                        {field: 'sell.real_name', title: __('卖家真实姓名')},
-                        {field: 'sell.phone', title: __('卖家手机号')},
-                        {field: 'sell.out_trade_no', title: __('卖家支付商户订单号')},
-                        {field: 'sell.total_fee', title: __('卖家最终支付金额')},
-                        {field: 'sell.time_end', title: __('卖家支付完成时间'), formatter: Controller.api.formatter.datetime1},
+            $('ul.nav-tabs li a[data-toggle="tab"]').each(function () {
+                $(this).trigger("shown.bs.tab");
+            });
 
-                        {field: 'buy.bank_card', title: __('买家银行卡')},
-                        {field: 'buy.real_name', title: __('买家真实姓名')},
-                        {field: 'buy.phone', title: __('买家手机号')},
-                        {field: 'buy.out_trade_no', title: __('买家支付商户订单号')},
-                        {field: 'buy.total_fee', title: __('买家最终支付金额')},
-                        {field: 'buy.time_end', title: __('买家支付完成时间'), formatter: Controller.api.formatter.datetime1},
+        },
 
-                        {
-                            field: 'operate', title: __('Operate'), table: table,
-                            buttons: [
-                                /**
-                                 * 等待买家发起退款
-                                 */
-                                {
-                                    name: 'to_be_paid',
-                                    text: '等待买家发起退款',
-                                    icon: 'fa fa-eye',
-                                    extend: 'data-toggle="tooltip"',
-                                    title: __('等待买家发起退款'),
-                                    classname: 'btn btn-xs btn-primary',
-                                    hidden: function (row, value, index) {
-                                        if (row.buyer_payment_status == 'confirm_receipt') {
-                                            return false;
-                                        }
-                                        else if (row.buyer_payment_status == 'already_paid') {
-                                            return true;
-                                        }
-                                        else if (row.buyer_payment_status == 'to_the_account') {
-                                            return true;
-                                        }
-                                        else if (row.buyer_payment_status == 'to_be_paid') {
-                                            return true;
-                                        }
-                                    },
+        table: {
+            /**
+             * 保证金退款中
+             */
+            refund_bond: function () {
+                // 表格1
+                var refundBond = $("#refundBond");
+                refundBond.on('load-success.bs.table', function (e, data) {
+                    
+                    //背景颜色
+                    var td = $("#refundBond td:nth-child(n+5)");
+                    console.log(td.length);
+                    // return;
+                    for (var i = 0; i<td.length;i++) {
+                       
+                        td[i].style.backgroundColor = "yellow";
 
-                                },
-                                /**
-                                 * 等待卖家发起退款
-                                 */
-                                {
-                                    name: 'buyer_payment_status',
-                                    text: '等待卖家发起退款',
-                                    icon: 'fa fa-eye',
-                                    extend: 'data-toggle="tooltip"',
-                                    title: __('等待卖家发起退款'),
-                                    classname: 'btn btn-xs btn-success',
-                                    hidden: function (row, value, index) {
-                                        if (row.seller_payment_status == 'confirm_receipt') {
-                                            return false;
-                                        }
-                                        else if (row.seller_payment_status == 'to_be_paid') {
-                                            return true;
-                                        }
-                                        else if (row.seller_payment_status == 'already_paid') {
-                                            return true;
-                                        }
-                                        else if (row.seller_payment_status == 'to_the_account') {
-                                            return true;
-                                        }
-                                        else if (row.seller_payment_status == 'waiting_for_buyers') {
-                                            return true;
-                                        }
-                                    },
+                    }
 
+                    //背景颜色
+                    var td = $("#refundBond td:nth-child(n+11)");
+                    console.log(td.length);
+                    // return;
+                    for (var i = 0; i<td.length;i++) {
+                       
+                        td[i].style.backgroundColor = "red";
 
-                                },
+                    }
+
+                    //背景颜色
+                    var td = $("#refundBond td:nth-child(17)");
+                    console.log(td.length);
+                    // return;
+                    for (var i = 0; i<td.length;i++) {
+                       
+                        td[i].style.backgroundColor = "";
+
+                    }
+                    
+                })
+                refundBond.on('post-body.bs.table', function (e, settings, json, xhr) {
+                   
+                });
+                // 初始化表格
+                refundBond.bootstrapTable({
+                    url: 'merchant/refund/refundBond',
+
+                    toolbar: '#toolbar1',
+                    pk: 'id',
+                    sortName: 'id',
+                    // searchFormVisible: true,
+
+                    columns: [
+                        [
+                            {checkbox: true},
+
+                            {field: 'id', title: __('Id')},
+                            {field: 'models_info.models_name', title: __('交易车型名称')},
+                            {field: 'bond', title: __('保证金'), operate:'BETWEEN'},
+                            
+                            {field: 'sell.bank_card', title: __('卖家银行卡')},
+                            {field: 'sell.real_name', title: __('卖家真实姓名')},
+                            {field: 'sell.phone', title: __('卖家手机号')},
+                            {field: 'sell.out_trade_no', title: __('卖家支付商户订单号')},
+                            {field: 'sell.total_fee', title: __('卖家最终支付金额')},
+                            {field: 'sell.time_end', title: __('卖家支付完成时间'), formatter: Controller.api.formatter.datetime1},
                                 
-                            ],
-                            events: Controller.api.events.operate,
-                            formatter: Controller.api.formatter.operate
-                        }
+                            {field: 'buy.bank_card', title: __('买家银行卡')},
+                            {field: 'buy.real_name', title: __('买家真实姓名')},
+                            {field: 'buy.phone', title: __('买家手机号')},
+                            {field: 'buy.out_trade_no', title: __('买家支付商户订单号')},
+                            {field: 'buy.total_fee', title: __('买家最终支付金额')},
+                            {field: 'buy.time_end', title: __('买家支付完成时间'), formatter: Controller.api.formatter.datetime1},
+
+                            {
+                                field: 'operate', title: __('Operate'), table: refundBond,
+                                buttons: [
+                                    /**
+                                     * 确认买家的保证金已退回
+                                     */
+                                    {
+                                        name: 'confirm_receipt',
+                                        text: '确认买家的保证金已退回',
+                                        icon: 'fa fa-eye',
+                                        extend: 'data-toggle="tooltip"',
+                                        title: __('确认买家的保证金已退回'),
+                                        classname: 'btn btn-xs btn-primary btn-buy_refund',
+                                        hidden: function (row, value, index) {
+                                            if (row.buyer_payment_status == 'confirm_receipt') {
+                                                return false;
+                                            }
+                                            else if (row.buyer_payment_status == 'already_paid') {
+                                                return true;
+                                            }
+                                            else if (row.buyer_payment_status == 'to_the_account') {
+                                                return true;
+                                            }
+                                            else if (row.buyer_payment_status == 'to_be_paid') {
+                                                return true;
+                                            }
+                                            else if (row.buyer_payment_status == 'refund_bond') {
+                                                return true;
+                                            }
+                                        },
+
+                                    },
+                                    /**
+                                     * 买家的保证金已打款退回
+                                     */
+                                    {
+                                        name: 'refund_bond',
+                                        text: '买家的保证金已打款退回',
+                                        icon: 'fa fa-eye',
+                                        extend: 'data-toggle="tooltip"',
+                                        title: __('买家的保证金已打款退回'),
+                                        classname: 'btn btn-xs btn-primary',
+                                        hidden: function (row, value, index) {
+                                            if (row.buyer_payment_status == 'refund_bond') {
+                                                return false;
+                                            }
+                                            else if (row.buyer_payment_status == 'already_paid') {
+                                                return true;
+                                            }
+                                            else if (row.buyer_payment_status == 'to_the_account') {
+                                                return true;
+                                            }
+                                            else if (row.buyer_payment_status == 'to_be_paid') {
+                                                return true;
+                                            }
+                                            else if (row.buyer_payment_status == 'confirm_receipt') {
+                                                return true;
+                                            }
+                                        },
+
+                                    },
+                                    /**
+                                     * 确认卖家的保证金已退回
+                                     */
+                                    {
+                                        name: 'confirm_receipt',
+                                        text: '确认卖家的保证金已退回',
+                                        icon: 'fa fa-eye',
+                                        extend: 'data-toggle="tooltip"',
+                                        title: __('确认卖家的保证金已退回'),
+                                        classname: 'btn btn-xs btn-success btn-sell_refund',
+                                        hidden: function (row, value, index) {
+                                            if (row.seller_payment_status == 'confirm_receipt') {
+                                                return false;
+                                            }
+                                            else if (row.seller_payment_status == 'to_be_paid') {
+                                                return true;
+                                            }
+                                            else if (row.seller_payment_status == 'already_paid') {
+                                                return true;
+                                            }
+                                            else if (row.seller_payment_status == 'to_the_account') {
+                                                return true;
+                                            }
+                                            else if (row.seller_payment_status == 'waiting_for_buyers') {
+                                                return true;
+                                            }
+                                            else if (row.buyer_payment_status == 'refund_bond') {
+                                                return true;
+                                            }
+                                        },
+                                    },
+                                    /**
+                                     * 卖家的保证金已打款退回
+                                     */
+                                    {
+                                        name: 'refund_bond',
+                                        text: '卖家的保证金已打款退回',
+                                        icon: 'fa fa-eye',
+                                        extend: 'data-toggle="tooltip"',
+                                        title: __('卖家的保证金已打款退回'),
+                                        classname: 'btn btn-xs btn-success',
+                                        hidden: function (row, value, index) {
+                                            if (row.seller_payment_status == 'refund_bond') {
+                                                return false;
+                                            }
+                                            else if (row.seller_payment_status == 'to_be_paid') {
+                                                return true;
+                                            }
+                                            else if (row.seller_payment_status == 'already_paid') {
+                                                return true;
+                                            }
+                                            else if (row.seller_payment_status == 'to_the_account') {
+                                                return true;
+                                            }
+                                            else if (row.seller_payment_status == 'waiting_for_buyers') {
+                                                return true;
+                                            }
+                                            else if (row.seller_payment_status == 'confirm_receipt') {
+                                                return true;
+                                            }
+                                        },
+                                    },
+                                    
+                                ],
+                                events: Controller.api.events.operate,
+                                formatter: Controller.api.formatter.operate
+                            }
+                        ]
                     ]
-                ]
-            });
+                });
+                // 为表格1绑定事件
+                Table.api.bindevent(refundBond);
 
-            // // 绑定TAB事件
-            // $('.panel-heading a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-            //     var field = $(this).closest("ul").data("field");
-            //     var value = $(this).data("value");
-            //     var options = table.bootstrapTable('getOptions');
-            //     options.pageNumber = 1;
-            //     options.queryParams = function (params) {
-            //         var filter = {};
-            //         if (value !== '') {
-            //             filter[field] = value;
-            //         }
-            //         params.filter = JSON.stringify(filter);
-            //         return params;
-            //     };
-            //     table.bootstrapTable('refresh', {});
-            //     return false;
-            // });
 
-            // 为表格绑定事件
-            Table.api.bindevent(table);
+            },
+            /**
+             * 保证金已退回
+             */
+            refund_success: function () {
+                // 表格2
+                var refundSuccess = $("#refundSuccess");
+                refundSuccess.on('load-success.bs.table', function (e, data) {
+
+                    //背景颜色
+                    var td = $("#refundSuccess td:nth-child(n+5)");
+                    console.log(td.length);
+                    // return;
+                    for (var i = 0; i<td.length;i++) {
+                       
+                        td[i].style.backgroundColor = "yellow";
+
+                    }
+
+                    //背景颜色
+                    var td = $("#refundSuccess td:nth-child(n+11)");
+                    console.log(td.length);
+                    // return;
+                    for (var i = 0; i<td.length;i++) {
+                       
+                        td[i].style.backgroundColor = "red";
+
+                    }
+
+                    //背景颜色
+                    var td = $("#refundSuccess td:nth-child(17)");
+                    console.log(td.length);
+                    // return;
+                    for (var i = 0; i<td.length;i++) {
+                       
+                        td[i].style.backgroundColor = "";
+
+                    }
+
+                })
+                refundSuccess.on('post-body.bs.table', function (e, settings, json, xhr) {
+                   
+                });
+                // 初始化表格
+                refundSuccess.bootstrapTable({
+                    url: 'merchant/refund/refundSuccess',
+                    
+                    toolbar: '#toolbar2',
+                    pk: 'id',
+                    sortName: 'id',
+                    // searchFormVisible: true,
+                    columns: [
+                        [
+                            {checkbox: true},
+
+                            {field: 'id', title: __('Id')},
+                            {field: 'models_info.models_name', title: __('交易车型名称')},
+                            {field: 'bond', title: __('保证金'), operate:'BETWEEN'},
+                            
+                            {field: 'sell.bank_card', title: __('卖家银行卡')},
+                            {field: 'sell.real_name', title: __('卖家真实姓名')},
+                            {field: 'sell.phone', title: __('卖家手机号')},
+                            {field: 'sell.out_trade_no', title: __('卖家支付商户订单号')},
+                            {field: 'sell.total_fee', title: __('卖家最终支付金额')},
+                            {field: 'sell.time_end', title: __('卖家支付完成时间'), formatter: Controller.api.formatter.datetime1},
+
+                            {field: 'buy.bank_card', title: __('买家银行卡')},
+                            {field: 'buy.real_name', title: __('买家真实姓名')},
+                            {field: 'buy.phone', title: __('买家手机号')},
+                            {field: 'buy.out_trade_no', title: __('买家支付商户订单号')},
+                            {field: 'buy.total_fee', title: __('买家最终支付金额')},
+                            {field: 'buy.time_end', title: __('买家支付完成时间'), formatter: Controller.api.formatter.datetime1},
+
+                            {
+                                field: 'operate', title: __('Operate'), table: refundSuccess,
+                                buttons: [
+                                    /**
+                                     * 买家的保证金已打款退回
+                                     */
+                                    {
+                                        name: 'refund_bond',
+                                        text: '买家的保证金已打款退回',
+                                        icon: 'fa fa-eye',
+                                        extend: 'data-toggle="tooltip"',
+                                        title: __('买家的保证金已打款退回'),
+                                        classname: 'btn btn-xs btn-primary',
+                                        hidden: function (row, value, index) {
+                                            if (row.buyer_payment_status == 'refund_bond') {
+                                                return false;
+                                            }
+                                            else if (row.buyer_payment_status == 'already_paid') {
+                                                return true;
+                                            }
+                                            else if (row.buyer_payment_status == 'to_the_account') {
+                                                return true;
+                                            }
+                                            else if (row.buyer_payment_status == 'to_be_paid') {
+                                                return true;
+                                            }
+                                            else if (row.buyer_payment_status == 'confirm_receipt') {
+                                                return true;
+                                            }
+                                        },
+
+                                    },
+                                    /**
+                                     * 卖家的保证金已打款退回
+                                     */
+                                    {
+                                        name: 'refund_bond',
+                                        text: '卖家的保证金已打款退回',
+                                        icon: 'fa fa-eye',
+                                        extend: 'data-toggle="tooltip"',
+                                        title: __('卖家的保证金已打款退回'),
+                                        classname: 'btn btn-xs btn-success',
+                                        hidden: function (row, value, index) {
+                                            if (row.seller_payment_status == 'refund_bond') {
+                                                return false;
+                                            }
+                                            else if (row.seller_payment_status == 'to_be_paid') {
+                                                return true;
+                                            }
+                                            else if (row.seller_payment_status == 'already_paid') {
+                                                return true;
+                                            }
+                                            else if (row.seller_payment_status == 'to_the_account') {
+                                                return true;
+                                            }
+                                            else if (row.seller_payment_status == 'waiting_for_buyers') {
+                                                return true;
+                                            }
+                                            else if (row.buyer_payment_status == 'confirm_receipt') {
+                                                return true;
+                                            }
+                                        },
+                                    },
+                                    
+                                ],
+                                events: Controller.api.events.operate,
+                                formatter: Controller.api.formatter.operate
+                            }
+                        ]
+                    ]
+                });
+                // 为表格2绑定事件
+                Table.api.bindevent(refundSuccess);
+
+            }
+
         },
         add: function () {
             Controller.api.bindevent();
@@ -140,33 +400,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             events: {
                 operate: {
                     /**
-                     * 店铺审核
+                     * 确认买家的保证金已退回
                      * @param e
                      * @param value
                      * @param row
                      * @param index
                      */
-                    'click .btn-auditResult': function (e, value, row, index) {
-                        $(".btn-auditResult").data("area", ["60%", "95%"]);
-                        e.stopPropagation();
-                        e.preventDefault();
-                        var table = $(this).closest('table');
-                        var options = table.bootstrapTable('getOptions');
-                        var ids = row[options.pk];
-                        row = $.extend({}, row ? row : {}, {ids: ids});
-                        var url = 'merchant/store/auditResult';
-                        Fast.api.open(Table.api.replaceurl(url, row, table), __('店铺审核'), $(this).data() || {})
-
-                    },
-
-                    /**
-                     * 确定交易
-                     * @param e
-                     * @param value
-                     * @param row
-                     * @param index
-                     */
-                    'click .btn-start_deal': function (e, value, row, index) {
+                    'click .btn-buy_refund': function (e, value, row, index) {
                         e.stopPropagation();
                         e.preventDefault();
                         var that = this;
@@ -179,14 +419,59 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             top = left = undefined;
                         }
                         Layer.confirm(
-                            __('是否确定交易?'),
+                            __('是否确定买家的保证金已退回?'),
                             {icon: 3, title: __('Warning'), offset: [top, left], shadeClose: true},
                             function (index) {
                                 var table = $(that).closest('table');
                                 var options = table.bootstrapTable('getOptions');
                                 Fast.api.ajax({
 
-                                    url: 'merchant/store/startdeal',
+                                    url: 'merchant/refund/buyrefund',
+                                    data: {id: row[options.pk]}
+
+                                }, function (data, ret) {
+
+                                    Toastr.success('操作成功');
+                                    Layer.close(index);
+                                    table.bootstrapTable('refresh');
+                                    return false;
+                                }, function (data, ret) {
+                                    //失败的回调
+                                    Toastr.success(ret.msg);
+
+                                    return false;
+                                });
+                            }
+                        );
+                    },
+                    /**
+                     * 确认卖家的保证金已退回
+                     * @param e
+                     * @param value
+                     * @param row
+                     * @param index
+                     */
+                    'click .btn-sell_refund': function (e, value, row, index) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        var that = this;
+                        var top = $(that).offset().top - $(window).scrollTop();
+                        var left = $(that).offset().left - $(window).scrollLeft() - 260;
+                        if (top + 154 > $(window).height()) {
+                            top = top - 154;
+                        }
+                        if ($(window).width() < 480) {
+                            top = left = undefined;
+                        }
+                        Layer.confirm(
+                            __('是否确定卖家的保证金已退回?'),
+                            {icon: 3, title: __('Warning'), offset: [top, left], shadeClose: true},
+                            function (index) {
+                                var table = $(that).closest('table');
+                                var options = table.bootstrapTable('getOptions');
+                                Fast.api.ajax({
+
+                                    url: 'merchant/refund/sellrefund',
                                     data: {id: row[options.pk]}
 
                                 }, function (data, ret) {
@@ -205,7 +490,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         );
                     },
                     
-
                 },
             },
             formatter: {
