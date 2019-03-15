@@ -165,6 +165,7 @@ class StoreUpPay extends Base
                     'data' => array(
                         'keyword1' => array(
                             'value' => "{$store_name}",
+                            'color' => '#FF5722'
                         ),
                         'keyword2' => array(
                             'value' => "{$newKey}",
