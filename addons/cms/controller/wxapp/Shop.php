@@ -494,8 +494,20 @@ class Shop extends Base
     {
         $user_id = $this->request->post('user_id');
 
+        $store_id = $this->request->post('store_id');
+
         if (!$user_id) {
             $this->error('缺少参数');
+        }
+
+        $is_own = 0;
+
+        $user_store_id = CompanyStore::get(['user_id'=>$user_id])->id;
+
+        if($user_store_id){
+            if($user_store_id==$store_id){
+                $is_own = 1;
+            }
         }
 
         $store = CompanyStore::get([
@@ -538,7 +550,7 @@ class Shop extends Base
 
         $store_info['car_list'] = $car_list;
 
-        $this->success('请求成功', ['detail' => $store_info]);
+        $this->success('请求成功', ['detail' => $store_info,'is_own'=>$is_own]);
     }
 
     /**

@@ -77,7 +77,7 @@ class Common extends Base
             $this->error('缺少参数', 'error');
         }
         $msg = '';
-        $is_authentication = -1;
+//        $is_authentication = -1;
         $modelName = null;
         switch ($type) {
             case 'sell':
@@ -143,26 +143,26 @@ class Common extends Base
                 $default_image[2]['name'] => $default_image[2]['value'],
             ];
 
-            $company = CompanyStore::get(['user_id' => $user_id]);
-            if (!$company) {
-                $is_authentication = 1;
-                $msg = '您未认证店铺';
-            } else {
-                $status = $company->auditstatus;
-                if ($status == 'paid_the_money') {
-                    $is_authentication = 0;
-                } else {
-                    $is_authentication = 2;
-                    $msg = '您还未完成店铺认证';
-                }
-            };
+//            $company = CompanyStore::get(['user_id' => $user_id]);
+//            if (!$company) {
+//                $is_authentication = 1;
+//                $msg = '您未认证店铺';
+//            } else {
+//                $status = $company->auditstatus;
+//                if ($status == 'paid_the_money') {
+//                    $is_authentication = 0;
+//                } else {
+//                    $is_authentication = 2;
+//                    $msg = '您还未完成店铺认证';
+//                }
+//            };
 
 
         } catch (Exception $e) {
             $this->error($e->getMessage());
         }
 
-        $this->success('请求成功', ['can_quote' => ['is_authentication' => $is_authentication, 'msg' => $msg], 'detail' => $detail]);
+        $this->success('请求成功', [ 'detail' => $detail]);
     }
 
     /**
