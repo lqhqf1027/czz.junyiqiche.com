@@ -415,7 +415,7 @@ class My extends Base
             foreach ($first_store as $k => $v) {
 
                 $first_store[$k]['second_count'] = Distribution::where('store_id', $v['level_store_id'])->count();
-                $first_store[$k]['second_moneycount'] = Distribution::where('store_id', $v['level_store_id'])->sum('second_earnings');
+                $first_store[$k]['second_moneycount'] = round(Distribution::where('store_id', $v['level_store_id'])->sum('second_earnings'),2);
                 $first_store[$k]['user'] = User::field('id,nickname,avatar')->where('id', $v['store']['user_id'])->find();
 
             }
