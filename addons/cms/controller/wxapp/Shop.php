@@ -298,30 +298,33 @@ class Shop extends Base
         }
 
         try {
-            $info = User::field('id,nickname,avatar')
-                ->with(['companystoreone' => function ($q) {
-                    $q->withField('id,store_name,level_id,auditstatus');
-                }])->find($user_id);
-
-            if ($info) {
-                $info['certification_fee'] = Db::name('store_level')->where('id', $info['companystoreone']['level_id'])->value('money');
-            }
-
-            //待支付        已支付
-            $to_be_paid = $paid = [];
-
-            if ($info['companystoreone']['auditstatus'] == 'paid_the_money') {
-                $paid[] = $info;
-            } else if ($info['companystoreone']['auditstatus']) {
-                $to_be_paid[] = $info;
-            }
+//            $info = User::field('id,nickname,avatar')
+//                ->with(['companystoreone' => function ($q) {
+//                    $q->withField('id,store_name,level_id,auditstatus');
+//                }])->find($user_id);
+//
+//            if ($info) {
+//                $info['certification_fee'] = Db::name('store_level')->where('id', $info['companystoreone']['level_id'])->value('money');
+//            }
+//
+//            //待支付        已支付
+//            $to_be_paid = $paid = [];
+//
+//            if ($info['companystoreone']['auditstatus'] == 'paid_the_money') {
+//                $paid[] = $info;
+//            } else if ($info['companystoreone']['auditstatus']) {
+//                $to_be_paid[] = $info;
+//            }
 
             $to_be_paid = User::field('id,nickname,avatar')
                 ->with(['companystoreone' => function ($q) {
-                    $q->where('auditstatus', 'neq', 'paid_the_money')->withField('id,store_name,level_id,auditstatus');
+                    $q->where('auditstatus', 'neq', 'paid_the_money')->withField('id,store_name,level_id,auditstatus,createtime');
                 }])->select($user_id);
-
             if ($to_be_paid) {
+                $level_info = Db::name('store_level')->where('id', $to_be_paid[0]['companystoreone']['level_id'])->field('partner_rank,money')->find();
+                $to_be_paid[0]['certification_fee'] = $level_info['money'];
+                $to_be_paid[0]['level_name'] = $level_info['partner_rank'];
+                $to_be_paid[0]['companystoreone']['createtime'] = format_date($to_be_paid[0]['companystoreone']['createtime']);
                 //根据门店状态判断能否支付
                 $can_pay = $to_be_paid[0]['companystoreone']['auditstatus'] == 'pass_the_audit' ? 1 : 0;
 
