@@ -232,12 +232,12 @@ class StoreMarginPay extends Base
         //写入formIds表
         Common::writeFormId($formId, $user_id);
         //查询卖家是否正在等待买家确认收货
-        $buy_user = QuotedPrice::get(['seller_payment_status' => 'waiting_for_buyers', 'quotationtime' => $quotationtime, 'models_info_id' => $trading_models_id, 'by_user_ids' => $by_user_ids]);
+//        $buy_user = QuotedPrice::get(['seller_payment_status' => 'waiting_for_buyers', 'quotationtime' => $quotationtime, 'models_info_id' => $trading_models_id, 'by_user_ids' => $by_user_ids]);
 
 
         //更新买家字段
         $q = QuotedPrice::where(['user_ids' => $user_id, 'quotationtime' => $quotationtime, 'buyer_payment_status' => 'to_the_account', 'models_info_id' => $trading_models_id])
-            ->update(['buyer_payment_status' => 'confirm_receipt', 'seller_payment_status' => $buy_user ? 'confirm_receipt' : 'waiting_for_buyers'])
+            ->update(['buyer_payment_status' => 'confirm_receipt', 'seller_payment_status' =>'confirm_receipt'])
             ? $this->success('操作成功') : $this->error('操作失败');
 
     }

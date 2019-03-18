@@ -106,7 +106,7 @@ class Common extends Base
                 $condition = $condition . ',modelsimages';
                 $condition = $condition . ',modelsimages';
             }
-            $detail = $modelName->field($condition)
+            $detail = $modelName->useGlobalScope(false)->field($condition)
                 ->with(['brand' => function ($q) {
                     $q->withField('id,name,brand_default_images');
                 }, 'publisherUser' => function ($q) {

@@ -38,9 +38,9 @@ class Shop extends Base
         $user_id = $this->request->post('user_id');
         $inviter_user_id = $this->request->post('inviter_user_id');//邀请人user_id
 
-        if (!$user_id) {
-            $this->error('缺少参数');
-        }
+//        if (!$user_id) {
+//            $this->error('缺少参数');
+//        }
 
         try {
             //得到品牌列表
@@ -237,6 +237,7 @@ class Shop extends Base
                 $result = $company->allowField(true)->save($infos);
             } else {
                 $infos['auditstatus'] = 'wait_the_review';
+                $infos['reasons_failure'] = null;
                 $result = $company->allowField(true)->save($infos, ['id' => CompanyStore::get(['user_id' => $user_id])->id]);
             }
 
@@ -256,7 +257,7 @@ class Shop extends Base
                     }
 
                 } else {
-                    throw new Exception('获取银行卡信息失败');
+                    throw new Exception($result['reason']);
                 }
 
                 if ($submit_type == 'insert') {
