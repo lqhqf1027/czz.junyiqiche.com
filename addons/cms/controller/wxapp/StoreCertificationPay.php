@@ -155,7 +155,8 @@ class StoreCertificationPay extends Base
             $order_number = $o->out_trade_no;
             $money = $o->total_fee;
             $openid = Common::getOpenid($user_id);
-            $expirationtime = date('Y-m-d', Common::getStoreInfo($user_id)->expirationtime);
+
+            $expirationtime = date('Y-m-d',strtotime('+1 year'));
             if ($formId && $openid) {
                 $keyword1 = "友车圈{$level}认证费,有效期为一年，认证有效日期截止到" . $expirationtime;
                 $temp_msg = array(
