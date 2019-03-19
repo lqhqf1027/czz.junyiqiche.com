@@ -60,7 +60,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             title: __('Invitation_code'),
                             operate: false
                         }, 
-                        {field: 'main_camp', title: __('Main_camp')},
+                        {
+                            field: 'main_camp', title: __('Main_camp'), formatter: function (v, r, i) {
+                                return Controller.cutString(r.main_camp,15)
+                            }
+                        },
                         {
                             field: 'salecount',
                             title: __('查看店铺在售车型'), table: table, buttons: [

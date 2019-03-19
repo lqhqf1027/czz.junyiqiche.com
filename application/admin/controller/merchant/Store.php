@@ -193,7 +193,7 @@ class Store extends Backend
                     'appid' => Env::get('sms.appid'),
                     'templateid' => '441263',
                 ];
-                $param = '{' . $storeData['store_name'] . '(' . $level_name . ')}';
+                $param = $storeData['store_name'] . '(' . $level_name . ')';
             
                 $url = 'http://open.ucpaas.com/ol/sms/sendsms';
                 $client = new \GuzzleHttp\Client();
