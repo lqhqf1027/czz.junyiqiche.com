@@ -400,24 +400,30 @@ class My extends Base
             $this->error('缺少参数');
         }
         try {
-            $user = User::where('id', $user_id)->field('id,nickname,avatar')->find();
+            $user = User::field('id,nickname,avatar')
+                ->with(['storeHasMany' => function ($q) {
+                    $q->field('id,user_id,store_name')->with(['belongsStoreLevel' => function ($q) {
+                        $q->withField('partner_rank');
+                    }]);
+                }])->find($user_id)->toArray();
 
+            $user['store_has_many'] = $user['store_has_many'][0];
             $store_id = CompanyStore::where('user_id', $user_id)->value('id');
 
             $mymoney = EarningDetailed::field('first_earnings,second_earnings,total_earnings,available_balance')->where('store_id', $store_id)->find();
 
             $first_store = Collection(Distribution::field('level_store_id,second_earnings')->with(['store' => function ($q) {
 
-                $q->withField('id,store_name,user_id');
+                $q->withField('id,store_name,user_id,level_id');
 
             }])->where('store_id', $store_id)->select())->toArray();
 
             foreach ($first_store as $k => $v) {
 
                 $first_store[$k]['second_count'] = Distribution::where('store_id', $v['level_store_id'])->count();
-                $first_store[$k]['second_moneycount'] = round(Distribution::where('store_id', $v['level_store_id'])->sum('second_earnings'),2);
+                $first_store[$k]['second_moneycount'] = round(Distribution::where('store_id', $v['level_store_id'])->sum('second_earnings'), 2);
                 $first_store[$k]['user'] = User::field('id,nickname,avatar')->where('id', $v['store']['user_id'])->find();
-
+                $first_store[$k]['store']['partner_rank'] = StoreLevel::get($v['store']['level_id'])->partner_rank;
             }
 
             $data = [
@@ -428,7 +434,6 @@ class My extends Base
         } catch (\Exception $e) {
             $this->error($e->getMessage());
         }
-
         $this->success('请求成功', ['data' => $data]);
 
     }
@@ -513,8 +518,8 @@ class My extends Base
 
             if ($data) {
 
-                QuotedPrice::where(['models_info_id'=>$data])->setField(['deal_status' => 'start_the_deal']);
-                
+                QuotedPrice::where(['models_info_id' => $data])->setField(['deal_status' => 'start_the_deal']);
+
             }
 
             $res = QuotedPrice::destroy($quoted_id);

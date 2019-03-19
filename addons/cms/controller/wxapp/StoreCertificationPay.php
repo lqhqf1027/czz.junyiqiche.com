@@ -226,8 +226,9 @@ class StoreCertificationPay extends Base
 
             $up_id = Distribution::get(['level_store_id' => $company_info['id']])->store_id;
             if ($up_id) {
+                $up_table_id = EarningDetailed::getByStore_id($up_id)->id;
                 //加锁查询上级的金额信息
-                $up_data = EarningDetailed::field('first_earnings,total_earnings,available_balance')->where('store_id', $up_id)->lock(true)->find();
+                $up_data = EarningDetailed::field('first_earnings,total_earnings,available_balance')->where('id', $up_table_id)->lock(true)->find();
                 //如果有上级，将上级的收益加入上级收益明细表中
                 EarningDetailed::where('store_id', $up_id)
                     ->update(['first_earnings' => $up_data['first_earnings'] + $first_income,
@@ -238,9 +239,9 @@ class StoreCertificationPay extends Base
                 $up_up_id = Distribution::get(['level_store_id' => $up_id])->store_id;
 
                 if ($up_up_id) {
+                    $up_up_table_id = EarningDetailed::getByStore_id($up_up_id)->id;
                     //加锁查询上上级的金额信息
-
-                    $up_up_data = EarningDetailed::field('second_earnings,total_earnings,available_balance')->where('store_id', $up_up_id)->lock(true)->find();
+                    $up_up_data = EarningDetailed::field('second_earnings,total_earnings,available_balance')->where('id', $up_up_table_id)->lock(true)->find();
 
                     //如果有上上级，将上级的收益加入上上级收益明细表中
                     EarningDetailed::where('store_id', $up_up_id)
