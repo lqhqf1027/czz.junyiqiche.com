@@ -76,8 +76,9 @@ class Common extends Base
         if (!$car_id || !$type || !$user_id) {
             $this->error('缺少参数', 'error');
         }
-        $msg = '';
-//        $is_authentication = -1;
+
+        $is_certification_needed = 0;
+
         $modelName = null;
         switch ($type) {
             case 'sell':
@@ -129,7 +130,7 @@ class Common extends Base
                 $q->where('group', 'default_image')->field('name,value');
             }))->toArray();
 
-            $detail['factorytime'] = $detail['factorytime'] ? date('Y', $detail['factorytime']) : '';
+//            $detail['factorytime'] = $detail['factorytime'] ? date('Y', $detail['factorytime']) : '';
             $detail['emission_standard'] = $detail['emission_standard'] ? $detail['emission_standard'] . '次' : '';
             $detail['kilometres'] = $detail['kilometres'] ? round($detail['kilometres'] / 10000, 2) . '万公里' : null;
             $detail['guide_price'] = $detail['guide_price'] ? round($detail['guide_price'] / 10000, 2) . '万' : null;
@@ -142,6 +143,14 @@ class Common extends Base
                 $default_image[1]['name'] => $default_image[1]['value'],
                 $default_image[2]['name'] => $default_image[2]['value'],
             ];
+
+            if($type=='buy'){
+                if(!CompanyStore::get(['user_id'=>$user_id,'auditstatus'=>'paid_the_money'])){
+                    $is_certification_needed = 1;
+                }
+            }
+
+            $detail['is_certification_needed'] = $is_certification_needed;
 
 //            $company = CompanyStore::get(['user_id' => $user_id]);
 //            if (!$company) {
@@ -162,7 +171,7 @@ class Common extends Base
             $this->error($e->getMessage());
         }
 
-        $this->success('请求成功', [ 'detail' => $detail]);
+        $this->success('请求成功', ['detail' => $detail]);
     }
 
     /**

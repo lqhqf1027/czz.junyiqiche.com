@@ -2,6 +2,7 @@
 
 namespace addons\cms\controller\wxapp;
 
+use addons\cms\model\BankInfo;
 use addons\cms\model\Comment;
 use addons\cms\model\Page;
 use addons\cms\model\Distribution;
@@ -18,6 +19,7 @@ use addons\cms\model\BrandCate;
 use addons\cms\model\Brand;
 use addons\cms\model\EarningDetailed;
 use addons\cms\model\Message;
+use addons\cms\model\WithdrawalsRecord;
 use think\Db;
 use Endroid\QrCode\QrCode;
 use fast\Random;
@@ -426,10 +428,11 @@ class My extends Base
                 $first_store[$k]['store']['partner_rank'] = StoreLevel::get($v['store']['level_id'])->partner_rank;
             }
 
+
             $data = [
                 'user' => $user,
                 'mymoney' => $mymoney,
-                'earning_details' => $first_store
+                'earning_details' => $first_store,
             ];
         } catch (\Exception $e) {
             $this->error($e->getMessage());
@@ -438,33 +441,39 @@ class My extends Base
 
     }
 
+    /**
+     * 提现记录接口
+     */
+    public function withdrawals_record()
+    {
 
-//    /**
-//     * 消息列表接口
-//     * @throws \think\exception\DbException
-//     */
-//    public function message_list()
-//    {
-//        $user_id = $this->request->post('user_id');
-//
-//        if (!$user_id) {
-//            $this->error('缺少参数,请求失败', 'error');
-//        }
-//        $message = Message::all(function ($q) {
-//            $q->order('createtime desc')->field('id,title,createtime,use_id');
-//        });
-//
-//        foreach ($message as $k => $v) {
-//            $v['isRead'] = 0;
-//
-//            if (strpos($v['use_id'], ',' . $user_id . ',') !== false) {
-//                $v['isRead'] = 1;
-//            }
-//            unset($v['use_id']);
-//        }
-//
-//        $this->success('请求成功', ['message_list' => $message]);
-//    }
+        $store_id = $this->request->post('store_id');
+
+        if (!$store_id) {
+            $this->error('缺少参数');
+        }
+
+        try {
+            $withdrawals_record = WithdrawalsRecord::field('id,withdrawal_amount,createtime,status,store_id')
+                ->with(['store' => function ($q) {
+                    $q->withField('id,bank_card');
+                }])
+                ->order('id desc')
+                ->where('store_id', $store_id)
+                ->select();
+
+            if ($withdrawals_record) {
+                foreach ($withdrawals_record as $k => $v) {
+                    $withdrawals_record[$k]['bank_info'] = BankInfo::getByStore_id($v['store_id'])->visible(['id', 'bankname']);
+                    $withdrawals_record[$k]['store']['bank_card'] = substr($v['store']['bank_card'], -4);
+                }
+            }
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
+        }
+
+        $this->success('请求成功', ['record' => $withdrawals_record]);
+    }
 
 
     /**

@@ -58,10 +58,6 @@ class Index extends Base
             'code'=>0,
         ];
 
-        $buy_info = [
-            'msg' => '',
-            'code'=>0,
-        ];
         try {
             $bannerList = $modelsInfoList = $buycarModelList = [];
             $list = Block::getBlockList(['name' => 'focus']);
@@ -78,8 +74,8 @@ class Index extends Base
                 ])->find();
 
             if (empty($res)) {
-                $sell_info['msg'] = $buy_info['msg'] = '您暂未认证！';
-                $sell_info['code']= $buy_info['code'] = 1;
+                $sell_info['msg'] = '您暂未认证！';
+                $sell_info['code'] = 1;
             } else {
                 if($res['auditstatus']=='paid_the_money'){
                     if ($res['storelevel']['max_release_number'] != -1) {
@@ -113,8 +109,8 @@ class Index extends Base
                             $code = 5;
                             break;
                     }
-                    $sell_info['msg'] = $buy_info['msg'] = $msg;
-                    $sell_info['code']= $buy_info['code'] = $code;
+                    $sell_info['msg'] = $msg;
+                    $sell_info['code'] = $code;
 
                 }
 
@@ -168,7 +164,7 @@ class Index extends Base
             'default_image' => ConfigModel::get(['name' => 'default_picture'])->value,
             'share' => self::get_share(),
             'sell_car_condition' => $sell_info,
-            'buy_car_condition' =>$buy_info,
+//            'buy_car_condition' =>$buy_info,
             'unread'=>$unread
         ]);
 
