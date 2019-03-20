@@ -30,7 +30,7 @@ class BuycarModel extends Model
     //关联店铺
     public function store()
     {
-        return $this->belongsTo('CompanyStore', 'store_id', 'id', [], 'LEFT')->setEagerlyType(0);
+        return $this->belongsTo('CompanyStore', 'store_id', 'id');
     }
     //关联品牌
     public function brand()

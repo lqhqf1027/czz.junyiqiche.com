@@ -100,7 +100,7 @@ class StoreMarginPay extends Base
                         'bank_type' => $getData['bank_type'],
                         'transaction_id' => $getData['transaction_id'],
                         $explodeData[0] == 'seller' ? 'seller_id' : 'buyers_id' => $user_id,
-                        'trading_models_id' => $explodeData[2],
+                        $explodeData[4] == 'buy' ? 'buy_trading_models_id' : 'trading_models_id' => $explodeData[2],
                         'pay_type' => 'bond'
                     ]
                 );
@@ -150,7 +150,7 @@ class StoreMarginPay extends Base
             //修改报价表   买卖家
 
             QuotedPrice::where([
-                'models_info_id' => explode('_', $out_trade_no)[2],
+                explode('_', $out_trade_no)[4] == 'buy' ? 'buy_car_id' : 'models_info_id' => explode('_', $out_trade_no)[2],
                 'deal_status' => 'click_the_deal',
                 $payUserType == 'buyers_id' ? 'user_ids' : 'by_user_ids' => $user_id
             ])->update([$payUserType == 'seller_id' ? 'seller_payment_status' : 'buyer_payment_status' => 'already_paid']);
