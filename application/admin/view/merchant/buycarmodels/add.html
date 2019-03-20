@@ -1,0 +1,118 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Models_name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-models_name" data-rule="required" class="form-control" name="row[models_name]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Kilometres')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-kilometres" class="form-control" name="row[kilometres]" type="number">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Store_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-store_id" data-rule="required" data-source="store/index" class="form-control selectpage" name="row[store_id]" type="text" value="">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('User_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-user_id" data-rule="required" data-source="user/user/index" data-field="nickname" class="form-control selectpage" name="row[user_id]" type="text" value="">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Shelfismenu')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-shelfismenu" class="form-control" name="row[shelfismenu]" type="number" value="1">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('License_plate')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-license_plate" class="form-control" name="row[license_plate]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Phone')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-phone" data-rule="required" class="form-control" name="row[phone]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Parkingposition')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-parkingposition" data-rule="required" class="form-control" name="row[parkingposition]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Brand_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-brand_id" data-rule="required" data-source="brand/index" class="form-control selectpage" name="row[brand_id]" type="text" value="">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Store_description')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-store_description" class="form-control" name="row[store_description]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Guide_price')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-guide_price" data-rule="required" class="form-control" step="0.01" name="row[guide_price]" type="number">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Emission_standard')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-emission_standard" class="form-control" name="row[emission_standard]" type="number">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Factorytime')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-factorytime" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[factorytime]" type="text" value="{:date('Y-m-d H:i:s')}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Car_licensetime')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-car_licensetime" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[car_licensetime]" type="text" value="{:date('Y-m-d H:i:s')}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Browse_volume')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-browse_volume" data-rule="required" class="form-control" name="row[browse_volume]" type="number" value="0">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Brand_car_series')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-brand_car_series" class="form-control" name="row[brand_car_series]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Transmission_case')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-transmission_case" class="form-control" name="row[transmission_case]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Displacement')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-displacement" class="form-control" name="row[displacement]" type="text">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>
