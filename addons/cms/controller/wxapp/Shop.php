@@ -314,6 +314,7 @@ class Shop extends Base
                 ->with(['companystoreone' => function ($q) {
                     $q->where('auditstatus', 'neq', 'paid_the_money')->withField('id,store_name,level_id,auditstatus,createtime');
                 }])->select($user_id);
+
             if ($to_be_paid) {
                 $level_info = Db::name('store_level')->where('id', $to_be_paid[0]['companystoreone']['level_id'])->field('partner_rank,money')->find();
                 $to_be_paid[0]['certification_fee'] = $level_info['money'];
@@ -325,35 +326,39 @@ class Shop extends Base
                 $to_be_paid[0]['can_pay'] = $can_pay;
             }
 
-            $paid = PayOrder::field('id,time_end,total_fee')
+            $paid = PayOrder::field('id,time_end,total_fee,store_id,level_id,pay_type,trading_models_id')
                 ->with([
                     'user' => function ($q) {
                         $q->withField('id,nickname,avatar');
-                    },
-                    'companyStore' => function ($q) {
-                        $q->withField('id,store_name,auditstatus');
-                    },
-                    'level' => function ($q) {
-                        $q->withField('id,partner_rank,money');
                     }
                 ])
                 ->where([
                     'pay_order.user_id' => $user_id,
-                    'pay_type' => ['neq', 'bond']
                 ])->order('id desc')->select();
+
+            if ($paid) {
+                foreach ($paid as $k => $v) {
+                    $paid[$k]['company_store'] = $paid[$k]['level'] = [];
+                    $paid[$k]['models_name'] = '';
+                    if ($v['store_id']) {
+                        $paid[$k]['company_store'] = CompanyStore::get($v['store_id'])->visible(['id', 'store_name', 'auditstatus']);
+                    }
+
+                    if ($v['level_id']) {
+                        $paid[$k]['level'] = StoreLevel::get($v['level_id'])->visible(['id', 'partner_rank', 'money']);
+                    }
+
+                    if ($v['trading_models_id']) {
+                        $paid[$k]['models_name'] = ModelsInfo::useGlobalScope(false)->where('id', $v['trading_models_id'])->value('models_name');
+                    }
+
+                    unset($paid[$k]['store_id'], $paid[$k]['level_id'], $paid[$k]['trading_models_id']);
+                }
+            }
 
         } catch (Exception $e) {
             $this->error($e->getMessage());
         }
-
-
-//        if ($paid) {
-//            //根据门店等级判断能否升级
-//            $can_upgrade = $paid[0]['companystoreone']['level_id'] == 1 ? 0 : 1;
-//            $paid[0]['can_upgrade'] = $can_upgrade;
-//            $pay_order = PayOrder::get(['user_id' => $user_id, 'pay_type' => '']);
-//            $paid[0]['payment_time'] = $pay_order ? date('Y-m-d H:i:s', strtotime($pay_order->time_end)) : '';
-//        }
 
         $this->success('请求成功', ['to_be_paid' => $to_be_paid, 'paid_the_money' => $paid]);
 
@@ -430,7 +435,8 @@ class Shop extends Base
             ->with(['storelevel' => function ($q) {
                 $q->withField('id,partner_rank');
             }])
-            ->where('user_id', $user_id)->find();
+            ->find($store_id);
+
 
         if (!$store) {
             $this->error('门店未找到或未完成认证');
@@ -440,7 +446,7 @@ class Shop extends Base
             ->with(['brand' => function ($q) {
                 $q->withField('id,name,brand_initials,brand_default_images');
             }])
-            ->where('store_id', $store_info['id'])->order('createtime desc')->select();
+            ->where('store_id', $store_id)->order('createtime desc')->select();
 
         if ($car_list) {
             $car_list = collection($car_list)->toArray();

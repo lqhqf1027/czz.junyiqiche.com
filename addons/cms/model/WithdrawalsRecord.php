@@ -20,4 +20,14 @@ class WithdrawalsRecord extends Model
     protected $createTime = 'createtime';
 
     protected $updateTime = false;
+
+    public function store()
+    {
+        return $this->belongsTo('CompanyStore', 'store_id', 'id')->setEagerlyType(0);
+    }
+
+    protected function getCreateTimeAttr($value)
+    {
+        return date('Y-m-d',$value);
+    }
 }
