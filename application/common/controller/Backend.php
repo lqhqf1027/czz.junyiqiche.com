@@ -209,6 +209,9 @@ class Backend extends Controller
         $this->assign('auth', $this->auth);
         //渲染管理员对象
         $this->assign('admin', Session::get('admin'));
+        $version = collection(model('Config')->where('name','version')->find()->toArray())['value'];
+        //扔出版本信息
+        $this->assign('version',$version);
     }
 
     /**
