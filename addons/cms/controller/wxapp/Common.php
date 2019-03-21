@@ -162,7 +162,7 @@ class Common extends Base
             $this->error($e->getMessage());
         }
 
-        $this->success('请求成功', [ 'detail' => $detail]);
+        $this->success('请求成功', ['detail' => $detail]);
     }
 
     /**
@@ -170,15 +170,16 @@ class Common extends Base
      * @param $fomrId
      * @return bool
      */
-    public static function writeFormId($fomrId, $user_id)
+    public static function writeFormId($formId, $user_id)
     {
 
         try {
-            $data = FormIds::create(['form_id' => $fomrId, 'user_id' => $user_id, 'status' => 1]);
+            $data = FormIds::create(['form_id' => $formId, 'user_id' => $user_id, 'status' => 1, 'createtime' => time()]);
 
         } catch (Exception $e) {
             return $e->getMessage();
         }
+        return $data;
 
     }
 
