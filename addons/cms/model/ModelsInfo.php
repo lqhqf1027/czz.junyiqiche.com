@@ -81,6 +81,12 @@ class ModelsInfo  extends Model
         return $this->belongsTo('QuotedPrice', 'models_info_id', 'id')->setEagerlyType(0);
     }
 
+    public function hasManyQuotedPrice()
+    {
+        return $this->hasMany('QuotedPrice', 'models_info_id', 'id');
+    }
+
+
     public function setFactoryTimeAttr($value)
     {
         return $value && !is_numeric($value) ? strtotime($value) : $value;

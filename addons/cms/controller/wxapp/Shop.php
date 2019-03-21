@@ -446,7 +446,7 @@ class Shop extends Base
             ->with(['brand' => function ($q) {
                 $q->withField('id,name,brand_initials,brand_default_images');
             }])
-            ->where('store_id', $store_id)->order('createtime desc')->select();
+            ->where('store_id', $store_id)->where($is_own==0?['shelfismenu'=>1]:null)->order('createtime desc')->select();
 
         if ($car_list) {
             $car_list = collection($car_list)->toArray();
