@@ -259,6 +259,11 @@ class My extends Base
             $this->error('缺少参数');
         }
 
+        $quotedPriceId = array_merge($this->getQuotedPriceId($user_id, 'buy'), $this->getQuotedPriceId($user_id, 'sell'));
+        if ($quotedPriceId) {
+            QuotedPrice::where('id', 'in', $quotedPriceId)->setField('is_see', 1);
+        }
+
         $default_image = ConfigModel::get(['name' => 'default_picture'])->value;
 
         //收到的报价
@@ -315,11 +320,11 @@ class My extends Base
 
         $this->success('请求成功', ['QuotedPriceList' => ['receive_quotation' => array_values($receive_quotation), 'my_quoted' => array_values($my_quoted),'default_phone'=>ConfigModel::getByName('default_phone')->value]]);
 
-//
-//        $quotedPriceId = array_merge($this->getQuotedPriceId($user_id, 'buy'), $this->getQuotedPriceId($user_id, 'sell'));
-//        if ($quotedPriceId) {
-//            QuotedPrice::where('id', 'in', $quotedPriceId)->setField('is_see', 1);
-//        }
+
+    //    $quotedPriceId = array_merge($this->getQuotedPriceId($user_id, 'buy'), $this->getQuotedPriceId($user_id, 'sell'));
+    //    if ($quotedPriceId) {
+    //        QuotedPrice::where('id', 'in', $quotedPriceId)->setField('is_see', 1);
+    //    }
 //
 //        //收到报价---卖车
 //        $ModelsInfoList = $this->ModelsInfo('ModelsInfo', $user_id, ['type' => 'sell']);
@@ -352,6 +357,11 @@ class My extends Base
 
         if (!$user_id) {
             $this->error('缺少参数');
+        }
+
+        $quotedPriceId = array_merge($this->getQuotedPriceId($user_id, 'buy'), $this->getQuotedPriceId($user_id, 'sell'));
+        if ($quotedPriceId) {
+            QuotedPrice::where('id', 'in', $quotedPriceId)->setField('is_see', 1);
         }
 
         $default_image = ConfigModel::get(['name' => 'default_picture'])->value;
