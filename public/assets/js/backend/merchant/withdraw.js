@@ -32,6 +32,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'store.real_name', title: __('Store.real_name')},
 
                         {field: 'withdrawal_amount', title: __('Withdrawal_amount'), operate:'BETWEEN'},
+                        {field: 'service_charge', title: __('服务费（元）'), operate:false},
+                        {field: 'actual_amount', title: __('实际需打款金额（元）'), operate:false},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         {field: 'status', title: __('提现状态'), searchList: {"cash_in":__('提现中'),"has_been_presented":__('提现成功')}, formatter: Table.api.formatter.status},
                       

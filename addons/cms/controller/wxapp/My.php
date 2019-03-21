@@ -3,6 +3,7 @@
 namespace addons\cms\controller\wxapp;
 
 use addons\cms\model\BankInfo;
+use addons\cms\model\Collection;
 use addons\cms\model\Comment;
 use addons\cms\model\Page;
 use addons\cms\model\Distribution;
@@ -248,7 +249,7 @@ class My extends Base
     }
 
     /**
-     * 我的页面---我的报价
+     * 我的页面---我是卖家---收到报价/我的报价
      */
     public function myQuoted()
     {
@@ -258,32 +259,184 @@ class My extends Base
             $this->error('缺少参数');
         }
 
-        $quotedPriceId = array_merge($this->getQuotedPriceId($user_id, 'buy'), $this->getQuotedPriceId($user_id, 'sell'));
-        if ($quotedPriceId) {
-            QuotedPrice::where('id', 'in', $quotedPriceId)->setField('is_see', 1);
+        $default_image = ConfigModel::get(['name' => 'default_picture'])->value;
+
+        //收到的报价
+        $receive_quotation = collection(ModelsInfo::field('id,models_name,car_licensetime,kilometres,parkingposition,guide_price,browse_volume,modelsimages,createtime')->with(['hasManyQuotedPrice' => function ($q) use ($user_id) {
+            $q->where(['by_user_ids' => $user_id])->order('quotationtime desc')->with(['user' => function ($q) {
+                $q->withField('nickname,avatar');
+            }]);
+        }])->select())->toArray();
+
+        //我的报价
+        $my_quoted = collection(BuycarModel::field('id,models_name,car_licensetime,kilometres,parkingposition,guide_price,browse_volume,createtime')->with(['hasManyQuotedPrice' => function ($q) use ($user_id) {
+            $q->where(['user_ids' => $user_id])->order('quotationtime desc')->with(['user' => function ($q) {
+                $q->withField('nickname,avatar');
+            }]);
+        }])->select())->toArray();
+
+        foreach ($receive_quotation as $k => $v) {
+            if (!$v['has_many_quoted_price']) {
+                unset($receive_quotation[$k]);
+                continue;
+            };
+
+            $receive_quotation[$k]['car_licensetime'] = date('Y-m', $v['car_licensetime']);
+            $receive_quotation[$k]['kilometres'] = round($v['kilometres'] / 10000, 2);
+            $receive_quotation[$k]['guide_price'] = round($v['guide_price'] / 10000, 2);
+            $receive_quotation[$k]['modelsimages'] = explode(',', $v['modelsimages'])[0];
+            $receive_quotation[$k]['createtime'] = format_date($v['createtime']);
+
+            foreach ($v['has_many_quoted_price'] as $kk => $vv) {
+                $receive_quotation[$k]['has_many_quoted_price'][$kk]['quotationtime_format'] = format_date($vv['quotationtime']);
+                $receive_quotation[$k]['has_many_quoted_price'][$kk]['money'] = round($vv['money'] / 10000, 2);
+            }
+
         }
 
-        //收到报价---卖车
-        $ModelsInfoList = $this->ModelsInfo('ModelsInfo', $user_id, ['type' => 'sell']);
-        //收到报价---买车
-        $BuycarModel = $this->ModelsInfo('BuycarModel', $user_id, ['type' => 'buy']);
-        //收到报价合并
-        $MyModelsInfoList = array_merge($ModelsInfoList, $BuycarModel);
+        foreach ($my_quoted as $k => $v) {
+            if (!$v['has_many_quoted_price']) {
+                unset($my_quoted[$k]);
+                continue;
+            };
+            $my_quoted[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y-m', $v['car_licensetime']) : '';
+            $my_quoted[$k]['modelsimages'] = $default_image;
 
-        //我的报价----卖车
-        $SellcarModelList = $this->ModelsInfo('ModelsInfo', null, ['user_ids' => $user_id]);
-        //我的报价---买车
-        $BuycarModelList = $this->ModelsInfo('BuycarModel', null, ['user_ids' => $user_id]);
-        //我的报价合并
-        $MyBuycarModelList = array_merge($SellcarModelList, $BuycarModelList);
+            $my_quoted[$k]['kilometres'] = round($v['kilometres'] / 10000, 2);
+            $my_quoted[$k]['guide_price'] = round($v['guide_price'] / 10000, 2);
 
-        //收到报价
-        $QuotedPriceList['sell'] = $MyModelsInfoList;
+            $my_quoted[$k]['createtime'] = format_date($v['createtime']);
+
+            foreach ($v['has_many_quoted_price'] as $kk => $vv) {
+                $my_quoted[$k]['has_many_quoted_price'][$kk]['quotationtime_format'] = format_date($vv['quotationtime']);
+                $my_quoted[$k]['has_many_quoted_price'][$kk]['money'] = round($vv['money'] / 10000, 2);
+            }
+        }
+
+        $this->success('请求成功', ['QuotedPriceList' => ['receive_quotation' => array_values($receive_quotation), 'my_quoted' => array_values($my_quoted),'default_phone'=>ConfigModel::getByName('default_phone')->value]]);
+
+//
+//        $quotedPriceId = array_merge($this->getQuotedPriceId($user_id, 'buy'), $this->getQuotedPriceId($user_id, 'sell'));
+//        if ($quotedPriceId) {
+//            QuotedPrice::where('id', 'in', $quotedPriceId)->setField('is_see', 1);
+//        }
+//
+//        //收到报价---卖车
+//        $ModelsInfoList = $this->ModelsInfo('ModelsInfo', $user_id, ['type' => 'sell']);
+//        //收到报价---买车
+//        $BuycarModel = $this->ModelsInfo('BuycarModel', $user_id, ['type' => 'buy']);
+//        //收到报价合并
+//        $MyModelsInfoList = array_merge($ModelsInfoList, $BuycarModel);
+//
+//        //我的报价----卖车
+//        $SellcarModelList = $this->ModelsInfo('ModelsInfo', null, ['user_ids' => $user_id]);
+//        //我的报价---买车
+//        $BuycarModelList = $this->ModelsInfo('BuycarModel', null, ['user_ids' => $user_id]);
+//        //我的报价合并
+//        $MyBuycarModelList = array_merge($SellcarModelList, $BuycarModelList);
+//
+//        //收到报价
+//        $QuotedPriceList['sell'] = $MyModelsInfoList;
+//        //我的报价
+//        $QuotedPriceList['buy'] = $MyBuycarModelList;
+
+
+    }
+
+    /**
+     * 我是买家
+     */
+    public function buyer_quote()
+    {
+        $user_id = $this->request->post('user_id');
+
+        if (!$user_id) {
+            $this->error('缺少参数');
+        }
+
+        $default_image = ConfigModel::get(['name' => 'default_picture'])->value;
+
+//        //收到的报价
+//        $receive_quotation = collection(ModelsInfo::field('id,models_name,car_licensetime,kilometres,parkingposition,guide_price,browse_volume,modelsimages')->with(['hasManyQuotedPrice' => function ($q) use ($user_id) {
+//            $q->where(['by_user_ids' => $user_id])->order('quotationtime desc')->with(['user' => function ($q) {
+//                $q->withField('nickname,avatar');
+//            }]);
+//        }])->select())->toArray();
+//
+//        //我的报价
+//        $my_quoted = collection(BuycarModel::field('id,models_name,car_licensetime,kilometres,parkingposition,guide_price,browse_volume')->with(['hasManyQuotedPrice' => function ($q) use ($user_id) {
+//            $q->where(['user_ids' => $user_id])->order('quotationtime desc')->with(['user' => function ($q) {
+//                $q->withField('nickname,avatar');
+//            }]);
+//        }])->select())->toArray();
+
+        //收到的报价
+        $receive_quotation = collection(BuycarModel::field('id,models_name,car_licensetime,kilometres,parkingposition,guide_price,browse_volume,createtime')->with(['hasManyQuotedPrice' => function ($q) use ($user_id) {
+            $q->where(['by_user_ids' => $user_id])->order('quotationtime desc')->with(['user' => function ($q) {
+                $q->withField('nickname,avatar');
+            }]);
+        }])->select())->toArray();
+
+        foreach ($receive_quotation as $k => $v) {
+            if (!$v['has_many_quoted_price']) {
+                unset($receive_quotation[$k]);
+                continue;
+            };
+            $receive_quotation[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y-m', $v['car_licensetime']) : '';
+            $receive_quotation[$k]['modelsimages'] = $default_image;
+
+            $receive_quotation[$k]['kilometres'] = round($v['kilometres'] / 10000, 2);
+            $receive_quotation[$k]['guide_price'] = round($v['guide_price'] / 10000, 2);
+
+            $receive_quotation[$k]['createtime'] = format_date($v['createtime']);
+
+            foreach ($v['has_many_quoted_price'] as $kk => $vv) {
+                $receive_quotation[$k]['has_many_quoted_price'][$kk]['quotationtime_format'] = format_date($vv['quotationtime']);
+                $receive_quotation[$k]['has_many_quoted_price'][$kk]['money'] = round($vv['money'] / 10000, 2);
+            }
+        }
+
         //我的报价
-        $QuotedPriceList['buy'] = $MyBuycarModelList;
+        $my_quoted = collection(ModelsInfo::field('id,models_name,car_licensetime,kilometres,parkingposition,guide_price,browse_volume,modelsimages,createtime')->with(['hasManyQuotedPrice' => function ($q) use ($user_id) {
+            $q->where(['user_ids' => $user_id])->order('quotationtime desc')->with(['user' => function ($q) {
+                $q->withField('nickname,avatar');
+            }]);
+        }])->select())->toArray();
 
-        $this->success('请求成功', ['QuotedPriceList' => $QuotedPriceList]);
+        foreach ($my_quoted as $k => $v) {
+            if (!$v['has_many_quoted_price']) {
+                unset($my_quoted[$k]);
+                continue;
+            };
 
+            $my_quoted[$k]['car_licensetime'] = date('Y-m', $v['car_licensetime']);
+            $my_quoted[$k]['kilometres'] = round($v['kilometres'] / 10000, 2);
+            $my_quoted[$k]['guide_price'] = round($v['guide_price'] / 10000, 2);
+            $my_quoted[$k]['modelsimages'] = explode(',', $v['modelsimages'])[0];
+
+            $my_quoted[$k]['createtime'] = format_date($v['createtime']);
+
+            foreach ($v['has_many_quoted_price'] as $kk => $vv) {
+                $my_quoted[$k]['has_many_quoted_price'][$kk]['quotationtime_format'] = format_date($vv['quotationtime']);
+                $my_quoted[$k]['has_many_quoted_price'][$kk]['money'] = round($vv['money'] / 10000, 2);
+            }
+
+        }
+
+        $this->success('请求成功', ['QuotedPriceList' => ['receive_quotation' => array_values($receive_quotation), 'my_quoted' => array_values($my_quoted),'default_phone'=>ConfigModel::getByName('default_phone')->value]]);
+    }
+
+    public static function test($type,$role,$user_id)
+    {
+            $table_name = $type=='sell'?new ModelsInfo():new BuycarModel();
+
+            $else_field = $type=='sell'?'modelsimages':'';
+
+            $arr = $table_name->field('id,models_name,car_licensetime,kilometres,parkingposition,guide_price,browse_volume'.$else_field)->with(['hasManyQuotedPrice' => function ($q) use ($user_id) {
+                $q->where(['user_ids' => $user_id])->order('quotationtime desc')->with(['user' => function ($q) {
+                    $q->withField('nickname,avatar');
+                }]);
+            }])->select();
     }
 
     /**

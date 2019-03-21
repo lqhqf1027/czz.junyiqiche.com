@@ -55,7 +55,7 @@ class Index extends Base
         $user_id = $this->request->post('user_id');
         $sell_info = [
             'msg' => '',
-            'code'=>0,
+            'code' => 0,
         ];
 
         try {
@@ -77,7 +77,7 @@ class Index extends Base
                 $sell_info['msg'] = '您暂未认证！';
                 $sell_info['code'] = 1;
             } else {
-                if($res['auditstatus']=='paid_the_money'){
+                if ($res['auditstatus'] == 'paid_the_money') {
                     if ($res['storelevel']['max_release_number'] != -1) {
                         $my_release_number = ModelsInfo::where([
                             'user_id' => $user_id,
@@ -89,9 +89,9 @@ class Index extends Base
                             $sell_info['code'] = 2;
                         }
                     }
-                }else{
-                    $msg =$code = '';
-                    switch ($res['auditstatus']){
+                } else {
+                    $msg = $code = '';
+                    switch ($res['auditstatus']) {
                         case 'wait_the_review':
                             $msg = '您的店铺正在等待审核';
                             $code = 3;
@@ -131,7 +131,7 @@ class Index extends Base
 
             }
 
-            unset($dataList,$res);
+            unset($dataList, $res);
 
             array_multisort(array_column($modelsInfoList, 'browse_volume'), SORT_DESC, $modelsInfoList);
             array_multisort(array_column($buycarModelList, 'browse_volume'), SORT_DESC, $buycarModelList);
@@ -165,7 +165,7 @@ class Index extends Base
             'share' => self::get_share(),
             'sell_car_condition' => $sell_info,
 //            'buy_car_condition' =>$buy_info,
-            'unread'=>$unread
+            'unread' => $unread
         ]);
 
     }
@@ -420,11 +420,13 @@ class Index extends Base
             $this->error('缺少参数或格式错误,请求失败', 'error');
         }
 
-            $userInfo = Db::name('cms_login_info')
-                ->where(['user_id' => $user_id, 'login_state' => 0])->find();
-            if (!$userInfo || $code != $userInfo['login_code']) {
-                $this->error('验证码输入错误');
-            }
+        $userInfo = Db::name('cms_login_info')
+            ->where(['user_id' => $user_id, 'login_state' => 0])->find();
+        if (!$userInfo || $code != $userInfo['login_code']) {
+            $this->error('验证码输入错误');
+        }
+
+        User::where('id', $user_id)->setField('mobile', $mobile);
 
         $this->success('验证成功', 'success');
     }
@@ -458,15 +460,15 @@ class Index extends Base
         if (!$user_id || !$carInfo) {
             $this->error('缺少参数，请求失败', 'error');
         }
-        try{
-            $store_id = CompanyStore::get(['user_id' => $user_id])->id;
+        try {
+            $store_id = CompanyStore::getByUser_id($user_id)->id;
             $carInfo['store_id'] = $store_id;
             $carInfo['user_id'] = $user_id;
             $carInfo['browse_volume'] = rand(500, 2000);
 //            $carInfo['store_description'] = emoji_encode($carInfo['store_description']);
             $modelsInfo = new ModelsInfo();
             $modelsInfo->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $this->success($e->getMessage());
         }
     }
@@ -575,8 +577,8 @@ class Index extends Base
         if (!$user_id || !$carInfo) {
             $this->error('缺少参数，请求失败', 'error');
         }
-        try{
-            $store_id = CompanyStore::get(['user_id' => $user_id])->id;
+        try {
+            $store_id = CompanyStore::getByUser_id($user_id)->id;
             if ($store_id) {
                 $carInfo['store_id'] = $store_id;
             }
@@ -586,7 +588,7 @@ class Index extends Base
 //            $carInfo['store_description'] = emoji_encode($carInfo['store_description']);
             $buyModels = new BuycarModel();
             $buyModels->allowField(true)->save($carInfo) ? $this->success('添加成功', 'success') : $this->error('添加失败', 'error');
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $this->error($e->getMessage());
         }
     }
@@ -691,11 +693,10 @@ class Index extends Base
      */
     public function information_list()
     {
-      $res = InformationCategories::field('id,categories_name')
-
-      ->with(['automotive'=>function ($q){
-          $q->field('id,title,categories_id,author,coverimage,browse_volume');
-      }])->select();
+        $res = InformationCategories::field('id,categories_name')
+            ->with(['automotive' => function ($q) {
+                $q->field('id,title,categories_id,author,coverimage,browse_volume');
+            }])->select();
 
         $this->success('请求成功', ['information' => $res]);
     }
@@ -714,7 +715,7 @@ class Index extends Base
 
         $info = AutomotiveInformation::get($information_id)->hidden(['status']);
 
-        AutomotiveInformation::where('id',$information_id)->setInc('browse_volume',rand(1,10));
+        AutomotiveInformation::where('id', $information_id)->setInc('browse_volume', rand(1, 10));
 
         $this->success('请求成功', ['detail' => $info]);
     }

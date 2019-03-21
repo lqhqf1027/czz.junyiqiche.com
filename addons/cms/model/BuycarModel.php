@@ -67,6 +67,11 @@ class BuycarModel extends Model
         return $this->belongsTo('QuotedPrice', 'buy_car_id', 'id')->setEagerlyType(0);
     }
 
+    public function hasManyQuotedPrice()
+    {
+        return $this->hasMany('QuotedPrice', 'buy_car_id', 'id');
+    }
+
 
     protected function setFactorytimeAttr($value)
     {
