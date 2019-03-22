@@ -224,11 +224,13 @@ class StoreMarginPay extends Base
         $user_id = $this->request->post('user_id');
         $formId = $this->request->post('formId');
         $trading_models_id = $this->request->post('trading_models_id');//车辆交易Id
-        $buyers_payment_status = $this->request->post('buyers_payment_status');
+        $buyer_payment_status = $this->request->post('buyer_payment_status');
         $user_ids = $this->request->post('user_ids');//报价人的user_ids
         $by_user_ids = $this->request->post('by_user_ids');//卖家的id
         $quotationtime = $this->request->post('quotationtime');//报价时间
+
         if (!$user_id || !$formId || !$trading_models_id || !$by_user_ids || !$quotationtime) $this->error('缺少参数');
+
         //写入formIds表
         Common::writeFormId($formId, $user_id);
         //查询卖家是否正在等待买家确认收货

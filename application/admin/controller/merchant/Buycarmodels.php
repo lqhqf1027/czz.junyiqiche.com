@@ -7,6 +7,7 @@ use app\admin\model\BuycarModel;
 use app\admin\model\CompanyStore;
 use app\admin\model\QuotedPrice;
 use app\admin\model\User;
+use app\admin\model\PayOrder;
 
 /**
  * 店铺想买的二手车型
@@ -183,7 +184,17 @@ class Buycarmodels extends Backend
                     ->limit($offset, $limit)
                     ->select();
 
-            foreach ($list as $row) {
+            foreach ($list as $k => $row) {
+
+                $payorder = PayOrder::where(['buy_trading_models_id' => $row['buy_car_id'], 'pay_type' => 'bond'])->select();
+                foreach ($payorder as $key => $value) {
+                    if ($value['seller_id']) {
+                        $list[$k]['seller_out_trade_no'] = $value['out_trade_no'];
+                    }
+                    if ($value['buyers_id']) {
+                        $list[$k]['buyers_out_trade_no'] = $value['out_trade_no'];
+                    }
+                }
                 
             }
             $list = collection($list)->toArray();
@@ -214,6 +225,8 @@ class Buycarmodels extends Backend
                 $this->model->save(['deal_status' => 'cannot_the_deal'], function ($query) use ($data) {
                     $query->where('buy_car_id', $data['buy_car_id']);
                 });
+
+                BuycarModel::where(['id' => $data['buy_car_id']])->setField(['shelfismenu' => 0]);
             }
             
             $result = $this->model->save(['deal_status' => 'click_the_deal'], function ($query) use ($id) {

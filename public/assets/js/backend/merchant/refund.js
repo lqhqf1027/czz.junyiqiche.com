@@ -517,10 +517,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 },
                 datetime1: function (value, row, index) {
 
-                    var date1 = value.slice(0,4);
-                    var date2 = value.slice(4,6);
-                    var date3 = value.slice(6,8);
-                    return date1 + '-' + date2 + '-' + date3;
+                    // var date1 = value.slice(0,4);
+                    // var date2 = value.slice(4,6);
+                    // var date3 = value.slice(6,8);
+                    // return date1 + '-' + date2 + '-' + date3;
+                    return value;
 
                 },
                 normal: function (value, row, index) {
