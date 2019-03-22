@@ -8,6 +8,7 @@
 
 namespace addons\cms\controller\wxapp;
 
+use addons\cms\model\BuycarModel;
 use addons\cms\model\CompanyStore;
 use addons\cms\model\EarningDetailed;
 use addons\cms\model\FormIds;
@@ -156,7 +157,7 @@ class StoreCertificationPay extends Base
             $money = $o->total_fee;
             $openid = Common::getOpenid($user_id);
 
-            $expirationtime = date('Y-m-d',strtotime('+1 year'));
+            $expirationtime = date('Y-m-d', strtotime('+1 year'));
             if ($formId && $openid) {
                 $keyword1 = "友车圈{$level}认证费,有效期为一年，认证有效日期截止到" . $expirationtime;
                 $temp_msg = array(
@@ -199,6 +200,13 @@ class StoreCertificationPay extends Base
                     'user_id' => $user_id,
                     'auditstatus' => 'paid_the_money'
                 ])->find();
+
+            //该用户是否有没有店铺ID的车型
+            $is_null_store = BuycarModel::where(['user_id' => $user_id, 'store_id' => null])->column('id');
+
+            if ($is_null_store) {
+                BuycarModel::where('id', 'in', $is_null_store)->setField('store_id', $company_info['id']);
+            }
 
             if (!$company_info) {
                 throw new Exception('未知错误');
@@ -251,6 +259,8 @@ class StoreCertificationPay extends Base
                         ]);
                 }
             }
+
+
             Db::commit();
         } catch (Exception $e) {
             Db::rollback();

@@ -9,6 +9,7 @@
 namespace addons\cms\controller\wxapp;
 
 use addons\cms\model\Brand;
+use addons\cms\model\BuycarModel;
 use addons\cms\model\CompanyStore;
 use addons\cms\model\ModelsInfo;
 use addons\cms\model\PayOrder;
@@ -376,17 +377,8 @@ class Shop extends Base
         }
         Db::startTrans();
         try {
-            $bank_info_id = Db::name('bank_info')->where('store_id', $store_id)->lock(true)->value('id');
-
-            $distribution_id = Distribution::get(['level_store_id' => $store_id])->id;
-
-            if ($distribution_id) {
-                Distribution::destroy($distribution_id);
-            }
-
-            if ($bank_info_id) {
-                Db::name('bank_info')->where('id', $bank_info_id)->delete();
-            }
+            Distribution::destroy(['level_store_id' => $store_id]);
+            BankInfo::destroy(['store_id' => $store_id]);
             $res = CompanyStore::destroy($store_id);
             Db::commit();
 
@@ -426,11 +418,6 @@ class Shop extends Base
             }
         }
 
-        $store = CompanyStore::get([
-            'user_id' => $user_id,
-            'auditstatus' => 'paid_the_money'
-        ]);
-
         $store_info = CompanyStore::field(['id', 'cities_name', 'store_name', 'store_address', 'phone', 'main_camp', 'store_img', 'store_description', 'auditstatus', 'level_id'])
             ->with(['storelevel' => function ($q) {
                 $q->withField('id,partner_rank');
@@ -438,15 +425,11 @@ class Shop extends Base
             ->find($store_id);
 
 
-        if (!$store) {
-            $this->error('门店未找到或未完成认证');
-        }
-
         $car_list = ModelsInfo::useGlobalScope(false)->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime,store_description,factorytime,modelsimages,shelfismenu')
             ->with(['brand' => function ($q) {
                 $q->withField('id,name,brand_initials,brand_default_images');
             }])
-            ->where('store_id', $store_id)->where($is_own==0?['shelfismenu'=>1]:null)->order('createtime desc')->select();
+            ->where('store_id', $store_id)->where($is_own == 0 ? ['shelfismenu' => 1] : null)->order('createtime desc')->select();
 
         if ($car_list) {
             $car_list = collection($car_list)->toArray();
@@ -459,8 +442,6 @@ class Shop extends Base
                 $car_list[$k]['modelsimages'] = !empty($v['modelsimages']) ? explode(',', $v['modelsimages'])[0] : $default_image;
 
                 $car_list[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y-m', $v['car_licensetime']) : null;
-
-//                $car_list[$k]['factorytime'] = $v['factorytime'] ? date('Y', $v['factorytime']) : '';
 
             }
         }
