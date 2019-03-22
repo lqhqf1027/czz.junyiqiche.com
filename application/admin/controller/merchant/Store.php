@@ -522,7 +522,7 @@ class Store extends Backend
                     $query->where('models_info_id', $data['models_info_id']);
                 });
 
-                ModelsInfo::where(['id' => $data['models_info_id']])->setField(['shelfismenu' => 0]);
+                ModelsInfo::where(['id' => $data['models_info_id']])->setField(['shelfismenu' => 2]);
             }
             
             $result = $this->model->save(['deal_status' => 'click_the_deal'], function ($query) use ($id) {

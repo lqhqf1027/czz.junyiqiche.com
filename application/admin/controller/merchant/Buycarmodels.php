@@ -226,7 +226,7 @@ class Buycarmodels extends Backend
                     $query->where('buy_car_id', $data['buy_car_id']);
                 });
 
-                BuycarModel::where(['id' => $data['buy_car_id']])->setField(['shelfismenu' => 0]);
+                BuycarModel::where(['id' => $data['buy_car_id']])->setField(['shelfismenu' => 2]);
             }
             
             $result = $this->model->save(['deal_status' => 'click_the_deal'], function ($query) use ($id) {
