@@ -22,7 +22,7 @@ use addons\cms\model\PayOrder;
 Loader::import('WxPay.WxPay', EXTEND_PATH, '.Api.php');
 Loader::import('WxPay.WxPay', EXTEND_PATH, '.Notify.php');
 
-class StoreMarginPay extends Base
+class StoreMarginPayOther extends Base
 {
     protected $noNeedLogin = '*';
 
@@ -58,7 +58,7 @@ class StoreMarginPay extends Base
         $input->SetOut_trade_no("$out_trade_no");
         //     费用应该是由小程序端传给服务端的，在用户下单时告知服务端应付金额，demo中取值是1，即1分钱
         $input->SetTotal_fee("$money");
-        $input->SetNotify_url($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/addons/cms/wxapp.store_margin_pay/margin_wxPay_noTify');
+        $input->SetNotify_url($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/addons/cms/wxapp.store_margin_pay_other/margin_wxPay_noTify');
         $input->SetTrade_type("JSAPI");
         //     由小程序端传给服务端+.
         $input->SetOpenid($openid);
@@ -100,7 +100,7 @@ class StoreMarginPay extends Base
                         'bank_type' => $getData['bank_type'],
                         'transaction_id' => $getData['transaction_id'],
                         $explodeData[0] == 'seller' ? 'seller_id' : 'buyers_id' => $user_id,
-                        'trading_models_id' => $explodeData[2],
+                        'buy_trading_models_id' => $explodeData[2],
                         'pay_type' => 'bond'
                     ]
                 );
@@ -149,11 +149,13 @@ class StoreMarginPay extends Base
             if (is_null($checkOrder)) throw new Exception('未检查到支付订单');
             //修改报价表   买卖家
 
-            QuotedPrice::where([
-                'models_info_id' => explode('_', $out_trade_no)[2],
+            $res= QuotedPrice::where([
+                'buy_car_id' => explode('_', $out_trade_no)[2],
                 'deal_status' => 'click_the_deal',
-                $payUserType == 'buyers_id' ? 'user_ids' : 'by_user_ids' => $user_id
+                $payUserType == 'seller_id' ? 'user_ids' : 'by_user_ids' => $user_id
             ])->update([$payUserType == 'seller_id' ? 'seller_payment_status' : 'buyer_payment_status' => 'already_paid']);
+            if(!$res) throw new Exception('更新失败');
+
             //修改店铺等级为 升级后的level
             /*  if ($openid) {
 
@@ -199,17 +201,16 @@ class StoreMarginPay extends Base
     {
         $user_id = $this->request->post('user_id');
         $formId = $this->request->post('formId');
-        $trading_models_id = $this->request->post('trading_models_id');//车辆交易Id
-        $seller_payment_status = $this->request->post('seller_payment_status');
+        $trading_models_id = (int)$this->request->post('trading_models_id');//车辆交易Id
         $user_ids = $this->request->post('user_ids');//报价人的user_ids
         $quotationtime = $this->request->post('quotationtime');//报价时间
-        if (!$user_id || !$formId || !$trading_models_id || !$seller_payment_status || !$quotationtime) $this->error('缺少参数');
+        if (!$user_id || !$formId || !$trading_models_id || !$quotationtime) $this->error('缺少参数');
         //写入formIds表
         Common::writeFormId($formId, $user_id);
         //查询买家是否已确认收货
-        $buy_user = QuotedPrice::get(['buyer_payment_status' => 'confirm_receipt', 'quotationtime' => $quotationtime, 'models_info_id' => $trading_models_id, 'user_ids' => $user_ids]);
+        $buy_user = QuotedPrice::get(['buyer_payment_status' => 'confirm_receipt', 'quotationtime' => $quotationtime, 'buy_car_id' => $trading_models_id, 'user_ids' => $user_id]);
         //更新卖家字段
-        $q = QuotedPrice::where(['by_user_ids' => $user_id, 'quotationtime' => $quotationtime, 'seller_payment_status' => 'to_the_account'])
+        $q = QuotedPrice::where(['user_ids' => $user_id, 'quotationtime' => $quotationtime, 'seller_payment_status' => 'to_the_account'])
             ->update(['seller_payment_status' => $buy_user ? 'confirm_receipt' : 'waiting_for_buyers'])
             ? $this->success('操作成功') : $this->error('操作失败');
 
@@ -224,13 +225,11 @@ class StoreMarginPay extends Base
         $user_id = $this->request->post('user_id');
         $formId = $this->request->post('formId');
         $trading_models_id = $this->request->post('trading_models_id');//车辆交易Id
-        $buyer_payment_status = $this->request->post('buyer_payment_status');
-        $user_ids = $this->request->post('user_ids');//报价人的user_ids
+//        $buyer_payment_status = $this->request->post('buyer_payment_status');
+//        $user_ids = $this->request->post('user_ids');//报价人的user_ids
         $by_user_ids = $this->request->post('by_user_ids');//卖家的id
         $quotationtime = $this->request->post('quotationtime');//报价时间
-
         if (!$user_id || !$formId || !$trading_models_id || !$by_user_ids || !$quotationtime) $this->error('缺少参数');
-
         //写入formIds表
         Common::writeFormId($formId, $user_id);
         //查询卖家是否正在等待买家确认收货
@@ -238,7 +237,7 @@ class StoreMarginPay extends Base
 
 
         //更新买家字段
-        $q = QuotedPrice::where(['user_ids' => $user_id, 'quotationtime' => $quotationtime, 'buyer_payment_status' => 'to_the_account', 'models_info_id' => $trading_models_id])
+        $q = QuotedPrice::where(['by_user_ids' => $user_id, 'quotationtime' => $quotationtime, 'buyer_payment_status' => 'to_the_account', 'buy_car_id' => $trading_models_id])
             ->update(['buyer_payment_status' => 'confirm_receipt', 'seller_payment_status' =>'confirm_receipt'])
             ? $this->success('操作成功') : $this->error('操作失败');
 
