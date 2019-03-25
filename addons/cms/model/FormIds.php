@@ -24,7 +24,7 @@ class FormIds extends Model
     // 定义全局的查询范围
     protected function base($query)
     {
-        $query->whereTime('createtime', 'week')->where(['status' => 1, 'form_id' => ['neq', 'the formId is a mock one']])->field('form_id');
+        $query->whereTime('createtime', '>',strtotime('-6 days'))->where(['status' => 1, 'form_id' => ['neq', 'the formId is a mock one']])->field('form_id');
     }
 
 }
