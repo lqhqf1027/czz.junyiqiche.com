@@ -287,24 +287,50 @@ class My extends Base
 
         $shelfismenu = $this->request->post('shelfismenu');
 
+        $user_id = $this->request->post('user_id');
+
         $shelfismenu = $shelfismenu == 0 ? 2 : 1;
 
         if (!$id || !$shelfismenu) {
             $this->error('缺少参数');
         }
 
-        $models_name = $car_type == 'sell' ? new ModelsInfo() : new BuycarModel();
-        //上架
-        if ($shelfismenu == 1) {
+        try {
+            $models_name = $car_type == 'sell' ? new ModelsInfo() : new BuycarModel();
 
-            $models_name->update(['id' => $id, 'shelfismenu' => $shelfismenu]) ? $this->success('上架成功', 'success') : $this->error('上架失败', 'error');
+            $with_table = $car_type == 'sell' ? 'ModelsInfo' : 'BuycarModel';
 
-        }
-        //下架
-        if ($shelfismenu == 2) {
+            if ($shelfismenu == 1) {
 
-            $models_name->update(['id' => $id, 'shelfismenu' => $shelfismenu]) ? $this->success('下架成功', 'success') : $this->error('下架失败', 'error');
+                $check_status = QuotedPrice::field('id,buyer_payment_status,seller_payment_status')
+                    ->with([$with_table => function ($q) use ($with_table, $id) {
+                        $q->where('id', $id)->withField('id');
+                    }])->where([
+                        'by_user_ids' => $user_id,
+                    ])->select();
 
+                if ($check_status) {
+
+                    foreach ($check_status as $k => $v) {
+                        if ($v['buyer_payment_status'] != 'to_be_paid' || $v['seller_payment_status'] != 'to_be_paid') {
+                            throw new Exception('该车辆暂不能上架');
+                        }
+                    }
+
+                }
+
+                //上架
+                $models_name->update(['id' => $id, 'shelfismenu' => $shelfismenu]) ? $this->success('上架成功', 'success') : $this->error('上架失败', 'error');
+            }
+
+            //下架
+            if ($shelfismenu == 2) {
+
+                $models_name->update(['id' => $id, 'shelfismenu' => $shelfismenu]) ? $this->success('下架成功', 'success') : $this->error('下架失败', 'error');
+
+            }
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
         }
 
     }

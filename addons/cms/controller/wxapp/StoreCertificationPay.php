@@ -53,9 +53,10 @@ class StoreCertificationPay extends Base
      */
     public function certification_wxPay()
     {
-
         if (!$this->request->isPost()) $this->error('非法请求');
         $user_id = (int)$this->request->post('user_id');
+
+        $formId = Common::getFormId($user_id); //获取formId
         $formId = $this->request->post('formId');
         $f = Common::writeFormId($formId, $user_id);
         $out_trade_no = $this->request->post('out_trade_no');

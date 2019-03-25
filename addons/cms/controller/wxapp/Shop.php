@@ -50,6 +50,7 @@ class Shop extends Base
             }
             $brand = Cache::get('brandCate');
 
+
             //如果传入邀请人ID，获取邀请人的二维码
             $inviter_code = '';
 
@@ -65,6 +66,7 @@ class Shop extends Base
                 'inviter_code' => $inviter_code,
                 'store_level_list' => self::getVisibleStoreList(empty($inviter_level_id) ? null : $inviter_level_id),
                 'brand_list' => $brand,
+                'have_store' => CompanyStore::getByUser_id($user_id) ? 1 : 0
 
             ];
 
@@ -291,7 +293,7 @@ class Shop extends Base
             $this->error($e->getMessage());
         }
 
-        $this->success('请求成功', 'success');
+        $this->success('提交申请成功', 'success');
 
     }
 
@@ -327,7 +329,7 @@ class Shop extends Base
                 $to_be_paid[0]['can_pay'] = $can_pay;
             }
 
-            $paid = PayOrder::field('id,time_end,total_fee,store_id,level_id,pay_type,trading_models_id')
+            $paid = PayOrder::field('id,time_end,total_fee,store_id,level_id,pay_type,trading_models_id,buy_trading_models_id')
                 ->with([
                     'user' => function ($q) {
                         $q->withField('id,nickname,avatar');
@@ -339,19 +341,17 @@ class Shop extends Base
 
             if ($paid) {
                 foreach ($paid as $k => $v) {
-                    $paid[$k]['company_store'] = $paid[$k]['level'] = [];
-                    $paid[$k]['models_name'] = '';
-                    if ($v['store_id']) {
-                        $paid[$k]['company_store'] = CompanyStore::get($v['store_id'])->visible(['id', 'store_name', 'auditstatus']);
-                    }
+                    $company = CompanyStore::get($v['store_id']);
+                    $store_level = StoreLevel::get($v['level_id']);
+                    $paid[$k]['company_store'] = $paid[$k]['level'] = $paid[$k]['models_name'] = null;
 
-                    if ($v['level_id']) {
-                        $paid[$k]['level'] = StoreLevel::get($v['level_id'])->visible(['id', 'partner_rank', 'money']);
-                    }
+                    if ($company) $paid[$k]['company_store'] = $company->visible(['id', 'store_name', 'auditstatus']);
 
-                    if ($v['trading_models_id']) {
-                        $paid[$k]['models_name'] = ModelsInfo::useGlobalScope(false)->where('id', $v['trading_models_id'])->value('models_name');
-                    }
+                    if ($store_level) $paid[$k]['level'] = $store_level->visible(['id', 'partner_rank', 'money']);
+
+                    if ($v['trading_models_id']) $paid[$k]['models_name'] = ModelsInfo::useGlobalScope(false)->where('id', $v['trading_models_id'])->value('models_name');
+
+                    if ($v['buy_trading_models_id']) $paid[$k]['models_name'] = BuycarModel::useGlobalScope(false)->where('id', $v['buy_trading_models_id'])->value('models_name');
 
                     unset($paid[$k]['store_id'], $paid[$k]['level_id'], $paid[$k]['trading_models_id']);
                 }
@@ -424,10 +424,11 @@ class Shop extends Base
             }])
             ->find($store_id);
 
-
         $car_list = ModelsInfo::useGlobalScope(false)->field('id,models_name,guide_price,car_licensetime,kilometres,parkingposition,browse_volume,createtime,store_description,factorytime,modelsimages,shelfismenu')
             ->with(['brand' => function ($q) {
                 $q->withField('id,name,brand_initials,brand_default_images');
+            }, 'hasManyQuotedPrice' => function ($q) {
+                $q->field('id,models_info_id,buyer_payment_status,seller_payment_status,deal_status');
             }])
             ->where('store_id', $store_id)->where($is_own == 0 ? ['shelfismenu' => 1] : null)->order('createtime desc')->select();
 
@@ -443,12 +444,48 @@ class Shop extends Base
 
                 $car_list[$k]['car_licensetime'] = $v['car_licensetime'] ? date('Y-m', $v['car_licensetime']) : null;
 
+                $car_list[$k]['trading_status'] = 'normal';
+
+                //如果被报价，查看车辆状态
+                if ($v['has_many_quoted_price']) {
+                    foreach ($v['has_many_quoted_price'] as $key => $value) {
+                        if ($value['buyer_payment_status'] == 'to_be_paid' && $value['seller_payment_status'] == 'to_be_paid' && $value['deal_status'] == 'start_the_deal') {
+                            $car_list[$k]['trading_status'] = 'normal';
+                        } else if ($value['buyer_payment_status'] == 'refund_bond' && $value['seller_payment_status'] == 'refund_bond') {
+                            $car_list[$k]['trading_status'] = 'complete';//已完成
+                        } else {
+                            $car_list[$k]['trading_status'] = 'underway';//进行中
+                        }
+                    }
+                }
+
+                unset($car_list[$k]['has_many_quoted_price']);
+
             }
         }
 
         $store_info['car_list'] = $car_list;
 
         $this->success('请求成功', ['detail' => $store_info, 'is_own' => $is_own]);
+    }
+
+
+    /**
+     * 店铺信息修改接口
+     */
+    public function update_store()
+    {
+        $store_id = $this->request->post('store_id');
+        $modify_content = $this->request->post('modify_content/a');
+
+        if (!$store_id || !$modify_content) {
+            $this->error('缺少参数', 'error');
+        }
+
+        $company_store = new CompanyStore();
+
+        $company_store->allowField(true)->save($modify_content, ['id' => $store_id]) ? $this->success('更新成功') : $this->error('更新失败');
+
     }
 
     /**
@@ -513,9 +550,9 @@ class Shop extends Base
 
             $store_id = CompanyStore::getByUser_id($user_id)->id;
 
-            $earning_detailed_id = EarningDetailed::getByStore_id($store_id)->id;
+            $earning_detailed_id = EarningDetailed::getByStore_id($store_id)->visible(['id', 'available_balance']);
 
-            $balance = EarningDetailed::where('id', $earning_detailed_id)->lock(true)->value('available_balance');
+            $balance = EarningDetailed::where('id', $earning_detailed_id['id'])->lock(true)->value('available_balance');
 
             if ($money > $balance) {
                 throw new Exception('提现金额不能超过可用余额');
@@ -530,7 +567,9 @@ class Shop extends Base
             //实际金额
             $actual_amount = $money - $service_charge;
 
-            $res = EarningDetailed::where('store_id', $store_id)->setDec('available_balance', $money);
+            $moneys = $earning_detailed_id['available_balance'] - $money;
+
+            $res = EarningDetailed::where('store_id', $store_id)->setField('available_balance', $moneys);
 
             if ($res) {
                 WithdrawalsRecord::create([
