@@ -44,6 +44,15 @@ class Buycarmodels extends Backend
     {
         //当前是否为关联查询
         // $this->relationSearch = true;
+        $data = BuycarModel::field(['user_id'])->select();
+        $user_ids = [];
+        foreach ($data as $k => $v) {
+            if (!in_array($v['user_id'],$user_ids)) {
+                $user_ids[] = $v['user_id'];
+            }
+        }
+        // pr($user_ids);
+        // die;
         //设置过滤方法
         $this->request->filter(['strip_tags']);
         if ($this->request->isAjax())
@@ -61,6 +70,7 @@ class Buycarmodels extends Backend
 
                     }])
                     ->where($where)
+                    ->where('id', 'in', $user_ids)
                     ->order($sort, $order)
                     ->count();
 
@@ -74,6 +84,7 @@ class Buycarmodels extends Backend
 
                     }])
                     ->where($where)
+                    ->where('id', 'in', $user_ids)
                     ->order($sort, $order)
                     ->limit($offset, $limit)
                     ->select();
@@ -84,9 +95,11 @@ class Buycarmodels extends Backend
                 $list[$k]['store_name'] = $row['buycar'][0]['store']['store_name'];
                 $list[$k]['store_address'] = $row['buycar'][0]['store']['store_address'];
                 $list[$k]['phone'] = $row['buycar'][0]['store']['phone'];
+
                 //店铺想买车型数量
-                $list[$k]['buycount'] = BuycarModel::where('store_id', $row['buycar'][0]['store']['id'])->count();
-                
+                $list[$k]['buycount'] = BuycarModel::where('store_id', $row['buycar'][0]['store']['id'])->count();      
+                    
+
             }
             $list = collection($list)->toArray();
             // pr($list);
@@ -95,6 +108,7 @@ class Buycarmodels extends Backend
 
             return json($result);
         }
+
         return $this->view->fetch();
     }
 
