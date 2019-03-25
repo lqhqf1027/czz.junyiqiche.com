@@ -379,6 +379,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.buyer_payment_status == 'confirm_receipt') {
                                             return true;
                                         }
+                                        else if (row.buyer_payment_status == 'refund_bond') {
+                                            return true;
+                                        }
                                     },
 
                                 },
@@ -403,6 +406,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.buyer_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'refund_bond') {
                                             return true;
                                         }
                                     },
@@ -431,6 +437,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.buyer_payment_status == 'confirm_receipt') {
                                             return true;
                                         }
+                                        else if (row.buyer_payment_status == 'refund_bond') {
+                                            return true;
+                                        }
                                     },
 
                                 },
@@ -455,6 +464,39 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.buyer_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'refund_bond') {
+                                            return true;
+                                        }
+                                    },
+
+
+                                },
+                                /**
+                                 * 买家保证金已退回
+                                 */
+                                {
+                                    name: 'refund_bond',
+                                    text: '买家保证金已退回',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('买家保证金已退回'),
+                                    classname: 'btn btn-xs btn-success',
+                                    hidden: function (row, value, index) {
+                                        if (row.buyer_payment_status == 'refund_bond') {
+                                            return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'confirm_receipt') {
                                             return true;
                                         }
                                     },
@@ -493,6 +535,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.seller_payment_status == 'confirm_receipt') {
                                             return true;
                                         }
+                                        else if (row.seller_payment_status == 'refund_bond') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'waiting_for_buyers') {
+                                            return true;
+                                        }
                                     },
 
                                 },
@@ -517,6 +565,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'refund_bond') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'waiting_for_buyers') {
                                             return true;
                                         }
                                     },
@@ -545,6 +599,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         else if (row.seller_payment_status == 'confirm_receipt') {
                                             return true;
                                         }
+                                        else if (row.seller_payment_status == 'refund_bond') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'waiting_for_buyers') {
+                                            return true;
+                                        }
                                     },
 
                                 },
@@ -569,6 +629,78 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                             return true;
                                         }
                                         else if (row.seller_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'refund_bond') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'waiting_for_buyers') {
+                                            return true;
+                                        }
+                                    },
+
+
+                                },
+                                /**
+                                 * 卖家等待买家收货
+                                 */
+                                {
+                                    name: 'waiting_for_buyers',
+                                    text: '卖家等待买家收货',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('卖家等待买家收货'),
+                                    classname: 'btn btn-xs btn-success',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'waiting_for_buyers') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'refund_bond') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
+
+
+                                },
+                                /**
+                                 * 卖家保证金已退回
+                                 */
+                                {
+                                    name: 'refund_bond',
+                                    text: '卖家保证金已退回',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('卖家保证金已退回'),
+                                    classname: 'btn btn-xs btn-success',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'refund_bond') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'waiting_for_buyers') {
                                             return true;
                                         }
                                     },

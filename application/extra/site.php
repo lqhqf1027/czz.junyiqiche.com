@@ -4,7 +4,7 @@ return array (
   'name' => '友车圈TEST',
   'beian' => '',
   'cdnurl' => '',
-  'version' => '1.0.3',
+  'version' => '1.0.7',
   'timezone' => 'Asia/Shanghai',
   'forbiddenip' => '',
   'languages' => 
@@ -324,5 +324,5 @@ tab-stops:15.6pt"><!--[if !supportLists]--><span lang="EN-US">1.<span style="fon
     '双离合变速' => '双离合变速',
   ),
   'default_mobile' => '15343597232',
-  'presentation_rate' => '0.10',
+  'presentation_rate' => '0.001',
 );

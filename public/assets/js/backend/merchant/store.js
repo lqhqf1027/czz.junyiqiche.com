@@ -60,8 +60,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             title: __('Invitation_code'),
                             operate: false
                         }, 
-                        {
-                            field: 'main_camp', title: __('Main_camp'), formatter: function (v, r, i) {
+                        {field: 'main_camp', title: __('Main_camp'), formatter: function (v, r, i) {
                                 return Controller.cutString(r.main_camp,15)
                             }
                         },
@@ -95,6 +94,36 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             operate: false,
                             formatter: Controller.api.formatter.buttons
                         },
+                        // {
+                        //     field: 'buycount',
+                        //     title: __('查看店铺想买车型'), table: table, buttons: [
+                        //         {
+                        //             name: 'buycount', text: '查看店铺想买车型', title: '查看店铺想买车型', icon: 'fa fa-eye', classname: 'btn btn-xs btn-info btn-addtabs',
+                        //             url: 'merchant/store/buymodels',
+                        //             hidden: function (row, value, index) {
+                        //                 if (row.buycount != 0) {
+                        //                     return false;
+                        //                 }
+                        //                 else if (row.buycount == 0) {
+                        //                     return true;
+                        //                 }
+                        //             },
+                        //         },
+                        //         {
+                        //             name: 'buycount', text: '暂无店铺想买车型', title: '暂无店铺想买车型', icon: 'fa fa-eye-slash', classname: 'btn btn-xs btn-danger',
+                        //             hidden: function (row, value, index) {
+                        //                 if (row.buycount == 0) {
+                        //                     return false;
+                        //                 }
+                        //                 else if (row.buycount != 0) {
+                        //                     return true;
+                        //                 }
+                        //             },
+                        //         }
+                        //     ],
+                        //     operate: false,
+                        //     formatter: Controller.api.formatter.buttons1
+                        // },
                         {
                             field: 'recommend',
                             title: __('是否为推荐'),
@@ -716,6 +745,128 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             Table.api.bindevent(table);
 
         },
+        /**
+         * 店铺想买车型
+         */
+        buymodels: function () {
+            // 初始化表格参数配置
+            Table.api.init({
+                extend: {
+                    'dragsort_url': ''
+                }
+            });
+
+            var table = $("#table");
+            $.fn.bootstrapTable.locales[Table.defaults.locale]['formatSearch'] = function () {
+            };
+            // 初始化表格
+            table.bootstrapTable({
+                url: 'merchant/store/buymodels',
+                toolbar: '#toolbar',
+                pk: 'id',
+                sortName: 'id',
+                searchFormVisible: true,
+                queryParams: function (params) {
+                    params.filter = JSON.stringify({'store_id': Config.store_id});
+                    params.op = JSON.stringify({'store_id': '='});
+                    return {
+                        search: params.search,
+                        sort: params.sort,
+                        order: params.order,
+                        filter: params.filter,
+                        op: params.op,
+                        offset: params.offset,
+                        limit: params.limit
+                    }
+                },
+                columns: [
+                    [
+                        {checkbox: true},
+                        {field: 'id', title: __('车型id')},
+                        {field: 'brand.name', title: __('品牌名称')},
+                        {field: 'models_name', title: __('车型名称')},
+                        {field: 'phone', title: __('手机号')},
+                        {field: 'browse_volume', title: __('浏览量'), operate: false},
+                        {field: 'parkingposition', title: __('期望车辆所在地'), operate: false},
+                        {field: 'guide_price', title: __('心理价（元）'), operate: false},
+                        {
+                            field: 'count',
+                            title: __('共收到报价次数'),
+                            operate: false,
+                            formatter: Controller.api.formatter.count
+                        },
+                        {field: 'shelfismenu', title: __('是否上下架'), formatter: Controller.api.formatter.toggle1},
+                        {
+                            field: 'createtime',
+                            title: __('创建时间'),
+                            operate: false,
+                            addclass: 'datetimerange',
+                            formatter: Table.api.formatter.datetime
+                        },
+                        {
+                            field: 'updatetime',
+                            title: __('更新时间'),
+                            operate: false,
+                            addclass: 'datetimerange',
+                            formatter: Table.api.formatter.datetime
+                        },
+                        {
+                            field: 'operate', title: __('Operate'), table: table,
+                            buttons: [
+                                /**
+                                 * 查看车型的报价
+                                 */
+                                {
+                                    name: 'buymodels_price',
+                                    text: '查看车型的报价',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('查看车型的报价'),
+                                    classname: 'btn btn-xs btn-success btn-buymodels_price btn-addtabs',
+                                    url: 'merchant/store/buymodelsprice',
+                                    hidden: function (row, value, index) {
+                                        if (row.count != 0) {
+                                            return false;
+                                        }
+                                        else if (row.count == 0) {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 暂无车型报价可查看
+                                 */
+                                {
+                                    name: 'buymodels_noprice',
+                                    text: '暂无车型报价可查看',
+                                    icon: 'fa fa-eye-slash',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('暂无车型报价可查看'),
+                                    classname: 'btn btn-xs btn-danger',
+                                    hidden: function (row, value, index) {
+                                        if (row.count == 0) {
+                                            return false;
+                                        }
+                                        else if (row.count != 0) {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+
+                            ],
+                            events: Controller.api.events.operate,
+                            formatter: Controller.api.formatter.buttons3
+                        }
+
+                    ]
+                ]
+            });
+            // 为表格1绑定事件
+            Table.api.bindevent(table);
+
+        },
         //店铺在售车型----报价
         salemodelsprice: function () {
 
@@ -1186,6 +1337,371 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
 
         },
+        //店铺想买车型----报价
+        buymodelsprice: function () {
+
+            // 初始化表格参数配置
+            Table.api.init({
+                extend: {
+                    'dragsort_url': ''
+                }
+            });
+
+            var table = $("#table");
+            // $.fn.bootstrapTable.locales[Table.defaults.locale]['formatSearch'] = function(){return "快速搜索:车型";};
+            // 初始化表格
+            table.bootstrapTable({
+                url: 'merchant/store/buymodelsprice',
+                pk: 'id',
+                sortName: 'id',
+                toolbar: '#toolbar',
+                searchFormVisible: true,
+                queryParams: function (params) {
+                    params.filter = JSON.stringify({'buy_car_id': Config.buy_car_id});
+                    params.op = JSON.stringify({'buy_car_id': '='});
+                    return {
+                        search: params.search,
+                        sort: params.sort,
+                        order: params.order,
+                        filter: params.filter,
+                        op: params.op,
+                        offset: params.offset,
+                        limit: params.limit
+                    }
+                },
+                columns: [
+                    [
+                        {field: 'id', title: __('报价id'), operate: false},
+
+                        // {field: 'store_name', title: __('报价店铺名')},
+                        {field: 'user.nickname', title: __('报价用户昵称')},
+                        {
+                            field: 'user.avatar',
+                            title: __('报价用户头像'),
+                            formatter: Table.api.formatter.images,
+                            operate: false
+                        },
+                        {field: 'user.mobile', title: __('报价用户手机')},
+
+                        {
+                            field: 'seller_payment_status',
+                            title: __('卖家（被报价人）支付状态/商户订单号'),
+                            formatter: Controller.api.formatter.seller_payment,
+                            operate: false
+                        },
+                        {
+                            field: 'buyer_payment_status',
+                            title: __('买家（报价人）支付状态/商户订单号'),
+                            formatter: Controller.api.formatter.buyer_payment,
+                            operate: false
+                        },
+
+                        {field: 'money', title: __('报价价格（元）')},
+                        {
+                            field: 'quotationtime',
+                            title: __('报价时间'),
+                            operate: false,
+                            addclass: 'datetimerange',
+                            formatter: Controller.api.formatter.datetime
+                        },
+                        {
+                            field: 'operate', title: __('Operate'), table: table,
+                            buttons: [
+                                /**
+                                 * 是否确定交易
+                                 */
+                                {
+                                    name: 'start_the_deal',
+                                    text: '确定交易',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('确定交易'),
+                                    classname: 'btn btn-xs btn-success btn-start_deal',
+                                    hidden: function (row, value, index) {
+                                        if (row.deal_status == 'start_the_deal') {
+                                            return false;
+                                        }
+                                        else if (row.deal_status == 'close_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'click_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'cannot_the_deal') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 不可以交易
+                                 */
+                                {
+                                    name: 'cannot_the_deal',
+                                    text: '不可以交易',
+                                    icon: 'fa fa-window-close',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('不可以交易'),
+                                    classname: 'btn btn-xs btn-danger',
+                                    hidden: function (row, value, index) {
+                                        if (row.deal_status == 'cannot_the_deal') {
+                                            return false;
+                                        }
+                                        else if (row.deal_status == 'close_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'start_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.deal_status == 'click_the_deal') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 等待买家支付保证金
+                                 */
+                                {
+                                    name: 'to_be_paid',
+                                    text: '等待买家支付保证金',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('等待买家支付保证金'),
+                                    classname: 'btn btn-xs btn-primary',
+                                    hidden: function (row, value, index) {
+                                        if (row.buyer_payment_status == 'to_be_paid' && row.deal_status != 'cannot_the_deal' && row.deal_status != 'start_the_deal' && row.deal_status != 'close_the_deal') {
+                                            return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_be_paid' && row.deal_status == 'cannot_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_be_paid' && row.deal_status == 'start_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_be_paid' && row.deal_status == 'close_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 确认买家保证金到账
+                                 */
+                                {
+                                    name: 'buyer_payment_status',
+                                    text: '确认买家保证金到账',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('确认买家保证金到账'),
+                                    classname: 'btn btn-xs btn-primary btn-buyer_account',
+                                    hidden: function (row, value, index) {
+                                        if (row.buyer_payment_status == 'already_paid') {
+                                            return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 买家保证金已经到账，等待发货
+                                 */
+                                {
+                                    name: 'buyer_payment_status',
+                                    text: '等待买家收货',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('等待买家收货'),
+                                    classname: 'btn btn-xs btn-danger',
+                                    hidden: function (row, value, index) {
+                                        if (row.buyer_payment_status == 'to_the_account') {
+                                            return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 买家已经收货
+                                 */
+                                {
+                                    name: 'buyer_payment_status',
+                                    text: '买家已经收货',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('买家已经收货'),
+                                    classname: 'btn btn-xs btn-success',
+                                    hidden: function (row, value, index) {
+                                        if (row.buyer_payment_status == 'confirm_receipt') {
+                                            return false;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.buyer_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                    },
+
+
+                                },
+                                /**
+                                 * 等待卖家支付保证金
+                                 */
+                                {
+                                    name: 'to_be_paid',
+                                    text: '等待卖家支付保证金',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('等待卖家支付保证金'),
+                                    classname: 'btn btn-xs btn-primary',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'to_be_paid' && row.deal_status != 'cannot_the_deal'  && row.deal_status != 'start_the_deal' && row.deal_status != 'close_the_deal') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid' && row.deal_status == 'cannot_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid' && row.deal_status == 'start_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid' && row.deal_status == 'close_the_deal') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 确认卖家保证金到账
+                                 */
+                                {
+                                    name: 'seller_payment_status',
+                                    text: '确认卖家保证金到账',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('确认卖家保证金到账'),
+                                    classname: 'btn btn-xs btn-success btn-seller_account',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'already_paid') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 卖家保证金已经到账，等待发货
+                                 */
+                                {
+                                    name: 'seller_payment_status',
+                                    text: '等待卖家发货',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('等待卖家发货'),
+                                    classname: 'btn btn-xs btn-danger',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'to_the_account') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'confirm_receipt') {
+                                            return true;
+                                        }
+                                    },
+
+                                },
+                                /**
+                                 * 卖家已经发货
+                                 */
+                                {
+                                    name: 'buyer_payment_status',
+                                    text: '卖家已经发货',
+                                    icon: 'fa fa-eye',
+                                    extend: 'data-toggle="tooltip"',
+                                    title: __('卖家已经发货'),
+                                    classname: 'btn btn-xs btn-success',
+                                    hidden: function (row, value, index) {
+                                        if (row.seller_payment_status == 'confirm_receipt') {
+                                            return false;
+                                        }
+                                        else if (row.seller_payment_status == 'to_be_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'already_paid') {
+                                            return true;
+                                        }
+                                        else if (row.seller_payment_status == 'to_the_account') {
+                                            return true;
+                                        }
+                                    },
+
+
+                                },
+
+                            ],
+                            events: Controller.api.events.operate,
+                            formatter: Controller.api.formatter.operate
+                        }
+
+                    ]
+                ]
+            });
+
+            // 为表格绑定事件
+            Table.api.bindevent(table);
+
+
+        },
         add: function () {
             Controller.api.bindevent();
         },
@@ -1535,7 +2051,17 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     var buttons = $.extend([], this.buttons || []);
                     return Controller.api.buttonlink(this, buttons, value, row, index, 'buttons');
                 },
+                buttons1: function (value, row, index) {
+                    // 默认按钮组
+                    var buttons = $.extend([], this.buttons || []);
+                    return Controller.api.buttonlink1(this, buttons, value, row, index, 'buttons');
+                },
                 buttons2: function (value, row, index) {
+                    // 默认按钮组
+                    var buttons = $.extend([], this.buttons || []);
+                    return Controller.api.buttonlink2(this, buttons, value, row, index, 'buttons');
+                },
+                buttons3: function (value, row, index) {
                     // 默认按钮组
                     var buttons = $.extend([], this.buttons || []);
                     return Controller.api.buttonlink2(this, buttons, value, row, index, 'buttons');
@@ -1591,13 +2117,19 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     var html = [];
                     $.each(arr, function (i, value) {
                         value = value ? value : '/assets/img/blank.gif';
-                        html.push('<a href="https://czz.junyiqiche.com' + value + '" target="_blank"><img class="' + classname + '" src="https://czz.junyiqiche.com' + value + '" /></a>');
+                        html.push('<a href="' + row.server_name + value + '" target="_blank"><img class="' + classname + '" src="' + row.server_name + value + '" /></a>');
                     });
                     return html.join(' ');
                 },
                 count: function (value, row, index) {
+
+                    if (value != 0) {
+                        return '<strong class="text-success">' + value + '</strong>';
+                    }
+                    else {
+                        return value;
+                    }
                     
-                    return '<strong class="text-success">' + value + '</strong>';
                 },
                 datetime: function (value, row, index) {
 
@@ -1624,9 +2156,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     if (row.buyer_payment_status == 'confirm_receipt') {
                         return "<strong class='text-success'>买家已经收货/" + row.buyers_out_trade_no +"</strong>";
                     }
-                    if (row.buyer_payment_status == 'refund_bond') {
-                        return "<strong class='text-success'>买家保证金已退回/" + row.buyers_out_trade_no +"</strong>";
-                    }
 
                 },
                 seller_payment: function (value, row, index) {
@@ -1647,10 +2176,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     if (row.seller_payment_status == 'waiting_for_buyers') {
                         return "<strong class='text-success'>等待买家确认收货/" + row.seller_out_trade_no +"</strong>";
                     }
-                    if (row.seller_payment_status == 'refund_bond') {
-                        return "<strong class='text-success'>卖家保证金已退回/" + row.seller_out_trade_no +"</strong>";
-                    }
-
 
                 },
             },
@@ -1716,7 +2241,131 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 }
                 return html.join(' ');
             },
+            buttonlink1: function (column, buttons, value, row, index, type) {
+                var table = column.table;
+                type = typeof type === 'undefined' ? 'buttons' : type;
+                var options = table ? table.bootstrapTable('getOptions') : {};
+                var html = [];
+                var hidden, visible, disable, url, classname, icon, text, title, refresh, confirm, extend, click, dropdown, link;
+                var fieldIndex = column.fieldIndex;
+                var dropdowns = {};
+
+                $.each(buttons, function (i, j) {
+                    if (type === 'operate') {
+                        if (j.name === 'dragsort' && typeof row[Table.config.dragsortfield] === 'undefined') {
+                            return true;
+                        }
+                        if (['add', 'edit', 'del', 'multi', 'dragsort'].indexOf(j.name) > -1 && !options.extend[j.name + "_url"]) {
+                            return true;
+                        }
+                    }
+                    var attr = table.data(type + "-" + j.name);
+                    if (typeof attr === 'undefined' || attr) {
+                        hidden = typeof j.hidden === 'function' ? j.hidden.call(table, row, j) : (j.hidden ? j.hidden : false);
+                        if (hidden) {
+                            return true;
+                        }
+                        visible = typeof j.visible === 'function' ? j.visible.call(table, row, j) : (j.visible ? j.visible : true);
+                        if (!visible) {
+                            return true;
+                        }
+                        dropdown = j.dropdown ? j.dropdown : '';
+                        url = j.url ? j.url : '';
+                        url = typeof url === 'function' ? url.call(table, row, j) : (url ? Fast.api.fixurl(Table.api.replaceurl(url, row, table)) : 'javascript:;');
+                        classname = j.classname ? j.classname : 'btn-primary btn-' + name + 'one';
+                        icon = j.icon ? j.icon : '';
+                        text = j.text ? j.text : '';
+                        title = '(' + row.store_name + ')的想买车型';
+                        refresh = j.refresh ? 'data-refresh="' + j.refresh + '"' : '';
+                        confirm = j.confirm ? 'data-confirm="' + j.confirm + '"' : '';
+                        extend = j.extend ? j.extend : '';
+                        disable = typeof j.disable === 'function' ? j.disable.call(table, row, j) : (j.disable ? j.disable : false);
+                        if (disable) {
+                            classname = classname + ' disabled';
+                        }
+                        link = '<a href="' + url + '" class="' + classname + '" ' + (confirm ? confirm + ' ' : '') + (refresh ? refresh + ' ' : '') + extend + ' title="' + title + '" data-table-id="' + (table ? table.attr("id") : '') + '" data-field-index="' + fieldIndex + '" data-row-index="' + index + '" data-button-index="' + i + '"><i class="' + icon + '"></i>' + (text ? ' ' + text : '') + '</a>';
+                        if (dropdown) {
+                            if (typeof dropdowns[dropdown] == 'undefined') {
+                                dropdowns[dropdown] = [];
+                            }
+                            dropdowns[dropdown].push(link);
+                        } else {
+                            html.push(link);
+                        }
+                    }
+                });
+                if (!$.isEmptyObject(dropdowns)) {
+                    var dropdownHtml = [];
+                    $.each(dropdowns, function (i, j) {
+                        dropdownHtml.push('<div class="btn-group"><button type="button" class="btn btn-primary dropdown-toggle btn-xs" data-toggle="dropdown">' + i + '</button><button type="button" class="btn btn-primary dropdown-toggle btn-xs" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right"><li>' + j.join('</li><li>') + '</li></ul></div>');
+                    });
+                    html.unshift(dropdownHtml);
+                }
+                return html.join(' ');
+            },
             buttonlink2: function (column, buttons, value, row, index, type) {
+                var table = column.table;
+                type = typeof type === 'undefined' ? 'buttons' : type;
+                var options = table ? table.bootstrapTable('getOptions') : {};
+                var html = [];
+                var hidden, visible, disable, url, classname, icon, text, title, refresh, confirm, extend, click, dropdown, link;
+                var fieldIndex = column.fieldIndex;
+                var dropdowns = {};
+
+                $.each(buttons, function (i, j) {
+                    if (type === 'operate') {
+                        if (j.name === 'dragsort' && typeof row[Table.config.dragsortfield] === 'undefined') {
+                            return true;
+                        }
+                        if (['add', 'edit', 'del', 'multi', 'dragsort'].indexOf(j.name) > -1 && !options.extend[j.name + "_url"]) {
+                            return true;
+                        }
+                    }
+                    var attr = table.data(type + "-" + j.name);
+                    if (typeof attr === 'undefined' || attr) {
+                        hidden = typeof j.hidden === 'function' ? j.hidden.call(table, row, j) : (j.hidden ? j.hidden : false);
+                        if (hidden) {
+                            return true;
+                        }
+                        visible = typeof j.visible === 'function' ? j.visible.call(table, row, j) : (j.visible ? j.visible : true);
+                        if (!visible) {
+                            return true;
+                        }
+                        dropdown = j.dropdown ? j.dropdown : '';
+                        url = j.url ? j.url : '';
+                        url = typeof url === 'function' ? url.call(table, row, j) : (url ? Fast.api.fixurl(Table.api.replaceurl(url, row, table)) : 'javascript:;');
+                        classname = j.classname ? j.classname : 'btn-primary btn-' + name + 'one';
+                        icon = j.icon ? j.icon : '';
+                        text = j.text ? j.text : '';
+                        title = '(' + row.store_name + '店铺)' + Controller.cutString(row.models_name,15) + '车型的报价';
+                        refresh = j.refresh ? 'data-refresh="' + j.refresh + '"' : '';
+                        confirm = j.confirm ? 'data-confirm="' + j.confirm + '"' : '';
+                        extend = j.extend ? j.extend : '';
+                        disable = typeof j.disable === 'function' ? j.disable.call(table, row, j) : (j.disable ? j.disable : false);
+                        if (disable) {
+                            classname = classname + ' disabled';
+                        }
+                        link = '<a href="' + url + '" class="' + classname + '" ' + (confirm ? confirm + ' ' : '') + (refresh ? refresh + ' ' : '') + extend + ' title="' + title + '" data-table-id="' + (table ? table.attr("id") : '') + '" data-field-index="' + fieldIndex + '" data-row-index="' + index + '" data-button-index="' + i + '"><i class="' + icon + '"></i>' + (text ? ' ' + text : '') + '</a>';
+                        if (dropdown) {
+                            if (typeof dropdowns[dropdown] == 'undefined') {
+                                dropdowns[dropdown] = [];
+                            }
+                            dropdowns[dropdown].push(link);
+                        } else {
+                            html.push(link);
+                        }
+                    }
+                });
+                if (!$.isEmptyObject(dropdowns)) {
+                    var dropdownHtml = [];
+                    $.each(dropdowns, function (i, j) {
+                        dropdownHtml.push('<div class="btn-group"><button type="button" class="btn btn-primary dropdown-toggle btn-xs" data-toggle="dropdown">' + i + '</button><button type="button" class="btn btn-primary dropdown-toggle btn-xs" data-toggle="dropdown"><span class="caret"></span></button><ul class="dropdown-menu pull-right"><li>' + j.join('</li><li>') + '</li></ul></div>');
+                    });
+                    html.unshift(dropdownHtml);
+                }
+                return html.join(' ');
+            },
+            buttonlink3: function (column, buttons, value, row, index, type) {
                 var table = column.table;
                 type = typeof type === 'undefined' ? 'buttons' : type;
                 var options = table ? table.bootstrapTable('getOptions') : {};
