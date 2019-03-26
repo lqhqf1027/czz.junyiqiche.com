@@ -606,7 +606,7 @@ class Store extends Backend
     }
 
     /** 
-     * 确认交易
+     * 确认交易    
      */
     public function startdeal()
     {
