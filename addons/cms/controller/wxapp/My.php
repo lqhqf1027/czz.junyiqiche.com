@@ -471,7 +471,7 @@ class My extends Base
 
             $data = QuotedPrice::where('id', $quoted_id)->field('models_info_id,buy_car_id,buyer_payment_status,seller_payment_status')->lock(true)->find();
 
-            if ($data['buyer_payment_status'] != 'to_be_paid' || $data['buyer_payment_status'] != 'to_be_paid') {
+            if ($data['buyer_payment_status'] != 'to_be_paid' || $data['seller_payment_status'] != 'to_be_paid') {
                 throw new Exception('一方已支付保证金，暂无法取消订单');
             }
 
