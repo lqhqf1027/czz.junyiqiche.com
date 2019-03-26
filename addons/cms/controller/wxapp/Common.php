@@ -101,7 +101,7 @@ class Common extends Base
             //判断该用户该车辆是否报价
             $isOffer = QuotedPrice::get([$car_id_key => $car_id, 'type' => $type, 'user_ids' => $user_id]);
 
-            $condition = 'emission_standard,id,models_name,car_licensetime,kilometres,guide_price,parkingposition,phone,store_id,user_id,store_description,createtime,factorytime,transmission_case,displacement';
+            $condition = 'emission_standard,id,models_name,car_licensetime,kilometres,guide_price,parkingposition,phone,store_id,user_id,store_description,createtime,factorytime,transmission_case,displacement,shelfismenu';
 
             if ($type == 'sell') {
                 $condition = $condition . ',modelsimages';
@@ -151,21 +151,6 @@ class Common extends Base
             }
 
             $detail['is_certification_needed'] = $is_certification_needed;
-
-//            $company = CompanyStore::get(['user_id' => $user_id]);
-//            if (!$company) {
-//                $is_authentication = 1;
-//                $msg = '您未认证店铺';
-//            } else {
-//                $status = $company->auditstatus;
-//                if ($status == 'paid_the_money') {
-//                    $is_authentication = 0;
-//                } else {
-//                    $is_authentication = 2;
-//                    $msg = '您还未完成店铺认证';
-//                }
-//            };
-
 
         } catch (Exception $e) {
             $this->error($e->getMessage());

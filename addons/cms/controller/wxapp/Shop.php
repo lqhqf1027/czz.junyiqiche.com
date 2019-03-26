@@ -567,9 +567,8 @@ class Shop extends Base
             //实际金额
             $actual_amount = $money - $service_charge;
 
-            $moneys = $earning_detailed_id['available_balance'] - $money;
 
-            $res = EarningDetailed::where('store_id', $store_id)->setField('available_balance', $moneys);
+            $res = EarningDetailed::where('store_id', $store_id)->setField('available_balance', EarningDetailed::raw('available_balance-'.$money));
 
             if ($res) {
                 WithdrawalsRecord::create([

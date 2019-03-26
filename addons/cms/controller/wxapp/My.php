@@ -234,6 +234,8 @@ class My extends Base
             $q->where($where)->order('quotationtime desc')->with(['user' => function ($q) {
                 $q->withField('nickname,avatar');
             }]);
+        },'brand'=>function ($q){
+            $q->withField('brand_default_images');
         }])->where($where_model)->select())->toArray();
 
         if ($receive_quotation) {
