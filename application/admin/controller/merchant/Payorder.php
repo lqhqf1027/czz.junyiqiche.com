@@ -62,11 +62,12 @@ class Payorder extends Backend
                     ->limit($offset, $limit)
                     ->select();
 
-            foreach ($list as $row) {
+            foreach ($list as $k => $row) {
                 
                 $row->getRelation('store')->visible(['store_name','store_img','bank_card']);
 				$row->getRelation('user')->visible(['nickname','mobile','avatar']);
-				$row->getRelation('level')->visible(['partner_rank']);
+                $row->getRelation('level')->visible(['partner_rank']);
+                $list[$k]['server_name'] = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'];
             }
             $list = collection($list)->toArray();
             $result = array("total" => $total, "rows" => $list);

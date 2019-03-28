@@ -91,7 +91,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     var html = [];
                     $.each(arr, function (i, value) {
                         value = value ? value : '/assets/img/blank.gif';
-                        html.push('<a href="https://czz.junyiqiche.com' + value + '" target="_blank"><img class="' + classname + '" src="https://czz.junyiqiche.com' + value + '" /></a>');
+                        html.push('<a href="' + row.server_name + value + '" target="_blank"><img class="' + classname + '" src="' + row.server_name + value + '" /></a>');
                     });
                     return html.join(' ');
                 },
